@@ -27,14 +27,15 @@
 
 static CRC32_t *table = NULL;
 
-void CRC32_Init(CRC32_t *value)
+void CRC32_Init(CRC32_t * value)
 {
 	unsigned int index, bit;
 	CRC32_t entry;
 
 	*value = ALL1;
 
-	if (table) return;
+	if (table)
+		return;
 /* mem_alloc() doesn't return on failure.  If replacing this with plain
  * malloc(3), error checking would need to be added. */
 	table = mem_alloc(sizeof(*table) * 0x100);
@@ -43,17 +44,17 @@ void CRC32_Init(CRC32_t *value)
 		entry = index;
 
 		for (bit = 0; bit < 8; bit++)
-		if (entry & 1) {
-			entry >>= 1;
-			entry ^= POLY;
-		} else
-			entry >>= 1;
+			if (entry & 1) {
+				entry >>= 1;
+				entry ^= POLY;
+			} else
+				entry >>= 1;
 
 		table[index] = entry;
 	}
 }
 
-void CRC32_Update(CRC32_t *value, void *data, unsigned int size)
+void CRC32_Update(CRC32_t * value, void *data, unsigned int size)
 {
 	unsigned char *ptr;
 	unsigned int count;
@@ -64,9 +65,10 @@ void CRC32_Update(CRC32_t *value, void *data, unsigned int size)
 	count = size;
 
 	if (count)
-	do {
-		result = (result >> 8) ^ table[(result ^ *ptr++) & 0xFF];
-	} while (--count);
+		do {
+			result =
+			    (result >> 8) ^ table[(result ^ *ptr++) & 0xFF];
+		} while (--count);
 
 	*value = result;
 }

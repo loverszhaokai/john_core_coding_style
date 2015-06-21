@@ -61,6 +61,7 @@ void DES_bs_init(int LM, int cpt)
 	int round, index, bit;
 	int p, q, s;
 	int c;
+
 #if DES_bs_mt
 	int t, n;
 
@@ -80,6 +81,7 @@ void DES_bs_init(int LM, int cpt)
 	DES_bs_min_kpc = n * DES_BS_DEPTH;
 	{
 		int max = n * cpt;
+
 		while (max > DES_bs_mt_max)
 			max -= n;
 		n = max;
@@ -89,8 +91,8 @@ void DES_bs_init(int LM, int cpt)
 	DES_bs_nt = n;
 	if (!DES_bs_all_p) {
 		DES_bs_n_alloc = n;
-		DES_bs_all_p = mem_alloc_tiny(
-		    ++n * DES_bs_all_size, MEM_ALIGN_PAGE);
+		DES_bs_all_p =
+		    mem_alloc_tiny(++n * DES_bs_all_size, MEM_ALIGN_PAGE);
 	}
 #endif
 
@@ -111,12 +113,14 @@ void DES_bs_init(int LM, int cpt)
 				p = DES_PC2[index];
 				q = p < 28 ? 0 : 28;
 				p += s;
-				while (p >= 28) p -= 28;
+				while (p >= 28)
+					p -= 28;
 				bit = DES_PC1[p + q];
 				bit ^= 070;
 				bit -= bit >> 3;
 				bit = 55 - bit;
-				if (LM) bit = DES_LM_KP[bit];
+				if (LM)
+					bit = DES_LM_KP[bit];
 				*k++ = &DES_bs_all.K[bit] START;
 			}
 		}
@@ -131,10 +135,10 @@ void DES_bs_init(int LM, int cpt)
 
 		if (LM) {
 			for (c = 0; c < 0x100; c++)
-			if (c >= 'a' && c <= 'z')
-				DES_bs_all.E.u[c] = c & ~0x20;
-			else
-				DES_bs_all.E.u[c] = c;
+				if (c >= 'a' && c <= 'z')
+					DES_bs_all.E.u[c] = c & ~0x20;
+				else
+					DES_bs_all.E.u[c] = c;
 		} else {
 			for (index = 0; index < 48; index++)
 				DES_bs_all.Ens[index] =
@@ -185,18 +189,24 @@ void DES_bs_set_key(char *key, int index)
 
 	DES_bs_all.keys_changed = 1;
 
-	if (!key[0]) goto fill8;
+	if (!key[0])
+		goto fill8;
 	*dst = key[0];
 	*(dst + sizeof(DES_bs_vector) * 8) = key[1];
 	*(dst + sizeof(DES_bs_vector) * 8 * 2) = key[2];
-	if (!key[1]) goto fill6;
-	if (!key[2]) goto fill5;
+	if (!key[1])
+		goto fill6;
+	if (!key[2])
+		goto fill5;
 	*(dst + sizeof(DES_bs_vector) * 8 * 3) = key[3];
 	*(dst + sizeof(DES_bs_vector) * 8 * 4) = key[4];
-	if (!key[3]) goto fill4;
-	if (!key[4] || !key[5]) goto fill3;
+	if (!key[3])
+		goto fill4;
+	if (!key[4] || !key[5])
+		goto fill3;
 	*(dst + sizeof(DES_bs_vector) * 8 * 5) = key[5];
-	if (!key[6]) goto fill2;
+	if (!key[6])
+		goto fill2;
 	*(dst + sizeof(DES_bs_vector) * 8 * 6) = key[6];
 	*(dst + sizeof(DES_bs_vector) * 8 * 7) = key[7];
 	return;
@@ -230,22 +240,28 @@ void DES_bs_set_key_LM(char *key, int index)
  * use of "long" here.
  */
 	c = (unsigned char)key[0];
-	if (!c) goto fill7;
+	if (!c)
+		goto fill7;
 	*dst = DES_bs_all.E.u[c];
 	c = (unsigned char)key[1];
-	if (!c) goto fill6;
+	if (!c)
+		goto fill6;
 	*(dst + sizeof(DES_bs_vector) * 8) = DES_bs_all.E.u[c];
 	c = (unsigned char)key[2];
-	if (!c) goto fill5;
+	if (!c)
+		goto fill5;
 	*(dst + sizeof(DES_bs_vector) * 8 * 2) = DES_bs_all.E.u[c];
 	c = (unsigned char)key[3];
-	if (!c) goto fill4;
+	if (!c)
+		goto fill4;
 	*(dst + sizeof(DES_bs_vector) * 8 * 3) = DES_bs_all.E.u[c];
 	c = (unsigned char)key[4];
-	if (!c) goto fill3;
+	if (!c)
+		goto fill3;
 	*(dst + sizeof(DES_bs_vector) * 8 * 4) = DES_bs_all.E.u[c];
 	c = (unsigned char)key[5];
-	if (!c) goto fill2;
+	if (!c)
+		goto fill2;
 	*(dst + sizeof(DES_bs_vector) * 8 * 5) = DES_bs_all.E.u[c];
 	c = (unsigned char)key[6];
 	*(dst + sizeof(DES_bs_vector) * 8 * 6) = DES_bs_all.E.u[c];
@@ -265,7 +281,7 @@ fill2:
 	dst[sizeof(DES_bs_vector) * 8 * 6] = 0;
 }
 
-static ARCH_WORD_32 *DES_bs_get_binary_raw(ARCH_WORD *raw, int count)
+static ARCH_WORD_32 *DES_bs_get_binary_raw(ARCH_WORD * raw, int count)
 {
 	static ARCH_WORD_32 out[2];
 
@@ -280,9 +296,8 @@ static ARCH_WORD_32 *DES_bs_get_binary_raw(ARCH_WORD *raw, int count)
 
 ARCH_WORD_32 *DES_bs_get_binary(char *ciphertext)
 {
-	return DES_bs_get_binary_raw(
-		DES_raw_get_binary(ciphertext),
-		DES_raw_get_count(ciphertext));
+	return DES_bs_get_binary_raw(DES_raw_get_binary(ciphertext),
+	    DES_raw_get_count(ciphertext));
 }
 
 ARCH_WORD_32 *DES_bs_get_binary_LM(char *ciphertext)
@@ -302,7 +317,7 @@ ARCH_WORD_32 *DES_bs_get_binary_LM(char *ciphertext)
 	return DES_bs_get_binary_raw(DES_do_IP(block), 1);
 }
 
-char *DES_bs_get_source_LM(ARCH_WORD_32 *raw)
+char *DES_bs_get_source_LM(ARCH_WORD_32 * raw)
 {
 	static char out[17];
 	char *p;
@@ -332,6 +347,7 @@ static MAYBE_INLINE int DES_bs_get_hash(int index, int count, int trip)
 {
 	int result;
 	DES_bs_vector *b;
+
 #if !ARCH_LITTLE_ENDIAN || DES_BS_VECTOR
 	int depth;
 #endif
@@ -344,13 +360,13 @@ static MAYBE_INLINE int DES_bs_get_hash(int index, int count, int trip)
  * little-endian archs is removed, even if the arch is in fact little-endian.
  */
 	init_depth();
-	b = (DES_bs_vector *)&DES_bs_all.B[0] DEPTH;
+	b = (DES_bs_vector *) & DES_bs_all.B[0] DEPTH;
 #define GET_BIT(bit) \
 	(((unsigned ARCH_WORD)b[(bit)] START >> index) & 1)
 #else
 	depth = index >> 3;
 	index &= 7;
-	b = (DES_bs_vector *)((unsigned char *)&DES_bs_all.B[0] START + depth);
+	b = (DES_bs_vector *) ((unsigned char *)&DES_bs_all.B[0] START + depth);
 #define GET_BIT(bit) \
 	(((unsigned int)*(unsigned char *)&b[(bit)] START >> index) & 1)
 #endif
@@ -361,40 +377,46 @@ static MAYBE_INLINE int DES_bs_get_hash(int index, int count, int trip)
 	result |= MOVE_BIT(1);
 	result |= MOVE_BIT(2);
 	result |= MOVE_BIT(3);
-	if (count == 4) return result;
+	if (count == 4)
+		return result;
 
 	result |= MOVE_BIT(4);
 	result |= MOVE_BIT(5);
 	result |= MOVE_BIT(6);
-	b += trip; /* for tripcodes, skip bit 7 */
+	b += trip;		/* for tripcodes, skip bit 7 */
 	result |= MOVE_BIT(7);
-	if (count == 8) return result;
+	if (count == 8)
+		return result;
 
 	result |= MOVE_BIT(8);
 	result |= MOVE_BIT(9);
 	result |= MOVE_BIT(10);
 	result |= MOVE_BIT(11);
-	if (count == 12) return result;
+	if (count == 12)
+		return result;
 
 	result |= MOVE_BIT(12);
 	result |= MOVE_BIT(13);
-	b += trip; /* for tripcodes, skip bit 15 */
+	b += trip;		/* for tripcodes, skip bit 15 */
 	result |= MOVE_BIT(14);
 	result |= MOVE_BIT(15);
-	if (count == 16) return result;
+	if (count == 16)
+		return result;
 
 	result |= MOVE_BIT(16);
 	result |= MOVE_BIT(17);
 	result |= MOVE_BIT(18);
 	result |= MOVE_BIT(19);
-	if (count == 20) return result;
+	if (count == 20)
+		return result;
 
 	result |= MOVE_BIT(20);
-	b += trip; /* for tripcodes, skip bit 23 */
+	b += trip;		/* for tripcodes, skip bit 23 */
 	result |= MOVE_BIT(21);
 	result |= MOVE_BIT(22);
 	result |= MOVE_BIT(23);
-	if (count == 24) return result;
+	if (count == 24)
+		return result;
 
 	result |= MOVE_BIT(24);
 	result |= MOVE_BIT(25);
@@ -446,11 +468,12 @@ int DES_bs_get_hash_6(int index)
  * DES_bs_crypt*() outputs in just O(log2(ARCH_BITS)) operations, assuming
  * that DES_BS_VECTOR is 0 or 1. This routine isn't vectorized yet.
  */
-int DES_bs_cmp_all(ARCH_WORD_32 *binary, int count)
+int DES_bs_cmp_all(ARCH_WORD_32 * binary, int count)
 {
 	ARCH_WORD value, mask;
 	int bit;
 	DES_bs_vector *b;
+
 #if DES_BS_VECTOR
 	int depth;
 #endif
@@ -459,25 +482,27 @@ int DES_bs_cmp_all(ARCH_WORD_32 *binary, int count)
 #endif
 
 	for_each_t(n)
-	for_each_depth() {
+	    for_each_depth() {
 		value = binary[0];
-		b = (DES_bs_vector *)&DES_bs_all.B[0] DEPTH;
+		b = (DES_bs_vector *) & DES_bs_all.B[0] DEPTH;
 
 		mask = b[0] START ^ -(value & 1);
 		mask |= b[1] START ^ -((value >> 1) & 1);
-		if (mask == ~(ARCH_WORD)0) goto next_depth;
+		if (mask == ~(ARCH_WORD) 0)
+			goto next_depth;
 		mask |= b[2] START ^ -((value >> 2) & 1);
 		mask |= b[3] START ^ -((value >> 3) & 1);
-		if (mask == ~(ARCH_WORD)0) goto next_depth;
+		if (mask == ~(ARCH_WORD) 0)
+			goto next_depth;
 		value >>= 4;
 		b += 4;
 		for (bit = 4; bit < 32; bit += 2) {
-			mask |= b[0] START ^
-				-(value & 1);
-			if (mask == ~(ARCH_WORD)0) goto next_depth;
-			mask |= b[1] START ^
-				-((value >> 1) & 1);
-			if (mask == ~(ARCH_WORD)0) goto next_depth;
+			mask |= b[0] START ^ -(value & 1);
+			if (mask == ~(ARCH_WORD) 0)
+				goto next_depth;
+			mask |= b[1] START ^ -((value >> 1) & 1);
+			if (mask == ~(ARCH_WORD) 0)
+				goto next_depth;
 			value >>= 2;
 			b += 2;
 		}
@@ -490,7 +515,7 @@ next_depth:
 	return 0;
 }
 
-int DES_bs_cmp_one(ARCH_WORD_32 *binary, int count, int index)
+int DES_bs_cmp_one(ARCH_WORD_32 * binary, int count, int index)
 {
 	DES_bs_vector *b;
 	int depth;
@@ -500,7 +525,7 @@ int DES_bs_cmp_one(ARCH_WORD_32 *binary, int count, int index)
 	depth = index >> 3;
 	index &= 7;
 
-	b = (DES_bs_vector *)((unsigned char *)&DES_bs_all.B[0] START + depth);
+	b = (DES_bs_vector *) ((unsigned char *)&DES_bs_all.B[0] START + depth);
 
 #define GET_BIT(bit) \
 	((unsigned int)*(unsigned char *)&b[(bit)] START >> index)
@@ -518,11 +543,13 @@ int DES_bs_cmp_one(ARCH_WORD_32 *binary, int count, int index)
 
 	{
 		int bit;
+
 		for (bit = 26; bit >= 0; bit--)
 			CMP_BIT(bit);
 #undef CMP_BIT
 
-		b += 32; count -= 32;
+		b += 32;
+		count -= 32;
 		for (bit = 0; bit < count; bit++)
 			if ((GET_BIT(bit) ^ (binary[1] >> bit)) & 1)
 				return 0;

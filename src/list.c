@@ -26,7 +26,7 @@ void list_add(struct list_main *list, char *data)
 	struct list_entry *entry;
 
 	entry = mem_alloc_tiny(sizeof(struct list_entry) + strlen(data),
-		MEM_ALIGN_WORD);
+	    MEM_ALIGN_WORD);
 	strcpy(entry->data, data);
 
 	list_add_link(list, entry);
@@ -49,12 +49,14 @@ void list_add_multi(struct list_main *list, char *data)
 	char *comma;
 
 	do {
-		if ((comma = strchr(data, ','))) *comma = 0;
+		if ((comma = strchr(data, ',')))
+			*comma = 0;
 
 		list_add(list, data);
 
 		data = comma + 1;
-		if (comma) *comma = ',';
+		if (comma)
+			*comma = ',';
 	} while (comma);
 }
 
@@ -63,9 +65,10 @@ void list_add_unique(struct list_main *list, char *data)
 	struct list_entry *current;
 
 	if ((current = list->head))
-	do {
-		if (!strcmp(current->data, data)) return;
-	} while ((current = current->next));
+		do {
+			if (!strcmp(current->data, data))
+				return;
+		} while ((current = current->next));
 
 	list_add(list, data);
 }
@@ -74,9 +77,10 @@ void list_add_unique(struct list_main *list, char *data)
 void list_del_next(struct list_main *list, struct list_entry *prev)
 {
 	if (prev) {
-		if (!(prev->next = prev->next->next)) list->tail = prev;
-	} else
-		if (!(list->head = list->head->next)) list->tail = NULL;
+		if (!(prev->next = prev->next->next))
+			list->tail = prev;
+	} else if (!(list->head = list->head->next))
+		list->tail = NULL;
 	list->count--;
 }
 #endif

@@ -52,7 +52,7 @@ extern int rec_restoring_now;
  * Opens the crash recovery file for writing, and sets a function that will
  * be called to save cracking mode specific information.
  */
-extern void rec_init(struct db_main *db, void (*save_mode)(FILE *file));
+extern void rec_init(struct db_main *db, void (*save_mode) (FILE * file));
 
 /*
  * Saves the command line arguments and cracking mode specific information.
@@ -98,6 +98,6 @@ extern void rec_restore_args(int lock);
 /*
  * Restores cracking mode specific information and closes the file.
  */
-extern void rec_restore_mode(int (*restore_mode)(FILE *file));
+extern void rec_restore_mode(int (*restore_mode) (FILE * file));
 
 #endif

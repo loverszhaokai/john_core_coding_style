@@ -33,7 +33,7 @@ static struct fmt_params crk_params;
 static struct fmt_methods crk_methods;
 static int crk_key_index, crk_last_key;
 static void *crk_last_salt;
-static void (*crk_fix_state)(void);
+static void (*crk_fix_state) (void);
 static struct db_keys *crk_guesses;
 static int64 *crk_timestamps;
 static char crk_stdout_key[PLAINTEXT_BUFFER_SIZE];
@@ -57,6 +57,7 @@ static void crk_init_salt(void)
 static void crk_help(void)
 {
 	static int printed = 0;
+
 	if (!john_main_process || printed)
 		return;
 	fprintf(stderr, "Press 'q' or Ctrl-C to abort, "
@@ -64,8 +65,8 @@ static void crk_help(void)
 	printed = 1;
 }
 
-void crk_init(struct db_main *db, void (*fix_state)(void),
-	struct db_keys *guesses)
+void crk_init(struct db_main *db, void (*fix_state) (void),
+    struct db_keys *guesses)
 {
 	char *where;
 	size_t size;
@@ -79,22 +80,23 @@ void crk_init(struct db_main *db, void (*fix_state)(void),
  * from john.c, and we don't want to mess with the format's state).
  */
 	if (db->loaded && db->format->methods.reset == fmt_default_reset)
-	if ((where = fmt_self_test(db->format))) {
-		log_event("! Self test failed (%s)", where);
-		fprintf(stderr, "Self test failed (%s)\n", where);
-		error();
-	}
+		if ((where = fmt_self_test(db->format))) {
+			log_event("! Self test failed (%s)", where);
+			fprintf(stderr, "Self test failed (%s)\n", where);
+			error();
+		}
 
 	crk_db = db;
 	memcpy(&crk_params, &db->format->params, sizeof(struct fmt_params));
 	memcpy(&crk_methods, &db->format->methods, sizeof(struct fmt_methods));
 
-	if (db->loaded) crk_init_salt();
+	if (db->loaded)
+		crk_init_salt();
 	crk_last_key = crk_key_index = 0;
 	crk_last_salt = NULL;
 
 	if (fix_state)
-		(crk_fix_state = fix_state)();
+		(crk_fix_state = fix_state) ();
 	else
 		crk_fix_state = crk_dummy_fix_state;
 
@@ -140,7 +142,7 @@ static void crk_remove_hash(struct db_salt *salt, struct db_password *pw)
 	crk_db->password_count--;
 
 	if (!--salt->count) {
-		salt->list = NULL; /* "single crack" mode might care */
+		salt->list = NULL;	/* "single crack" mode might care */
 		crk_remove_salt(salt);
 		return;
 	}
@@ -158,7 +160,8 @@ static void crk_remove_hash(struct db_salt *salt, struct db_password *pw)
 		return;
 	}
 
-	hash = crk_db->format->methods.binary_hash[salt->hash_size](pw->binary);
+	hash =
+	    crk_db->format->methods.binary_hash[salt->hash_size] (pw->binary);
 	count = 0;
 	current = &salt->hash[hash >> PASSWORD_HASH_SHR];
 	do {
@@ -191,7 +194,7 @@ static void crk_remove_hash(struct db_salt *salt, struct db_password *pw)
 }
 
 static int crk_process_guess(struct db_salt *salt, struct db_password *pw,
-	int index)
+    int index)
 {
 	int dupe;
 	char *key;
@@ -202,8 +205,7 @@ static int crk_process_guess(struct db_salt *salt, struct db_password *pw,
 	key = crk_methods.get_key(index);
 
 	log_guess(crk_db->options->flags & DB_LOGIN ? pw->login : "?",
-	    dupe ? NULL :
-	    crk_methods.source(pw->source, pw->binary), key);
+	    dupe ? NULL : crk_methods.source(pw->source, pw->binary), key);
 
 	crk_db->guess_count++;
 	status.guess_count++;
@@ -266,6 +268,7 @@ static int crk_password_loop(struct db_salt *salt)
 
 	{
 		int64 effective_count;
+
 		mul32by32(&effective_count, salt->count, count);
 		status_update_crypts(&effective_count, count);
 	}
@@ -277,31 +280,40 @@ static int crk_password_loop(struct db_salt *salt)
 		pw = salt->list;
 		do {
 			if (crk_methods.cmp_all(pw->binary, match))
-			for (index = 0; index < match; index++)
-			if (crk_methods.cmp_one(pw->binary, index))
-			if (crk_methods.cmp_exact(crk_methods.source(
-			    pw->source, pw->binary), index)) {
-				if (crk_process_guess(salt, pw, index))
-					return 1;
-				else
-					break;
-			}
+				for (index = 0; index < match; index++)
+					if (crk_methods.cmp_one(pw->binary,
+						index))
+						if (crk_methods.cmp_exact
+						    (crk_methods.source(pw->
+							    source, pw->binary),
+							index)) {
+							if (crk_process_guess
+							    (salt, pw, index))
+								return 1;
+							else
+								break;
+						}
 		} while ((pw = pw->next));
 	} else
-	for (index = 0; index < match; index++) {
-		int hash = salt->index(index);
-		if (salt->bitmap[hash / (sizeof(*salt->bitmap) * 8)] &
-		    (1U << (hash % (sizeof(*salt->bitmap) * 8)))) {
-			pw = salt->hash[hash >> PASSWORD_HASH_SHR];
-			do {
-				if (crk_methods.cmp_one(pw->binary, index))
-				if (crk_methods.cmp_exact(crk_methods.source(
-				    pw->source, pw->binary), index))
-				if (crk_process_guess(salt, pw, index))
-					return 1;
-			} while ((pw = pw->next_hash));
+		for (index = 0; index < match; index++) {
+			int hash = salt->index(index);
+
+			if (salt->bitmap[hash / (sizeof(*salt->bitmap) * 8)] &
+			    (1U << (hash % (sizeof(*salt->bitmap) * 8)))) {
+				pw = salt->hash[hash >> PASSWORD_HASH_SHR];
+				do {
+					if (crk_methods.cmp_one(pw->binary,
+						index))
+						if (crk_methods.cmp_exact
+						    (crk_methods.source(pw->
+							    source, pw->binary),
+							index))
+							if (crk_process_guess
+							    (salt, pw, index))
+								return 1;
+				} while ((pw = pw->next_hash));
+			}
 		}
-	}
 
 	return 0;
 }
@@ -352,13 +364,13 @@ int crk_process_key(char *key)
 
 		return 0;
 	}
-
 #if !OS_TIMER
 	sig_timer_emu_tick();
 #endif
 
 	if (event_pending)
-	if (crk_process_event()) return 1;
+		if (crk_process_event())
+			return 1;
 
 	puts(strnzcpy(crk_stdout_key, key, crk_params.plaintext_length + 1));
 
@@ -407,6 +419,7 @@ int crk_process_salt(struct db_salt *salt)
 		crk_methods.set_key(key, index++);
 		if (index >= crk_params.max_keys_per_crypt || !count) {
 			int done;
+
 			crk_key_index = index;
 			if ((done = crk_password_loop(salt)) >= 0) {
 /*
@@ -449,8 +462,7 @@ char *crk_get_key2(void)
 {
 	if (crk_key_index > 1 && crk_key_index < crk_last_key)
 		return crk_methods.get_key(crk_key_index - 1);
-	else
-	if (crk_last_key > 1)
+	else if (crk_last_key > 1)
 		return crk_methods.get_key(crk_last_key - 1);
 	else
 		return NULL;

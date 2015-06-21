@@ -14,11 +14,10 @@
 #include "common.h"
 
 char itoa64[64] =
-	"./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 char atoi64[0x100];
 
-char itoa16[16] =
-	"0123456789abcdef";
+char itoa16[16] = "0123456789abcdef";
 char atoi16[0x100];
 
 static int initialized = 0;
@@ -27,7 +26,8 @@ void common_init(void)
 {
 	char *pos;
 
-	if (initialized) return;
+	if (initialized)
+		return;
 
 	memset(atoi64, 0x7F, sizeof(atoi64));
 	for (pos = itoa64; pos <= &itoa64[63]; pos++)

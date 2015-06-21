@@ -27,9 +27,9 @@
 extern struct fmt_main fmt_LM;
 
 typedef char (*char2_table)
-	[CHARSET_SIZE + 1][CHARSET_SIZE + 1];
+    [CHARSET_SIZE + 1][CHARSET_SIZE + 1];
 typedef char (*chars_table)
-	[CHARSET_SIZE + 1][CHARSET_SIZE + 1][CHARSET_SIZE + 1];
+    [CHARSET_SIZE + 1][CHARSET_SIZE + 1][CHARSET_SIZE + 1];
 
 static unsigned int rec_entry, rec_length;
 static unsigned char rec_numbers[CHARSET_LENGTH];
@@ -41,7 +41,7 @@ static int counts[CHARSET_LENGTH][CHARSET_LENGTH];
 static unsigned int real_count, real_minc, real_min, real_max, real_size;
 static unsigned char real_chars[CHARSET_SIZE];
 
-static void save_state(FILE *file)
+static void save_state(FILE * file)
 {
 	unsigned int pos;
 
@@ -50,7 +50,7 @@ static void save_state(FILE *file)
 		fprintf(file, "%u\n", (unsigned int)rec_numbers[pos]);
 }
 
-static int restore_state(FILE *file)
+static int restore_state(FILE * file)
 {
 	unsigned int compat, pos;
 
@@ -59,11 +59,12 @@ static int restore_state(FILE *file)
 
 	if (fscanf(file, "%u\n%u\n%u\n", &rec_entry, &compat, &rec_length) != 3)
 		return 1;
-	rec_length--; /* zero-based */
+	rec_length--;		/* zero-based */
 	if (compat != 2 || rec_length >= CHARSET_LENGTH)
 		return 1;
 	for (pos = 0; pos <= rec_length; pos++) {
 		unsigned int number;
+
 		if (fscanf(file, "%u\n", &number) != 1)
 			return 1;
 		if (number >= CHARSET_SIZE)
@@ -110,8 +111,8 @@ static int is_mixedcase(char *chars)
 }
 
 static void inc_new_length(unsigned int length,
-	struct charset_header *header, FILE *file, char *charset,
-	char *char1, char2_table char2, chars_table *chars)
+    struct charset_header *header, FILE * file, char *charset,
+    char *char1, char2_table char2, chars_table * chars)
 {
 	long offset;
 	int value, pos, i, j;
@@ -128,88 +129,86 @@ static void inc_new_length(unsigned int length,
 	}
 	for (pos = 0; pos <= (int)length - 2; pos++) {
 		for (i = real_min; i <= real_max; i++)
-		for (j = real_min; j <= real_max; j++)
-			(*chars[pos])[i][j][0] = 0;
+			for (j = real_min; j <= real_max; j++)
+				(*chars[pos])[i][j][0] = 0;
 		for (j = real_min; j <= real_max; j++)
 			(*chars[pos])[CHARSET_SIZE][j][0] = 0;
 		(*chars[pos])[CHARSET_SIZE][CHARSET_SIZE][0] = 0;
 	}
 
 	offset =
-		(long)header->offsets[length][0] |
-		((long)header->offsets[length][1] << 8) |
-		((long)header->offsets[length][2] << 16) |
-		((long)header->offsets[length][3] << 24);
+	    (long)header->offsets[length][0] |
+	    ((long)header->offsets[length][1] << 8) |
+	    ((long)header->offsets[length][2] << 16) |
+	    ((long)header->offsets[length][3] << 24);
 	if (fseek(file, offset, SEEK_SET))
 		pexit("fseek");
 
 	i = j = pos = -1;
 	if ((value = getc(file)) != EOF)
-	do {
-		if (value != CHARSET_ESC) {
-			switch (pos) {
-			case -1:
-				inc_format_error(charset);
-
-			case 0:
-				buffer = char1;
-				break;
-
-			case 1:
-				if (j < 0)
+		do {
+			if (value != CHARSET_ESC) {
+				switch (pos) {
+				case -1:
 					inc_format_error(charset);
-				buffer = (*char2)[j];
-				break;
 
-			default:
-				if (i < 0 || j < 0)
-					inc_format_error(charset);
-				buffer = (*chars[pos - 2])[i][j];
-			}
-
-			buffer[count = 0] = value;
-			while ((value = getc(file)) != EOF) {
-				buffer[++count] = value;
-				if (value == CHARSET_ESC)
+				case 0:
+					buffer = char1;
 					break;
-				if (count >= CHARSET_SIZE)
-					inc_format_error(charset);
+
+				case 1:
+					if (j < 0)
+						inc_format_error(charset);
+					buffer = (*char2)[j];
+					break;
+
+				default:
+					if (i < 0 || j < 0)
+						inc_format_error(charset);
+					buffer = (*chars[pos - 2])[i][j];
+				}
+
+				buffer[count = 0] = value;
+				while ((value = getc(file)) != EOF) {
+					buffer[++count] = value;
+					if (value == CHARSET_ESC)
+						break;
+					if (count >= CHARSET_SIZE)
+						inc_format_error(charset);
+				}
+				buffer[count] = 0;
+
+				continue;
 			}
-			buffer[count] = 0;
 
-			continue;
-		}
-
-		if ((value = getc(file)) == EOF)
-			break;
-		else
-		if (value == CHARSET_NEW) {
-			if ((value = getc(file)) != (int)length)
-				break;
 			if ((value = getc(file)) == EOF)
 				break;
-			if (value < 0 || value > (int)length)
+			else if (value == CHARSET_NEW) {
+				if ((value = getc(file)) != (int)length)
+					break;
+				if ((value = getc(file)) == EOF)
+					break;
+				if (value < 0 || value > (int)length)
+					inc_format_error(charset);
+				pos = value;
+			} else if (value == CHARSET_LINE) {
+				if (pos < 0)
+					inc_format_error(charset);
+				if ((value = getc(file)) == EOF)
+					break;
+				i = value;
+				if (i < 0 || i > CHARSET_SIZE)
+					inc_format_error(charset);
+				if ((value = getc(file)) == EOF)
+					break;
+				j = value;
+				if (j < 0 || j > CHARSET_SIZE)
+					inc_format_error(charset);
+			} else
 				inc_format_error(charset);
-			pos = value;
-		} else
-		if (value == CHARSET_LINE) {
-			if (pos < 0)
-				inc_format_error(charset);
-			if ((value = getc(file)) == EOF)
-				break;
-			i = value;
-			if (i < 0 || i > CHARSET_SIZE)
-				inc_format_error(charset);
-			if ((value = getc(file)) == EOF)
-				break;
-			j = value;
-			if (j < 0 || j > CHARSET_SIZE)
-				inc_format_error(charset);
-		} else
-			inc_format_error(charset);
 
-		value = getc(file);
-	} while (value != EOF);
+			value = getc(file);
+		} while (value != EOF);
 
 	if (value == EOF) {
 		if (ferror(file))
@@ -253,7 +252,7 @@ static int expand(char *dst, char *src, int size)
 }
 
 static void inc_new_count(unsigned int length, int count, char *charset,
-	char *allchars, char *char1, char2_table char2, chars_table *chars)
+    char *allchars, char *char1, char2_table char2, chars_table * chars)
 {
 	int pos, ci;
 	int size;
@@ -281,6 +280,7 @@ static void inc_new_count(unsigned int length, int count, char *charset,
 
 		for (cj = 0; cj < real_count; cj++) {
 			int j = real_chars[cj];
+
 			for (pos = 0; pos <= (int)length - 2; pos++) {
 				error |= expand((*chars[pos])[i][j],
 				    (*chars[pos])[CHARSET_SIZE][j], size);
@@ -296,7 +296,7 @@ static void inc_new_count(unsigned int length, int count, char *charset,
 }
 
 static int inc_key_loop(int length, int fixed, int count,
-	char *char1, char2_table char2, chars_table *chars)
+    char *char1, char2_table char2, chars_table * chars)
 {
 	char key_i[PLAINTEXT_BUFFER_SIZE];
 	char key_e[PLAINTEXT_BUFFER_SIZE];
@@ -474,17 +474,16 @@ void do_incremental_crack(struct db_main *db, char *mode)
 			    charset);
 		error();
 	}
-
 #if CHARSET_SIZE < 0xff
 	if (header->count > CHARSET_SIZE)
 		inc_format_error(charset);
 #endif
 
 	check =
-		(unsigned int)header->check[0] |
-		((unsigned int)header->check[1] << 8) |
-		((unsigned int)header->check[2] << 16) |
-		((unsigned int)header->check[3] << 24);
+	    (unsigned int)header->check[0] |
+	    ((unsigned int)header->check[1] << 8) |
+	    ((unsigned int)header->check[2] << 16) |
+	    ((unsigned int)header->check[3] << 24);
 	if (!rec_restoring_now)
 		rec_check = check;
 	if (rec_check != check) {
@@ -502,7 +501,8 @@ void do_incremental_crack(struct db_main *db, char *mode)
 	}
 
 /* Sanity-check and expand allchars */
-	real_minc = CHARSET_MIN; real_size = CHARSET_SIZE;
+	real_minc = CHARSET_MIN;
+	real_size = CHARSET_SIZE;
 	allchars[header->count] = 0;
 	if (expand(allchars, "", sizeof(allchars)))
 		inc_format_error(charset);
@@ -520,6 +520,7 @@ void do_incremental_crack(struct db_main *db, char *mode)
 /* Calculate the actual real_* based on sanitized and expanded allchars */
 	{
 		unsigned char c;
+
 		real_min = 0xff;
 		real_count = real_max = 0;
 		while ((c = allchars[real_count])) {
@@ -568,9 +569,9 @@ void do_incremental_crack(struct db_main *db, char *mode)
 	for (pos = 0; pos < CHARSET_LENGTH - 2; pos++)
 		chars[pos] = NULL;
 	if (max_length >= 2) {
-		char2 = (char2_table)mem_alloc(sizeof(*char2));
+		char2 = (char2_table) mem_alloc(sizeof(*char2));
 		for (pos = 0; pos < max_length - 2; pos++)
-			chars[pos] = (chars_table)mem_alloc(sizeof(*chars[0]));
+			chars[pos] = (chars_table) mem_alloc(sizeof(*chars[0]));
 	}
 
 	rec_entry = 0;
@@ -586,19 +587,19 @@ void do_incremental_crack(struct db_main *db, char *mode)
 	while (entry < rec_entry &&
 	    ptr < &header->order[sizeof(header->order) - 1]) {
 		entry++;
-		length = *ptr++; fixed = *ptr++; count = *ptr++;
+		length = *ptr++;
+		fixed = *ptr++;
+		count = *ptr++;
 
 		if (length >= CHARSET_LENGTH ||
-		    fixed > length ||
-		    count >= CHARSET_SIZE)
+		    fixed > length || count >= CHARSET_SIZE)
 			inc_format_error(charset);
 
 		if (count >= real_count || (fixed && !count))
 			continue;
 
 		if ((int)length + 1 < min_length ||
-		    (int)length >= max_length ||
-		    (int)count >= max_count)
+		    (int)length >= max_length || (int)count >= max_count)
 			continue;
 
 		if (count)
@@ -622,18 +623,21 @@ void do_incremental_crack(struct db_main *db, char *mode)
 	entry--;
 	while (ptr < &header->order[sizeof(header->order) - 1]) {
 		int skip = 0;
+
 		if (options.node_count) {
 			int for_node = entry % options.node_count + 1;
+
 			skip = for_node < options.node_min ||
 			    for_node > options.node_max;
 		}
 
 		entry++;
-		length = *ptr++; fixed = *ptr++; count = *ptr++;
+		length = *ptr++;
+		fixed = *ptr++;
+		count = *ptr++;
 
 		if (length >= CHARSET_LENGTH ||
-		    fixed > length ||
-		    count >= CHARSET_SIZE)
+		    fixed > length || count >= CHARSET_SIZE)
 			inc_format_error(charset);
 
 		if (entry != rec_entry)
@@ -643,12 +647,12 @@ void do_incremental_crack(struct db_main *db, char *mode)
 			continue;
 
 		if ((int)length + 1 < min_length ||
-		    (int)length >= max_length ||
-		    (int)count >= max_count)
+		    (int)length >= max_length || (int)count >= max_count)
 			continue;
 
 		if (!skip) {
 			int i, max_count = 0;
+
 			if ((int)length != last_length) {
 				inc_new_length(last_length = length,
 				    header, file, charset, char1, char2, chars);

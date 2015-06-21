@@ -49,9 +49,11 @@ static unsigned int login_hash(char *login)
 #endif
 
 	while (*p) {
-		hash <<= 3; extra <<= 2;
+		hash <<= 3;
+		extra <<= 2;
 		hash += (unsigned char)p[0];
-		if (!p[1]) break;
+		if (!p[1])
+			break;
 		extra += (unsigned char)p[1];
 		p += 2;
 		if (hash & 0xe0000000) {
@@ -80,7 +82,7 @@ out:
 	return hash;
 }
 
-static void read_file(char *name, void (*process_line)(char *line))
+static void read_file(char *name, void (*process_line) (char *line))
 {
 	FILE *file;
 	char line[LINE_BUFFER_SIZE];
@@ -91,9 +93,11 @@ static void read_file(char *name, void (*process_line)(char *line))
 	while (fgetl(line, sizeof(line), file))
 		process_line(line);
 
-	if (ferror(file)) pexit("fgets");
+	if (ferror(file))
+		pexit("fgets");
 
-	if (fclose(file)) pexit("fclose");
+	if (fclose(file))
+		pexit("fclose");
 }
 
 static void process_shadow_line(char *line)
@@ -103,7 +107,8 @@ static void process_shadow_line(char *line)
 	char *login, *passwd, *tail;
 
 	if (!(passwd = strchr(line, ':'))) {
-		while (*line == ' ' || *line == '\t') line++;
+		while (*line == ' ' || *line == '\t')
+			line++;
 		/* AIX */
 		if (!strncmp(line, "password = ", 11) && entry)
 			(*entry)->passwd = str_alloc_copy(line + 11);
@@ -118,7 +123,7 @@ static void process_shadow_line(char *line)
 		if ((passwd = strstr(passwd, ":u_pwd=")))
 			passwd += 7;
 	} else
-	/* HP-UX tcb */
+		/* HP-UX tcb */
 	if (!strncmp(passwd, "u_pwd=", 6) && entry) {
 		passwd += 6;
 		if ((tail = strchr(passwd, ':')))
@@ -143,19 +148,21 @@ static void process_passwd_line(char *line)
 	char *pos1, *pos2;
 	struct shadow_entry *current;
 
-	if (!(pos1 = strchr(line, ':'))) return;
+	if (!(pos1 = strchr(line, ':')))
+		return;
 	*pos1++ = 0;
 
 	if (!(pos2 = strchr(pos1, ':')))
 		pos2 = pos1 + strlen(pos1);
 
 	if (pos2 > pos1 && (current = shadow_table[login_hash(line)]))
-	do {
-		if (!strcmp(current->login, line)) {
-			printf("%s:%s%s\n", line, current->passwd, pos2);
-			return;
-		}
-	} while ((current = current->next));
+		do {
+			if (!strcmp(current->login, line)) {
+				printf("%s:%s%s\n", line, current->passwd,
+				    pos2);
+				return;
+			}
+		} while ((current = current->next));
 
 	printf("%s:%s\n", line, pos1);
 }

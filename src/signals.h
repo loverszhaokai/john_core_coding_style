@@ -26,7 +26,7 @@
  */
 extern volatile int event_pending;	/* An event is pending */
 extern volatile int event_abort;	/* Abort requested */
-extern volatile int event_save;		/* Save the crash recovery file */
+extern volatile int event_save;	/* Save the crash recovery file */
 extern volatile int event_status;	/* Status display requested */
 extern volatile int event_ticksafety;	/* System time in ticks may overflow */
 

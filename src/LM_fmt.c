@@ -36,8 +36,8 @@ static struct fmt_tests tests[] = {
 	{LM_EMPTY LM_EMPTY, ""},
 	{"$LM$73cc402bd3e79175", "SCLEROS"},
 	{"$LM$5ecd9236d21095ce", "YOKOHAM"},
-	{"$LM$A5E6066DE61C3E35", "ZZZZZZZ"}, /* uppercase encoding */
-	{"$LM$1FB363feB834C12D", "ZZZZZZ"}, /* mixed case encoding */
+	{"$LM$A5E6066DE61C3E35", "ZZZZZZZ"},	/* uppercase encoding */
+	{"$LM$1FB363feB834C12D", "ZZZZZZ"},	/* mixed case encoding */
 	{NULL}
 };
 
@@ -86,10 +86,12 @@ static int valid(char *ciphertext, struct fmt_main *self)
 			return 1;
 	}
 
-	if (strncmp(ciphertext, "$LM$", 4)) return 0;
+	if (strncmp(ciphertext, "$LM$", 4))
+		return 0;
 
 	for (pos = &ciphertext[4]; atoi16[ARCH_INDEX(*pos)] != 0x7F; pos++);
-	if (*pos || pos - ciphertext != 20) return 0;
+	if (*pos || pos - ciphertext != 20)
+		return 0;
 
 	return 1;
 }
@@ -132,42 +134,42 @@ static char *source(char *source, void *binary)
 
 static int binary_hash_0(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xF;
+	return *(ARCH_WORD_32 *) binary & 0xF;
 }
 
 static int binary_hash_1(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFF;
+	return *(ARCH_WORD_32 *) binary & 0xFF;
 }
 
 static int binary_hash_2(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFF;
 }
 
 static int binary_hash_3(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFFF;
 }
 
 static int binary_hash_4(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFFFF;
 }
 
 static int binary_hash_5(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFFFFF;
 }
 
 static int binary_hash_6(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0x7FFFFFF;
+	return *(ARCH_WORD_32 *) binary & 0x7FFFFFF;
 }
 
 static int cmp_one(void *binary, int index)
 {
-	return DES_bs_cmp_one((ARCH_WORD_32 *)binary, 64, index);
+	return DES_bs_cmp_one((ARCH_WORD_32 *) binary, 64, index);
 }
 
 static int cmp_exact(char *source, int index)
@@ -196,59 +198,55 @@ static char *get_key(int index)
 
 struct fmt_main fmt_LM = {
 	{
-		FORMAT_LABEL,
-		FORMAT_NAME,
-		ALGORITHM_NAME,
-		BENCHMARK_COMMENT,
-		BENCHMARK_LENGTH,
-		PLAINTEXT_LENGTH,
-		BINARY_SIZE,
-		BINARY_ALIGN,
-		SALT_SIZE,
-		SALT_ALIGN,
-		MIN_KEYS_PER_CRYPT,
-		MAX_KEYS_PER_CRYPT,
+		    FORMAT_LABEL,
+		    FORMAT_NAME,
+		    ALGORITHM_NAME,
+		    BENCHMARK_COMMENT,
+		    BENCHMARK_LENGTH,
+		    PLAINTEXT_LENGTH,
+		    BINARY_SIZE,
+		    BINARY_ALIGN,
+		    SALT_SIZE,
+		    SALT_ALIGN,
+		    MIN_KEYS_PER_CRYPT,
+		    MAX_KEYS_PER_CRYPT,
 #if DES_bs_mt
-		FMT_OMP | FMT_OMP_BAD |
+		    FMT_OMP | FMT_OMP_BAD |
 #endif
-		FMT_8_BIT | FMT_BS | FMT_SPLIT_UNIFIES_CASE,
-		tests
-	}, {
-		init,
-		fmt_default_done,
-		fmt_default_reset,
-		prepare,
-		valid,
-		split,
-		binary,
-		fmt_default_salt,
-		source,
-		{
-			binary_hash_0,
-			binary_hash_1,
-			binary_hash_2,
-			binary_hash_3,
-			binary_hash_4,
-			binary_hash_5,
-			binary_hash_6
-		},
-		fmt_default_salt_hash,
-		fmt_default_set_salt,
-		DES_bs_set_key_LM,
-		get_key,
-		fmt_default_clear_keys,
-		DES_bs_crypt_LM,
-		{
-			DES_bs_get_hash_0,
-			DES_bs_get_hash_1,
-			DES_bs_get_hash_2,
-			DES_bs_get_hash_3,
-			DES_bs_get_hash_4,
-			DES_bs_get_hash_5,
-			DES_bs_get_hash_6
-		},
-		(int (*)(void *, int))DES_bs_cmp_all,
-		cmp_one,
-		cmp_exact
-	}
+		    FMT_8_BIT | FMT_BS | FMT_SPLIT_UNIFIES_CASE,
+	    tests}, {
+		    init,
+		    fmt_default_done,
+		    fmt_default_reset,
+		    prepare,
+		    valid,
+		    split,
+		    binary,
+		    fmt_default_salt,
+		    source,
+		    {
+				binary_hash_0,
+				binary_hash_1,
+				binary_hash_2,
+				binary_hash_3,
+				binary_hash_4,
+				binary_hash_5,
+			binary_hash_6},
+		    fmt_default_salt_hash,
+		    fmt_default_set_salt,
+		    DES_bs_set_key_LM,
+		    get_key,
+		    fmt_default_clear_keys,
+		    DES_bs_crypt_LM,
+		    {
+				DES_bs_get_hash_0,
+				DES_bs_get_hash_1,
+				DES_bs_get_hash_2,
+				DES_bs_get_hash_3,
+				DES_bs_get_hash_4,
+				DES_bs_get_hash_5,
+			DES_bs_get_hash_6},
+		    (int (*)(void *, int))DES_bs_cmp_all,
+		    cmp_one,
+	    cmp_exact}
 };

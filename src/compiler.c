@@ -23,7 +23,7 @@
 #undef PRINT_INSNS
 
 char *c_errors[] = {
-	NULL,	/* No error */
+	NULL,			/* No error */
 	"Unknown identifier",
 	"Unexpected character",
 	"Error in expression",
@@ -45,7 +45,7 @@ char *c_errors[] = {
 int c_errno;
 
 union c_insn {
-	void (*op)(void);
+	void (*op) (void);
 	c_int *mem;
 	c_int imm;
 	union c_insn *pc;
@@ -77,13 +77,14 @@ static char c_unget_buffer[C_UNGET_SIZE];
 static int c_unget_count;
 
 static char c_isident[0x100];
+
 #define c_isstart(c) \
 	(c_isident[ARCH_INDEX(c)] && ((c) < '0' || (c) > '9'))
 
 static int c_EOF;
 
-static int (*c_ext_getchar)(void);
-static void (*c_ext_rewind)(void);
+static int (*c_ext_getchar) (void);
+static void (*c_ext_rewind) (void);
 
 static char *c_reserved[] = {
 	"void",
@@ -109,7 +110,7 @@ struct c_op {
 	int dir;
 	int class;
 	char *name;
-	void (*op)(void);
+	void (*op) (void);
 };
 
 #ifdef __GNUC__
@@ -127,10 +128,11 @@ static void c_init(void)
 	int c;
 
 	for (c = 0; c < 0x100; c++)
-	if (c < 0x80)
-		c_isident[c] = (isalpha(c) || isdigit(c) || c == '_') ? 1 : 0;
-	else
-		c_isident[c] = 0;
+		if (c < 0x80)
+			c_isident[c] = (isalpha(c) || isdigit(c) ||
+			    c == '_') ? 1 : 0;
+		else
+			c_isident[c] = 0;
 
 	c_code_ptr = c_code_start;
 	c_data_ptr = c_data_start;
@@ -160,8 +162,10 @@ static char c_buffer_getchar(void)
 {
 	int c;
 
-	if (c_unget_count) return c_unget_buffer[--c_unget_count];
-	if ((c = c_ext_getchar()) > 0) return c;
+	if (c_unget_count)
+		return c_unget_buffer[--c_unget_count];
+	if ((c = c_ext_getchar()) > 0)
+		return c;
 
 	c_EOF = 1;
 	c_errno = C_ERROR_EOF;
@@ -175,31 +179,36 @@ static char c_getchar(int quote)
 
 	do {
 		c = (unsigned char)c_buffer_getchar();
-		if (quote || c_EOF) return c;
+		if (quote || c_EOF)
+			return c;
 
-		if (c <= ' ') space = 1; else
-		if (c == '/')
-		switch ((c = c_buffer_getchar())) {
-		case '/':
-			do {
-				c = c_buffer_getchar();
-			} while (!c_EOF && c != '\n' && c != '\r');
-			c = ' '; space = 1;
-			break;
+		if (c <= ' ')
+			space = 1;
+		else if (c == '/')
+			switch ((c = c_buffer_getchar())) {
+			case '/':
+				do {
+					c = c_buffer_getchar();
+				} while (!c_EOF && c != '\n' && c != '\r');
+				c = ' ';
+				space = 1;
+				break;
 
-		case '*':
-			do {
-				if ((c = c_buffer_getchar()) == '*')
-				if ((c = c_buffer_getchar()) == '/')
-					break;
-			} while (!c_EOF);
-			c = ' '; space = 1;
-			break;
+			case '*':
+				do {
+					if ((c = c_buffer_getchar()) == '*')
+						if ((c = c_buffer_getchar()) ==
+						    '/')
+							break;
+				} while (!c_EOF);
+				c = ' ';
+				space = 1;
+				break;
 
-		default:
-			c_ungetchar(c);
-			c = '/';
-		}
+			default:
+				c_ungetchar(c);
+				c = '/';
+			}
 	} while (c <= ' ');
 
 	if (space) {
@@ -216,12 +225,13 @@ static char *c_gettoken(void)
 	int pos = 0;
 
 	while (c_isident[ARCH_INDEX(token[pos++] = c_getchar(0))])
-	if (pos >= C_TOKEN_SIZE) {
-		c_errno = C_ERROR_TOOLONG;
-		break;
-	}
+		if (pos >= C_TOKEN_SIZE) {
+			c_errno = C_ERROR_TOOLONG;
+			break;
+		}
 
-	if (pos != 1) c_ungetchar(token[--pos]);
+	if (pos != 1)
+		c_ungetchar(token[--pos]);
 	token[pos] = 0;
 
 	return token;
@@ -236,19 +246,17 @@ static c_int c_getint(char *token)
 	if (token[0] == '\'') {
 		if ((value = (unsigned char)c_getchar(1)) == '\'')
 			c_errno = C_ERROR_UNEXPECTED;
-		else
-			if (value == '\\')
-				value = (unsigned char)c_getchar(1);
+		else if (value == '\\')
+			value = (unsigned char)c_getchar(1);
 		if (c_getchar(1) != '\'')
 			c_errno = C_ERROR_UNEXPECTED;
 	} else {
 		errno = 0;
 		l_value = strtol(token, &error, 0);
-		value = (c_int)l_value;
+		value = (c_int) l_value;
 		if (errno == ERANGE || (long)value != l_value)
 			c_errno = C_ERROR_RANGE;
-		else
-		if (!*token || *error || errno)
+		else if (!*token || *error || errno)
 			c_errno = C_ERROR_UNEXPECTED;
 	}
 
@@ -259,7 +267,8 @@ static char c_skip_space(void)
 {
 	char c;
 
-	if ((c = c_getchar(0)) == ' ') c = c_getchar(0);
+	if ((c = c_getchar(0)) == ' ')
+		c = c_getchar(0);
 
 	return c;
 }
@@ -269,22 +278,25 @@ static int c_expect(char expected)
 	char c;
 
 	if ((c = c_getchar(0)) == ' ')
-	if (expected != ' ') c = c_getchar(0);
+		if (expected != ' ')
+			c = c_getchar(0);
 
-	if (c != expected) c_errno = C_ERROR_UNEXPECTED;
+	if (c != expected)
+		c_errno = C_ERROR_UNEXPECTED;
 
 	return c_errno;
 }
 
 static struct c_ident *c_find_ident(struct c_ident *list,
-	struct c_ident *globals, char *name)
+    struct c_ident *globals, char *name)
 {
 	struct c_ident *current;
 
 	if ((current = list) != globals)
-	do {
-		if (!strcmp(name, current->name)) break;
-	} while ((current = current->next) != globals);
+		do {
+			if (!strcmp(name, current->name))
+				break;
+		} while ((current = current->next) != globals);
 
 	if (current != globals)
 		return current;
@@ -293,17 +305,19 @@ static struct c_ident *c_find_ident(struct c_ident *list,
 }
 
 static int c_alloc_ident(struct c_ident **list, struct c_ident *globals,
-	char *name, void *addr)
+    char *name, void *addr)
 {
 	char **current;
 	struct c_ident *last;
 
 	current = c_reserved;
 	do {
-		if (!strcmp(name, *current)) return c_errno = C_ERROR_RESERVED;
+		if (!strcmp(name, *current))
+			return c_errno = C_ERROR_RESERVED;
 	} while (*++current);
 
-	if (c_find_ident(*list, globals, name)) return c_errno = C_ERROR_DUPE;
+	if (c_find_ident(*list, globals, name))
+		return c_errno = C_ERROR_DUPE;
 
 	last = *list;
 	*list = (struct c_ident *)mem_alloc(sizeof(struct c_ident));
@@ -333,10 +347,12 @@ static int c_find_op(char *token, int left)
 	do {
 		if ((c_ops[op].class != C_CLASS_LEFT && left) ||
 		    (c_ops[op].class == C_CLASS_LEFT && !left))
-		if (!memcmp(c_ops[op].name, token, strlen(c_ops[op].name)))
-		if (best < 0 ||
-		    strlen(c_ops[op].name) > strlen(c_ops[best].name))
-			best = op;
+			if (!memcmp(c_ops[op].name, token,
+				strlen(c_ops[op].name)))
+				if (best < 0 ||
+				    strlen(c_ops[op].name) >
+				    strlen(c_ops[best].name))
+					best = op;
 	} while (c_ops[++op].prec);
 
 	return best;
@@ -355,27 +371,26 @@ static void c_free_fixup(struct c_fixup *list, union c_insn *pc)
 	}
 }
 
-static void (*c_op_return)(void);
-static void (*c_op_bz)(void);
-static void (*c_op_ba)(void);
-static void (*c_op_push_imm)(void);
-static void (*c_op_push_mem)(void);
-static void (*c_op_pop)(void);
+static void (*c_op_return) (void);
+static void (*c_op_bz) (void);
+static void (*c_op_ba) (void);
+static void (*c_op_push_imm) (void);
+static void (*c_op_push_mem) (void);
+static void (*c_op_pop) (void);
 
-static void (*c_op_push_imm_imm)(void);
-static void (*c_op_push_imm_mem)(void);
-static void (*c_op_push_mem_imm)(void);
-static void (*c_op_push_mem_mem)(void);
-static void (*c_op_push_mem_mem_mem)(void);
-static void (*c_op_push_mem_mem_mem_imm)(void);
-static void (*c_op_push_mem_mem_mem_mem)(void);
+static void (*c_op_push_imm_imm) (void);
+static void (*c_op_push_imm_mem) (void);
+static void (*c_op_push_mem_imm) (void);
+static void (*c_op_push_mem_mem) (void);
+static void (*c_op_push_mem_mem_mem) (void);
+static void (*c_op_push_mem_mem_mem_imm) (void);
+static void (*c_op_push_mem_mem_mem_mem) (void);
 
-static void (*c_op_assign)(void);
-static void (*c_op_assign_pop)(void);
+static void (*c_op_assign) (void);
+static void (*c_op_assign_pop) (void);
 
 static void (*c_push
-	(void (*last)(void), void (*op)(void), union c_insn *value))(void)
-{
+    (void (*last) (void), void (*op) (void), union c_insn *value)) (void) {
 	if (last == c_op_push_imm || last == c_op_push_mem) {
 		if (last == c_op_push_imm) {
 			if (op == c_op_push_imm)
@@ -434,53 +449,67 @@ static int c_define(char term, struct c_ident **vars, struct c_ident *globals)
 
 	c_expect(' ');
 	token = c_gettoken();
-	if (!c_isstart(*token)) c_errno = C_ERROR_UNEXPECTED;
+	if (!c_isstart(*token))
+		c_errno = C_ERROR_UNEXPECTED;
 
 	do
-	if (*token != ' ') {
-		if (!c_isstart(*token)) c_errno = C_ERROR_UNEXPECTED;
-		if (c_errno) return c_errno;
-
-		if ((c = c_skip_space()) == '(') {
-			if (term) return c_errno = C_ERROR_NESTEDFUNC;
-
-			if (c_alloc_ident(&c_funcs, NULL, token, c_code_ptr))
+		if (*token != ' ') {
+			if (!c_isstart(*token))
+				c_errno = C_ERROR_UNEXPECTED;
+			if (c_errno)
 				return c_errno;
 
-			c_expect(')');
-			if (c_expect('{')) return c_errno;
+			if ((c = c_skip_space()) == '(') {
+				if (term)
+					return c_errno = C_ERROR_NESTEDFUNC;
 
-			c_block('}', *vars);
+				if (c_alloc_ident(&c_funcs, NULL, token,
+					c_code_ptr))
+					return c_errno;
 
-			if (c_pass)
-				c_code_ptr->op = c_op_return;
-			c_code_ptr++;
+				c_expect(')');
+				if (c_expect('{'))
+					return c_errno;
 
-			break;
-		} else {
-			if (c_alloc_ident(vars, globals, token, c_data_ptr++))
-				return c_errno;
+				c_block('}', *vars);
 
-			if (c == '[') {
-				size = c_getint(c_gettoken());
-				if (c_errno) return c_errno;
+				if (c_pass)
+					c_code_ptr->op = c_op_return;
+				c_code_ptr++;
 
-				if (size < 1 || size > C_ARRAY_SIZE)
-					return c_errno = C_ERROR_ARRAYSIZE;
+				break;
+			} else {
+				if (c_alloc_ident(vars, globals, token,
+					c_data_ptr++))
+					return c_errno;
 
-				c_data_ptr += size - 1;
+				if (c == '[') {
+					size = c_getint(c_gettoken());
+					if (c_errno)
+						return c_errno;
 
-				if (c_data_ptr - c_data_start > C_DATA_SIZE)
-					return c_errno = C_ERROR_DATASIZE;
+					if (size < 1 || size > C_ARRAY_SIZE)
+						return c_errno =
+						    C_ERROR_ARRAYSIZE;
 
-				c_expect(']');
-				c = c_skip_space();
+					c_data_ptr += size - 1;
+
+					if (c_data_ptr - c_data_start >
+					    C_DATA_SIZE)
+						return c_errno =
+						    C_ERROR_DATASIZE;
+
+					c_expect(']');
+					c = c_skip_space();
+				}
+
+				if (c == ';')
+					break;
+				if (c != ',')
+					c_errno = C_ERROR_UNEXPECTED;
 			}
-
-			if (c == ';') break;
-			if (c != ',') c_errno = C_ERROR_UNEXPECTED;
 		}
-	} while (!c_errno && *(token = c_gettoken()) != ';');
+	while (!c_errno && *(token = c_gettoken()) != ';');
 
 	return c_errno;
 }
@@ -496,15 +525,17 @@ static int c_expr(char term, struct c_ident *vars, char *token, int pop)
 	int sp = 0;
 	int balance = -1;
 	int left = 0;
-	void (*last)(void) = (void (*)(void))0;
+	void (*last) (void) = (void (*)(void))0;
 
-	if (term == ')') stack[sp++] = -1;
+	if (term == ')')
+		stack[sp++] = -1;
 	do {
 		c = *token;
 
 		if (c == ')' || c == ']' || c == ';' || c == term) {
 			while (sp) {
-				if (stack[--sp] < 0) break;
+				if (stack[--sp] < 0)
+					break;
 				if (c_ops[stack[sp]].class == C_CLASS_BINARY)
 					balance--;
 
@@ -513,32 +544,32 @@ static int c_expr(char term, struct c_ident *vars, char *token, int pop)
 					c_code_ptr->op = last;
 				c_code_ptr++;
 
-				if (!stack[sp]) break;
+				if (!stack[sp])
+					break;
 			}
 
 			if ((c == ')' && stack[sp] >= 0) ||
 			    (c == ']' && stack[sp]) ||
 			    ((c == ';' || (term != ')' && c == term)) && sp))
 				c_errno = C_ERROR_COUNT;
-			if (c_errno || (!sp && c == term)) break;
+			if (c_errno || (!sp && c == term))
+				break;
 
 			left = 1;
-		} else
-		if ((c >= '0' && c <= '9') || c == '\'') {
+		} else if ((c >= '0' && c <= '9') || c == '\'') {
 			value.imm = c_getint(token);
 			last = c_push(last, c_op_push_imm, &value);
 
-			left = 1; balance++;
-		} else
-		if (c == '(' || c == '[') {
+			left = 1;
+			balance++;
+		} else if (c == '(' || c == '[') {
 			if (sp >= C_EXPR_SIZE)
 				c_errno = C_ERROR_TOOCOMPLEX;
 			else
 				stack[sp++] = (c == '(') ? -1 : 0;
 
 			left = 0;
-		} else
-		if (c != ' ') {
+		} else if (c != ' ') {
 			if (c_isident[ARCH_INDEX(c)])
 				var = c_find_ident(vars, NULL, token);
 			else
@@ -548,7 +579,8 @@ static int c_expr(char term, struct c_ident *vars, char *token, int pop)
 				value.mem = var->addr;
 				last = c_push(last, c_op_push_mem, &value);
 
-				left = 1; balance++;
+				left = 1;
+				balance++;
 			} else {
 				if ((lookahead = !token[1])) {
 					token[1] = c_getchar(0);
@@ -565,21 +597,23 @@ static int c_expr(char term, struct c_ident *vars, char *token, int pop)
 				}
 
 				if (lookahead)
-				if (strlen(c_ops[op].name) < 3) {
-					c_ungetchar(token[2]);
-					if (!c_ops[op].name[1])
-						c_ungetchar(token[1]);
-				}
+					if (strlen(c_ops[op].name) < 3) {
+						c_ungetchar(token[2]);
+						if (!c_ops[op].name[1])
+							c_ungetchar(token[1]);
+					}
 
 				op1 = &c_ops[op];
 				while (sp && stack[sp - 1] >= 0) {
 					op2 = &c_ops[stack[sp - 1]];
 
 					if (op2->dir == C_RIGHT_TO_LEFT)
-					if (op2->prec <= op1->prec) break;
+						if (op2->prec <= op1->prec)
+							break;
 
 					if (op2->dir == C_LEFT_TO_RIGHT)
-					if (op2->prec < op1->prec) break;
+						if (op2->prec < op1->prec)
+							break;
 
 					if (op2->class == C_CLASS_BINARY)
 						balance--;
@@ -602,13 +636,16 @@ static int c_expr(char term, struct c_ident *vars, char *token, int pop)
 			}
 		}
 
-		if (c_errno || c == ';' || (c == term && c != ')')) break;
+		if (c_errno || c == ';' || (c == term && c != ')'))
+			break;
 		token = c_gettoken();
 	} while (!c_errno);
 
-	if (c_errno) return c_errno;
+	if (c_errno)
+		return c_errno;
 
-	if (sp || balance) c_errno = C_ERROR_COUNT;
+	if (sp || balance)
+		c_errno = C_ERROR_COUNT;
 
 	if (pop) {
 		if (last == c_op_assign) {
@@ -621,8 +658,10 @@ static int c_expr(char term, struct c_ident *vars, char *token, int pop)
 		}
 	}
 
-	if (!term && !c_errno) c_errno = C_ERROR_NOTINFUNC;
-	if (*token == term) return -1;
+	if (!term && !c_errno)
+		c_errno = C_ERROR_NOTINFUNC;
+	if (*token == term)
+		return -1;
 
 	return c_errno;
 }
@@ -634,12 +673,14 @@ static int c_cond(char term, struct c_ident *vars, char *token)
 	union c_insn *start, *outer_loop_start, *fixup;
 	struct c_fixup *outer_loop_break_fixups;
 
-	if (!term) return c_errno = C_ERROR_NOTINFUNC;
+	if (!term)
+		return c_errno = C_ERROR_NOTINFUNC;
 
 	c = *token;
 	start = c_code_ptr;
 
-	if (c_expect('(')) return c_errno;
+	if (c_expect('('))
+		return c_errno;
 	switch (c_expr(')', vars, c_gettoken(), 0)) {
 	case -1:
 		break;
@@ -684,7 +725,8 @@ static int c_cond(char term, struct c_ident *vars, char *token)
 		c_break_fixups = outer_loop_break_fixups;
 	} else {
 		while (*(token = c_gettoken()) == ' ')
-		if (c_errno) return c_errno;
+			if (c_errno)
+				return c_errno;
 
 		if (!strcmp(token, "else")) {
 			if (c_pass) {
@@ -694,10 +736,12 @@ static int c_cond(char term, struct c_ident *vars, char *token)
 			} else
 				c_code_ptr += 2;
 
-			if (c_block(';', vars)) return c_errno;
+			if (c_block(';', vars))
+				return c_errno;
 		} else {
 			pos = token + strlen(token);
-			while (pos > token) c_ungetchar(*--pos);
+			while (pos > token)
+				c_ungetchar(*--pos);
 		}
 	}
 
@@ -710,7 +754,8 @@ static int c_cond(char term, struct c_ident *vars, char *token)
 
 static int c_continue(void)
 {
-	if (!c_loop_start) return c_errno = C_ERROR_NOTINLOOP;
+	if (!c_loop_start)
+		return c_errno = C_ERROR_NOTINLOOP;
 
 	if (c_pass) {
 		(c_code_ptr++)->op = c_op_ba;
@@ -728,14 +773,14 @@ static int c_break(void)
 {
 	struct c_fixup *fixup;
 
-	if (!c_loop_start) return c_errno = C_ERROR_NOTINLOOP;
+	if (!c_loop_start)
+		return c_errno = C_ERROR_NOTINLOOP;
 
 	c_expect(';');
 	c_ungetchar(';');
 
 	fixup = c_break_fixups;
-	c_break_fixups =
-		(struct c_fixup *)mem_alloc(sizeof(struct c_fixup));
+	c_break_fixups = (struct c_fixup *)mem_alloc(sizeof(struct c_fixup));
 	c_break_fixups->next = fixup;
 
 	if (c_pass)
@@ -748,7 +793,8 @@ static int c_break(void)
 
 static int c_return(char term)
 {
-	if (!term) return c_errno = C_ERROR_NOTINFUNC;
+	if (!term)
+		return c_errno = C_ERROR_NOTINFUNC;
 
 	if (c_pass)
 		c_code_ptr->op = c_op_return;
@@ -771,54 +817,54 @@ static int c_block(char term, struct c_ident *vars)
 				c_errno = C_ERROR_NONE;
 			break;
 		}
-		if (*token == ' ') continue;
+		if (*token == ' ')
+			continue;
 
 		if (*token == '{') {
-			if (!term) return c_errno = C_ERROR_NOTINFUNC;
+			if (!term)
+				return c_errno = C_ERROR_NOTINFUNC;
 
-			if (term == ';') term = '}'; else
-			if (c_block('}', locals)) break; else continue;
-		} else
-
-		if (!strcmp(token, "void") || !strcmp(token, "int")) {
-			if (c_define(term, &locals, vars)) break;
-		} else
-
-		if (!strcmp(token, "if") || !strcmp(token, "while")) {
-			if (c_cond(term, locals, token)) break;
-		} else
-
-		if (!strcmp(token, "else"))
+			if (term == ';')
+				term = '}';
+			else if (c_block('}', locals))
+				break;
+			else
+				continue;
+		} else if (!strcmp(token, "void") || !strcmp(token, "int")) {
+			if (c_define(term, &locals, vars))
+				break;
+		} else if (!strcmp(token, "if") || !strcmp(token, "while")) {
+			if (c_cond(term, locals, token))
+				break;
+		} else if (!strcmp(token, "else"))
 			return c_errno = C_ERROR_NOTINIF;
-		else
+		else if (!strcmp(token, "continue")) {
+			if (c_continue())
+				break;
+		} else if (!strcmp(token, "break")) {
+			if (c_break())
+				break;
+		} else if (!strcmp(token, "return")) {
+			if (c_return(term))
+				break;
+		} else if (*token != ';')
+			if (c_expr(term, locals, token, 1))
+				break;
 
-		if (!strcmp(token, "continue")) {
-			if (c_continue()) break;
-		} else
-
-		if (!strcmp(token, "break")) {
-			if (c_break()) break;
-		} else
-
-		if (!strcmp(token, "return")) {
-			if (c_return(term)) break;
-		} else
-
-		if (*token != ';')
-			if (c_expr(term, locals, token, 1)) break;
-
-		if (c_errno) break;
+		if (c_errno)
+			break;
 	}
 
 	c_free_ident(locals, vars);
 
-	if (c_errno && c_EOF) c_errno = C_ERROR_EOF;
+	if (c_errno && c_EOF)
+		c_errno = C_ERROR_EOF;
 
 	return c_errno;
 }
 
-int c_compile(int (*ext_getchar)(void), void (*ext_rewind)(void),
-	struct c_ident *externs)
+int c_compile(int (*ext_getchar) (void), void (*ext_rewind) (void),
+    struct c_ident *externs)
 {
 #if defined(__GNUC__) && !defined(PRINT_INSNS)
 	c_execute_fast(NULL);
@@ -843,11 +889,12 @@ int c_compile(int (*ext_getchar)(void), void (*ext_rewind)(void),
 			c_free_fixup(c_break_fixups, NULL);
 		}
 
-		if (c_errno || c_pass) break;
+		if (c_errno || c_pass)
+			break;
 
-		c_code_start = mem_alloc((size_t)c_code_ptr);
-		c_data_start = mem_alloc((size_t)c_data_ptr);
-		memset(c_data_start, 0, (size_t)c_data_ptr);
+		c_code_start = mem_alloc((size_t) c_code_ptr);
+		c_data_start = mem_alloc((size_t) c_data_ptr);
+		memset(c_data_start, 0, (size_t) c_data_ptr);
 	}
 
 	return c_errno;
@@ -856,6 +903,7 @@ int c_compile(int (*ext_getchar)(void), void (*ext_rewind)(void),
 void *c_lookup(char *name)
 {
 	struct c_ident *f = c_find_ident(c_funcs, NULL, name);
+
 	if (f)
 		return f->addr;
 	return NULL;
@@ -871,8 +919,9 @@ void c_execute_fast(void *addr)
 	c_pc = addr;
 	do {
 #ifdef PRINT_INSNS
-		void (*op)(void) = (c_pc++)->op;
+		void (*op) (void) = (c_pc++)->op;
 		int i = 0;
+
 		while (c_ops[i].op != op && c_ops[i].prec >= 0)
 			i++;
 		fprintf(stderr, "op: %s\n", c_ops[i].name);
@@ -947,7 +996,7 @@ void c_execute_fast(void *addr)
 #endif
 		int op = 0;
 
-		assert(c_op_return != &&op_return); /* Don't do this twice */
+		assert(c_op_return != &&op_return);	/* Don't do this twice */
 
 		c_op_return = &&op_return;
 		c_op_bz = &&op_bz;
@@ -1561,23 +1610,23 @@ static void c_op_dec_r(void)
 	*(c_sp - 1)->mem = (c_sp - 2)->imm - 1;
 }
 
-static void (*c_op_return)(void) = c_f_op_return;
-static void (*c_op_bz)(void) = c_f_op_bz;
-static void (*c_op_ba)(void) = c_f_op_ba;
-static void (*c_op_push_imm)(void) = c_f_op_push_imm;
-static void (*c_op_push_mem)(void) = c_f_op_push_mem;
-static void (*c_op_pop)(void) = c_f_op_pop;
+static void (*c_op_return) (void) = c_f_op_return;
+static void (*c_op_bz) (void) = c_f_op_bz;
+static void (*c_op_ba) (void) = c_f_op_ba;
+static void (*c_op_push_imm) (void) = c_f_op_push_imm;
+static void (*c_op_push_mem) (void) = c_f_op_push_mem;
+static void (*c_op_pop) (void) = c_f_op_pop;
 
-static void (*c_op_push_imm_imm)(void) = c_f_op_push_imm_imm;
-static void (*c_op_push_imm_mem)(void) = c_f_op_push_imm_mem;
-static void (*c_op_push_mem_imm)(void) = c_f_op_push_mem_imm;
-static void (*c_op_push_mem_mem)(void) = c_f_op_push_mem_mem;
-static void (*c_op_push_mem_mem_mem)(void) = c_f_op_push_mem_mem_mem;
-static void (*c_op_push_mem_mem_mem_imm)(void) = c_f_op_push_mem_mem_mem_imm;
-static void (*c_op_push_mem_mem_mem_mem)(void) = c_f_op_push_mem_mem_mem_mem;
+static void (*c_op_push_imm_imm) (void) = c_f_op_push_imm_imm;
+static void (*c_op_push_imm_mem) (void) = c_f_op_push_imm_mem;
+static void (*c_op_push_mem_imm) (void) = c_f_op_push_mem_imm;
+static void (*c_op_push_mem_mem) (void) = c_f_op_push_mem_mem;
+static void (*c_op_push_mem_mem_mem) (void) = c_f_op_push_mem_mem_mem;
+static void (*c_op_push_mem_mem_mem_imm) (void) = c_f_op_push_mem_mem_mem_imm;
+static void (*c_op_push_mem_mem_mem_mem) (void) = c_f_op_push_mem_mem_mem_mem;
 
-static void (*c_op_assign)(void) = c_f_op_assign;
-static void (*c_op_assign_pop)(void) = c_f_op_assign_pop;
+static void (*c_op_assign) (void) = c_f_op_assign;
+static void (*c_op_assign_pop) (void) = c_f_op_assign_pop;
 
 static struct c_op c_ops[] = {
 	{1, C_LEFT_TO_RIGHT, C_CLASS_BINARY, "[", c_op_index},

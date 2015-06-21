@@ -34,9 +34,9 @@ extern void log_guess(char *login, char *ciphertext, char *plaintext);
  */
 extern void log_event(const char *format, ...)
 #ifdef __GNUC__
-	__attribute__ ((format (printf, 1, 2)));
+    __attribute__ ((format(printf, 1, 2)));
 #else
-	;
+;
 #endif
 
 /*

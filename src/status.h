@@ -34,7 +34,7 @@ struct status_main {
 
 extern struct status_main status;
 
-extern int (*status_get_progress)(void);
+extern int (*status_get_progress) (void);
 
 /*
  * Elapsed time of previous sessions and excess ticks (if any), in seconds.
@@ -46,7 +46,7 @@ extern unsigned int status_restored_time;
  * fields to zero. Always initializes the get_progress() handler (can be
  * NULL).
  */
-extern void status_init(int (*get_progress)(void), int start);
+extern void status_init(int (*get_progress) (void), int start);
 
 /*
  * Checks the number of ticks elapsed since start_time and moves some excess
@@ -62,7 +62,7 @@ extern void status_ticks_overflow_safety(void);
  * to them.
  * Calls status_ticks_overflow_safety() once in a while.
  */
-extern void status_update_crypts(int64 *combs, unsigned int crypts);
+extern void status_update_crypts(int64 * combs, unsigned int crypts);
 
 /*
  * Updates the candidates counter by adding the supplied number to it.

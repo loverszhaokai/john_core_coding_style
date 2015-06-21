@@ -44,7 +44,7 @@ static int is_poweroftwo(size_t align)
 
 static int is_aligned(void *p, size_t align)
 {
-	return ((size_t)p & (align - 1)) == 0;
+	return ((size_t) p & (align - 1)) == 0;
 }
 
 static char *fmt_self_test_body(struct fmt_main *format,
@@ -82,14 +82,16 @@ static char *fmt_self_test_body(struct fmt_main *format,
 
 	format->methods.reset(NULL);
 
-	if (!(current = format->params.tests)) return NULL;
+	if (!(current = format->params.tests))
+		return NULL;
 	ntests = 0;
 	while ((current++)->ciphertext)
 		ntests++;
 	current = format->params.tests;
 
 	done = 0;
-	index = 0; max = format->params.max_keys_per_crypt;
+	index = 0;
+	max = format->params.max_keys_per_crypt;
 	do {
 		if (!current->fields[1])
 			current->fields[1] = current->ciphertext;
@@ -125,7 +127,7 @@ static char *fmt_self_test_body(struct fmt_main *format,
 		salt = salt_copy;
 
 		if (strcmp(ciphertext,
-		    format->methods.source(ciphertext, binary)))
+			format->methods.source(ciphertext, binary)))
 			return "source";
 
 		if ((unsigned int)format->methods.salt_hash(salt) >=
@@ -138,6 +140,7 @@ static char *fmt_self_test_body(struct fmt_main *format,
 		{
 			int count = index + 1;
 			int match = format->methods.crypt_all(&count, NULL);
+
 /* If salt is NULL, the return value must always match *count the way it is
  * after the crypt_all() call. */
 			if (match != count)
@@ -145,12 +148,13 @@ static char *fmt_self_test_body(struct fmt_main *format,
 		}
 
 		for (size = 0; size < PASSWORD_HASH_SIZES; size++)
-		if (format->methods.binary_hash[size] &&
-		    format->methods.get_hash[size](index) !=
-		    format->methods.binary_hash[size](binary)) {
-			sprintf(s_size, "get_hash[%d](%d)", size, index);
-			return s_size;
-		}
+			if (format->methods.binary_hash[size] &&
+			    format->methods.get_hash[size] (index) !=
+			    format->methods.binary_hash[size] (binary)) {
+				sprintf(s_size, "get_hash[%d](%d)", size,
+				    index);
+				return s_size;
+			}
 
 		if (!format->methods.cmp_all(binary, index + 1))
 			return "cmp_all";
@@ -160,7 +164,7 @@ static char *fmt_self_test_body(struct fmt_main *format,
 			return "cmp_exact";
 
 		if (strncmp(format->methods.get_key(index), plaintext,
-		    format->params.plaintext_length))
+			format->params.plaintext_length))
 			return "get_key";
 
 /* Remove some old keys to better test cmp_all() */
@@ -182,8 +186,8 @@ static char *fmt_self_test_body(struct fmt_main *format,
 /* Jump straight to last index for non-bitslice DES */
 			if (!(format->params.flags & FMT_BS) &&
 			    (!strcmp(format->params.label, "des") ||
-			    !strcmp(format->params.label, "bsdi") ||
-			    !strcmp(format->params.label, "afs")))
+				!strcmp(format->params.label, "bsdi") ||
+				!strcmp(format->params.label, "afs")))
 				index = max - 1;
 
 			current = format->params.tests;
@@ -209,10 +213,10 @@ static void *alloc_binary(void **alloc, size_t size, size_t align)
 /* Ensure minimum required alignment and leave room for "align" bytes more */
 	p = *alloc = mem_alloc(size + mask + align);
 	p += mask;
-	p -= (size_t)p & mask;
+	p -= (size_t) p & mask;
 
 /* If the alignment is too great, reduce it to the minimum */
-	if (!((size_t)p & align))
+	if (!((size_t) p & align))
 		p += align;
 
 	return p;

@@ -21,7 +21,7 @@
 #define OS_TIMER			0
 #else
 #ifndef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 500 /* for ITIMER_REAL */
+#define _XOPEN_SOURCE 500	/* for ITIMER_REAL */
 #endif
 #include <sys/time.h>
 #ifdef ITIMER_REAL
@@ -37,7 +37,7 @@
 #ifdef NEED_OS_FLOCK
 
 #if defined(__APPLE__) && !defined(_DARWIN_C_SOURCE)
-#define _DARWIN_C_SOURCE /* for LOCK_EX */
+#define _DARWIN_C_SOURCE	/* for LOCK_EX */
 #endif
 #include <sys/file.h>
 #ifdef LOCK_EX

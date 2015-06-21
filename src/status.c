@@ -33,7 +33,7 @@
 
 struct status_main status;
 unsigned int status_restored_time = 0;
-int (*status_get_progress)(void) = NULL;
+int (*status_get_progress) (void) = NULL;
 
 static clock_t get_time(void)
 {
@@ -42,7 +42,7 @@ static clock_t get_time(void)
 	return times(&buf);
 }
 
-void status_init(int (*get_progress)(void), int start)
+void status_init(int (*get_progress) (void), int start)
 {
 	if (start) {
 		if (!status_restored_time)
@@ -61,17 +61,18 @@ void status_ticks_overflow_safety(void)
 	clock_t ticks;
 
 	ticks = get_time() - status.start_time;
-	if (ticks > ((clock_t)1 << (sizeof(clock_t) * 8 - 2))) {
+	if (ticks > ((clock_t) 1 << (sizeof(clock_t) * 8 - 2))) {
 		time = ticks / clk_tck;
 		status_restored_time += time;
-		status.start_time += (clock_t)time * clk_tck;
+		status.start_time += (clock_t) time *clk_tck;
 	}
 }
 
-void status_update_crypts(int64 *combs, unsigned int crypts)
+void status_update_crypts(int64 * combs, unsigned int crypts)
 {
 	{
 		unsigned int saved_hi = status.combs.hi;
+
 		add64to64(&status.combs, combs);
 		if (status.combs.hi < saved_hi)
 			status.combs_ehi++;
@@ -79,6 +80,7 @@ void status_update_crypts(int64 *combs, unsigned int crypts)
 
 	{
 		unsigned int saved_lo = status.crypts.lo;
+
 		add32to64(&status.crypts, crypts);
 		if ((status.crypts.lo ^ saved_lo) & 0xfff00000U)
 			status_ticks_overflow_safety();
@@ -88,12 +90,13 @@ void status_update_crypts(int64 *combs, unsigned int crypts)
 void status_update_cands(unsigned int cands)
 {
 	unsigned int saved_lo = status.cands.lo;
+
 	add32to64(&status.cands, cands);
 	if ((status.cands.lo ^ saved_lo) & 0xfff00000U)
 		status_ticks_overflow_safety();
 }
 
-static char *status_get_c(char *buffer, int64 *c, unsigned int c_ehi)
+static char *status_get_c(char *buffer, int64 * c, unsigned int c_ehi)
 {
 	int64 current, next, rem;
 	char *p;
@@ -124,10 +127,10 @@ static char *status_get_c(char *buffer, int64 *c, unsigned int c_ehi)
 unsigned int status_get_time(void)
 {
 	return status_restored_time +
-		(get_time() - status.start_time) / clk_tck;
+	    (get_time() - status.start_time) / clk_tck;
 }
 
-static char *status_get_cps(char *buffer, int64 *c, unsigned int c_ehi)
+static char *status_get_cps(char *buffer, int64 * c, unsigned int c_ehi)
 {
 	int use_ticks;
 	clock_t ticks;
@@ -144,7 +147,8 @@ static char *status_get_cps(char *buffer, int64 *c, unsigned int c_ehi)
 		time = ticks;
 	else
 		time = status_restored_time + ticks / clk_tck;
-	if (!time) time = 1;
+	if (!time)
+		time = 1;
 
 	cps = *c;
 	if (c_ehi) {
@@ -161,25 +165,27 @@ static char *status_get_cps(char *buffer, int64 *c, unsigned int c_ehi)
 
 	if (cps.hi > 232 || (cps.hi == 232 && cps.lo >= 3567587328U))
 		sprintf(buffer, "%uG", div64by32lo(&cps, 1000000000));
-	else
-	if (cps.hi || cps.lo >= 1000000000)
+	else if (cps.hi || cps.lo >= 1000000000)
 		sprintf(buffer, "%uM", div64by32lo(&cps, 1000000));
-	else
-	if (cps.lo >= 1000000)
+	else if (cps.lo >= 1000000)
 		sprintf(buffer, "%uK", div64by32lo(&cps, 1000));
-	else
-	if (cps.lo >= 1000)
+	else if (cps.lo >= 1000)
 		sprintf(buffer, "%u", cps.lo);
 	else {
 		const char *fmt;
 		unsigned int div, frac;
-		fmt = "%u.%06u"; div = 1000000;
+
+		fmt = "%u.%06u";
+		div = 1000000;
 		if (cps.lo >= 100) {
-			fmt = "%u.%u"; div = 10;
+			fmt = "%u.%u";
+			div = 10;
 		} else if (cps.lo >= 10) {
-			fmt = "%u.%02u"; div = 100;
+			fmt = "%u.%02u";
+			div = 100;
 		} else if (cps.lo >= 1) {
-			fmt = "%u.%03u"; div = 1000;
+			fmt = "%u.%03u";
+			div = 1000;
 		}
 		tmp = *c;
 		if (use_ticks)
@@ -188,9 +194,13 @@ static char *status_get_cps(char *buffer, int64 *c, unsigned int c_ehi)
 		frac = div64by32lo(&tmp, time);
 		if (div == 1000000) {
 			if (frac >= 100000) {
-				fmt = "%u.%04u"; div = 10000; frac /= 100;
+				fmt = "%u.%04u";
+				div = 10000;
+				frac /= 100;
 			} else if (frac >= 10000) {
-				fmt = "%u.%05u"; div = 100000; frac /= 10;
+				fmt = "%u.%05u";
+				div = 100000;
+				frac /= 10;
 			}
 		}
 		frac %= div;
@@ -214,6 +224,7 @@ static void status_print_cracking(char *percent)
 	if (!(options.flags & FLG_STATUS_CHK) &&
 	    (status.crypts.lo | status.crypts.hi)) {
 		char *key = crk_get_key2();
+
 		if (key)
 			strnzcpy(key2, key, sizeof(key2));
 		key1 = crk_get_key1();
@@ -226,13 +237,13 @@ static void status_print_cracking(char *percent)
 			p += n;
 	}
 
-	g.lo = status.guess_count; g.hi = 0;
+	g.lo = status.guess_count;
+	g.hi = 0;
 	n = sprintf(p,
 	    "%ug %u:%02u:%02u:%02u%.100s %.31sg/s ",
 	    status.guess_count,
 	    time / 86400, time % 86400 / 3600, time % 3600 / 60, time % 60,
-	    percent,
-	    status_get_cps(s_gps, &g, 0));
+	    percent, status_get_cps(s_gps, &g, 0));
 	if (n > 0)
 		p += n;
 
@@ -282,16 +293,14 @@ void status_print(void)
 	percent_value = -1;
 	if (options.flags & FLG_STATUS_CHK)
 		percent_value = status.progress;
-	else
-	if (status_get_progress)
+	else if (status_get_progress)
 		percent_value = status_get_progress();
 
 	s_percent[0] = 0;
 	if (percent_value >= 0)
 		sprintf(s_percent, status.pass ? " %d%% %d/3" : " %d%%",
 		    percent_value, status.pass);
-	else
-	if (status.pass)
+	else if (status.pass)
 		sprintf(s_percent, " %d/3", status.pass);
 
 	if (options.flags & FLG_STDOUT)

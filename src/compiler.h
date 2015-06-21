@@ -69,8 +69,8 @@ struct c_ident {
  * Runs the compiler, and allocates some memory for its output and the
  * program's data. Returns one of the error codes.
  */
-extern int c_compile(int (*ext_getchar)(void), void (*ext_rewind)(void),
-	struct c_ident *externs);
+extern int c_compile(int (*ext_getchar) (void), void (*ext_rewind) (void),
+    struct c_ident *externs);
 
 /*
  * Returns the function's address or NULL if not found.

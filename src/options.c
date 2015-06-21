@@ -35,53 +35,55 @@ static struct opt_entry opt_list[] = {
 	{"", FLG_PASSWD, 0, 0, 0, OPT_FMT_ADD_LIST, &options.passwd},
 	{"single", FLG_SINGLE_SET, FLG_CRACKING_CHK},
 	{"wordlist", FLG_WORDLIST_SET, FLG_CRACKING_CHK,
-		0, OPT_REQ_PARAM, OPT_FMT_STR_ALLOC, &options.wordlist},
+	    0, OPT_REQ_PARAM, OPT_FMT_STR_ALLOC, &options.wordlist},
 	{"stdin", FLG_STDIN_SET, FLG_CRACKING_CHK},
 	{"rules", FLG_RULES, FLG_RULES, FLG_WORDLIST_CHK, FLG_STDIN_CHK},
 	{"incremental", FLG_INC_SET, FLG_CRACKING_CHK,
-		0, 0, OPT_FMT_STR_ALLOC, &options.charset},
+	    0, 0, OPT_FMT_STR_ALLOC, &options.charset},
 	{"external", FLG_EXTERNAL_SET, FLG_EXTERNAL_CHK,
-		0, OPT_REQ_PARAM, OPT_FMT_STR_ALLOC, &options.external},
+	    0, OPT_REQ_PARAM, OPT_FMT_STR_ALLOC, &options.external},
 	{"stdout", FLG_STDOUT, FLG_STDOUT,
-		FLG_CRACKING_SUP, FLG_SINGLE_CHK | FLG_BATCH_CHK,
-		"%u", &options.length},
+		    FLG_CRACKING_SUP, FLG_SINGLE_CHK | FLG_BATCH_CHK,
+	    "%u", &options.length},
 	{"restore", FLG_RESTORE_SET, FLG_RESTORE_CHK,
-		0, ~FLG_RESTORE_SET & ~OPT_REQ_PARAM,
-		OPT_FMT_STR_ALLOC, &options.session},
+		    0, ~FLG_RESTORE_SET & ~OPT_REQ_PARAM,
+	    OPT_FMT_STR_ALLOC, &options.session},
 	{"session", FLG_SESSION, FLG_SESSION,
-		FLG_CRACKING_SUP, OPT_REQ_PARAM,
-		OPT_FMT_STR_ALLOC, &options.session},
+		    FLG_CRACKING_SUP, OPT_REQ_PARAM,
+	    OPT_FMT_STR_ALLOC, &options.session},
 	{"status", FLG_STATUS_SET, FLG_STATUS_CHK,
-		0, ~FLG_STATUS_SET & ~OPT_REQ_PARAM,
-		OPT_FMT_STR_ALLOC, &options.session},
+		    0, ~FLG_STATUS_SET & ~OPT_REQ_PARAM,
+	    OPT_FMT_STR_ALLOC, &options.session},
 	{"make-charset", FLG_MAKECHR_SET, FLG_MAKECHR_CHK,
-		0, FLG_CRACKING_CHK | FLG_SESSION | OPT_REQ_PARAM,
-		OPT_FMT_STR_ALLOC, &options.charset},
+		    0, FLG_CRACKING_CHK | FLG_SESSION | OPT_REQ_PARAM,
+	    OPT_FMT_STR_ALLOC, &options.charset},
 	{"show", FLG_SHOW_SET, FLG_SHOW_CHK,
-		0, FLG_CRACKING_SUP | FLG_MAKECHR_CHK},
+	    0, FLG_CRACKING_SUP | FLG_MAKECHR_CHK},
 	{"test", FLG_TEST_SET, FLG_TEST_CHK,
-		0, ~FLG_TEST_SET & ~FLG_FORMAT & ~FLG_SAVEMEM & ~OPT_REQ_PARAM,
-		"%u", &benchmark_time},
+		    0,
+		    ~FLG_TEST_SET & ~FLG_FORMAT & ~FLG_SAVEMEM & ~OPT_REQ_PARAM,
+	    "%u", &benchmark_time},
 	{"users", FLG_NONE, 0, FLG_PASSWD, OPT_REQ_PARAM,
-		OPT_FMT_ADD_LIST_MULTI, &options.loader.users},
+	    OPT_FMT_ADD_LIST_MULTI, &options.loader.users},
 	{"groups", FLG_NONE, 0, FLG_PASSWD, OPT_REQ_PARAM,
-		OPT_FMT_ADD_LIST_MULTI, &options.loader.groups},
+	    OPT_FMT_ADD_LIST_MULTI, &options.loader.groups},
 	{"shells", FLG_NONE, 0, FLG_PASSWD, OPT_REQ_PARAM,
-		OPT_FMT_ADD_LIST_MULTI, &options.loader.shells},
+	    OPT_FMT_ADD_LIST_MULTI, &options.loader.shells},
 	{"salts", FLG_SALTS, FLG_SALTS, FLG_PASSWD, OPT_REQ_PARAM,
-		"%d", &options.loader.min_pps},
+	    "%d", &options.loader.min_pps},
 	{"save-memory", FLG_SAVEMEM, FLG_SAVEMEM, 0, OPT_REQ_PARAM,
-		"%u", &mem_saving_level},
+	    "%u", &mem_saving_level},
 	{"node", FLG_NODE, FLG_NODE, FLG_CRACKING_CHK, OPT_REQ_PARAM,
-		OPT_FMT_STR_ALLOC, &options.node_str},
+	    OPT_FMT_STR_ALLOC, &options.node_str},
 #if OS_FORK
 	{"fork", FLG_FORK, FLG_FORK,
-		FLG_CRACKING_CHK, FLG_STDIN_CHK | FLG_STDOUT | OPT_REQ_PARAM,
-		"%u", &options.fork},
+		    FLG_CRACKING_CHK,
+		    FLG_STDIN_CHK | FLG_STDOUT | OPT_REQ_PARAM,
+	    "%u", &options.fork},
 #endif
 	{"format", FLG_FORMAT, FLG_FORMAT,
-		0, FLG_STDOUT | OPT_REQ_PARAM,
-		OPT_FMT_STR_ALLOC, &options.format},
+		    0, FLG_STDOUT | OPT_REQ_PARAM,
+	    OPT_FMT_STR_ALLOC, &options.format},
 	{NULL}
 };
 
@@ -136,6 +138,7 @@ static void print_usage(char *name)
 	do {
 		char *label = format->params.label;
 		int length = strlen(label) + (format->next != NULL);
+
 		column += length;
 		if (column > 80) {
 			printf("\n" JOHN_USAGE_INDENT);
@@ -211,6 +214,7 @@ void opt_init(char *name, int argc, char **argv)
 #if OS_FORK
 		if (options.fork) {
 			unsigned int i;
+
 			for (i = 2; i <= options.fork; i++) {
 				rec_name = rec_name_orig;
 				rec_name_completed = 0;
@@ -230,20 +234,21 @@ void opt_init(char *name, int argc, char **argv)
 	}
 
 	if (options.flags & FLG_SALTS)
-	if (options.loader.min_pps < 0) {
-		options.loader.max_pps = -1 - options.loader.min_pps;
-		options.loader.min_pps = 0;
-	}
+		if (options.loader.min_pps < 0) {
+			options.loader.max_pps = -1 - options.loader.min_pps;
+			options.loader.min_pps = 0;
+		}
 
 	if (options.length < 0)
 		options.length = PLAINTEXT_BUFFER_SIZE - 3;
-	else
-	if (options.length < 1 || options.length > PLAINTEXT_BUFFER_SIZE - 3) {
+	else if (options.length < 1 ||
+	    options.length > PLAINTEXT_BUFFER_SIZE - 3) {
 		fprintf(stderr, "Invalid plaintext length requested\n");
 		error();
 	}
 
-	if (options.flags & FLG_STDOUT) options.flags &= ~FLG_PWD_REQ;
+	if (options.flags & FLG_STDOUT)
+		options.flags &= ~FLG_PWD_REQ;
 
 #if OS_FORK
 	if ((options.flags & FLG_FORK) &&
@@ -256,9 +261,10 @@ void opt_init(char *name, int argc, char **argv)
 	if (options.node_str) {
 		const char *msg = NULL;
 		int n;
+
 		if ((n = sscanf(options.node_str, "%u-%u/%u",
-		    &options.node_min, &options.node_max,
-		    &options.node_count)) != 3) {
+			    &options.node_min, &options.node_max,
+			    &options.node_count)) != 3) {
 			n = sscanf(options.node_str, "%u/%u",
 			    &options.node_min, &options.node_count);
 			options.node_max = options.node_min;
@@ -301,16 +307,17 @@ void opt_init(char *name, int argc, char **argv)
 
 	if ((options.flags & (FLG_PASSWD | FLG_PWD_REQ)) == FLG_PWD_REQ) {
 		fprintf(stderr, "Password files required, "
-			"but none specified\n");
+		    "but none specified\n");
 		error();
 	}
 
 	if ((options.flags & (FLG_PASSWD | FLG_PWD_SUP)) == FLG_PASSWD) {
 		fprintf(stderr, "Password files specified, "
-			"but no option would use them\n");
+		    "but no option would use them\n");
 		error();
 	}
 
-	rec_argc = argc; rec_argv = argv;
+	rec_argc = argc;
+	rec_argv = argv;
 	rec_check = 0;
 }

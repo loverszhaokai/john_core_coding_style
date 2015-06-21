@@ -108,10 +108,10 @@ struct fmt_methods {
  * called before a call to init().
  * Note that initializing an algorithm might de-initialize some others (if a
  * shared underlying resource is used). */
-	void (*init)(struct fmt_main *self);
+	void (*init) (struct fmt_main * self);
 
 /* De-initializes this format, which must have been previously initialized */
-	void (*done)(void);
+	void (*done) (void);
 
 /* Called whenever the set of password hashes being cracked changes, such as
  * after self-test, but before actual cracking starts.  When called before a
@@ -119,19 +119,19 @@ struct fmt_methods {
  * Normally, this is a no-op since a format implementation shouldn't mess with
  * the database unnecessarily.  However, when there is a good reason to do so
  * this may e.g. transfer the salts and hashes onto a GPU card. */
-	void (*reset)(struct db_main *db);
+	void (*reset) (struct db_main * db);
 
 /* Extracts the ciphertext string out of the input file fields.  Normally, this
  * will simply return field[1], but in some special cases it may use another
  * field (e.g., when the hash type is commonly used with PWDUMP rather than
  * /etc/passwd format files) or/and it may also extract and include the
  * username, etc. */
-	char *(*prepare)(char *fields[10], struct fmt_main *self);
+	char *(*prepare) (char *fields[10], struct fmt_main * self);
 
 /* Checks if an ASCII ciphertext is valid for this format.  Returns zero for
  * invalid ciphertexts, or the number of parts the ciphertext should be split
  * into (up to 9, will usually be 1). */
-	int (*valid)(char *ciphertext, struct fmt_main *self);
+	int (*valid) (char *ciphertext, struct fmt_main * self);
 
 /* Splits a ciphertext into several pieces and returns the piece with given
  * index, starting from 0 (will usually return the ciphertext unchanged).
@@ -139,32 +139,32 @@ struct fmt_methods {
  * irrespective of the case of characters (upper/lower/mixed) used in their
  * encoding, split() must unify the case (e.g., convert to all-lowercase)
  * and FMT_SPLIT_UNIFIES_CASE must be set. */
-	char *(*split)(char *ciphertext, int index, struct fmt_main *self);
+	char *(*split) (char *ciphertext, int index, struct fmt_main * self);
 
 /* Converts an ASCII ciphertext to binary, possibly using the salt */
-	void *(*binary)(char *ciphertext);
+	void *(*binary) (char *ciphertext);
 
 /* Converts an ASCII salt to its internal representation */
-	void *(*salt)(char *ciphertext);
+	void *(*salt) (char *ciphertext);
 
 /* Reconstructs the ASCII ciphertext from its binary (saltless only).
  * Alternatively, in the simplest case simply returns "source" as-is. */
-	char *(*source)(char *source, void *binary);
+	char *(*source) (char *source, void *binary);
 
 /* These functions calculate a hash out of a binary ciphertext. To be used
  * for hash table initialization. One of them should be selected depending
  * on the hash table size. */
-	int (*binary_hash[PASSWORD_HASH_SIZES])(void *binary);
+	int (*binary_hash[PASSWORD_HASH_SIZES]) (void *binary);
 
 /* Calculates a hash out of a salt (given in internal representation). To be
  * used by the password file loader. */
-	int (*salt_hash)(void *salt);
+	int (*salt_hash) (void *salt);
 
 /* Sets a salt for the crypt_all() method */
-	void (*set_salt)(void *salt);
+	void (*set_salt) (void *salt);
 
 /* Sets a plaintext, with index from 0 to fmt_params.max_keys_per_crypt - 1 */
-	void (*set_key)(char *key, int index);
+	void (*set_key) (char *key, int index);
 
 /* Returns a plaintext previously set with and potentially altered by
  * set_key() (e.g., converted to all-uppercase and truncated at 7 for LM
@@ -172,12 +172,12 @@ struct fmt_methods {
  * crypt_all().  Depending on crypt_all() implementation, the index used here
  * does not have to match an index previously used with set_key(), although
  * for most formats it does.  See the description of crypt_all() below. */
-	char *(*get_key)(int index);
+	char *(*get_key) (int index);
 
 /* Allow the previously set keys to be dropped if that would help improve
  * performance and/or reduce the impact of certain hardware faults. After
  * a call to clear_keys() the keys are undefined. */
-	void (*clear_keys)(void);
+	void (*clear_keys) (void);
 
 /* Computes the ciphertexts for given salt and plaintexts.
  * For implementation reasons, this may happen to always compute at least
@@ -201,23 +201,23 @@ struct fmt_methods {
  * computes other than the requested count (such as if it generates additional
  * candidate passwords on its own).  The updated count is used for c/s rate
  * calculation.  The return value is thus in the 0 to updated *count range. */
-	int (*crypt_all)(int *count, struct db_salt *salt);
+	int (*crypt_all) (int *count, struct db_salt * salt);
 
 /* These functions calculate a hash out of a ciphertext that has just been
  * generated with the crypt_all() method. To be used while cracking. */
-	int (*get_hash[PASSWORD_HASH_SIZES])(int index);
+	int (*get_hash[PASSWORD_HASH_SIZES]) (int index);
 
 /* Compares a given ciphertext against all the crypt_all() method outputs and
  * returns zero if no matches detected. A non-zero return value means that
  * there might be matches, and more checks are needed. */
-	int (*cmp_all)(void *binary, int count);
+	int (*cmp_all) (void *binary, int count);
 
 /* Same as the above, except the comparison is done against only one of the
  * crypt_all() method outputs. */
-	int (*cmp_one)(void *binary, int index);
+	int (*cmp_one) (void *binary, int index);
 
 /* Compares an ASCII ciphertext against a particular crypt_all() output */
-	int (*cmp_exact)(char *source, int index);
+	int (*cmp_exact) (char *source, int index);
 };
 
 /*

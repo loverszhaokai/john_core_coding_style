@@ -69,7 +69,7 @@ typedef struct {
 		unsigned char c[8][8][sizeof(DES_bs_vector)];
 		DES_bs_vector v[8][8];
 	} xkeys;		/* Partially transposed key bits matrix */
-	unsigned char *pxkeys[DES_BS_DEPTH]; /* Pointers into xkeys.c */
+	unsigned char *pxkeys[DES_BS_DEPTH];	/* Pointers into xkeys.c */
 	int keys_changed;	/* If keys have changed */
 	unsigned int salt;	/* Salt value corresponding to E[] contents */
 	DES_bs_vector *Ens[48];	/* Pointers into B[] for non-salted E */
@@ -82,6 +82,7 @@ typedef struct {
 extern int DES_bs_min_kpc, DES_bs_max_kpc;
 extern int DES_bs_nt;
 extern DES_bs_combined *DES_bs_all_p;
+
 #define DES_bs_all_align		64
 #define DES_bs_all_size \
 	((sizeof(DES_bs_combined) + (DES_bs_all_align - 1)) & \
@@ -113,6 +114,7 @@ extern DES_bs_combined *DES_bs_all_p;
 #define DES_bs_mt			0
 #define DES_bs_cpt			1
 extern DES_bs_combined DES_bs_all;
+
 #define for_each_t(n)
 #define init_t()
 #endif
@@ -126,6 +128,7 @@ extern void DES_bs_init(int LM, int cpt);
  * Sets a salt for DES_bs_crypt().
  */
 extern void DES_bs_set_salt(ARCH_WORD salt);
+
 #if DES_bs_mt
 extern void DES_bs_set_salt_for_thread(int t, unsigned int salt);
 #endif
@@ -165,7 +168,7 @@ extern ARCH_WORD_32 *DES_bs_get_binary_LM(char *ciphertext);
 /*
  * The reverse of DES_bs_get_binary_LM().
  */
-extern char *DES_bs_get_source_LM(ARCH_WORD_32 *raw);
+extern char *DES_bs_get_source_LM(ARCH_WORD_32 * raw);
 
 /*
  * Calculate a hash for a DES_bs_crypt*() output.
@@ -193,11 +196,11 @@ extern int DES_bs_get_hash_6t(int index);
  * Compares 32 bits of a given ciphertext against at least the first count of
  * the DES_bs_crypt*() outputs and returns zero if no matches detected.
  */
-extern int DES_bs_cmp_all(ARCH_WORD_32 *binary, int count);
+extern int DES_bs_cmp_all(ARCH_WORD_32 * binary, int count);
 
 /*
  * Compares count bits of a given ciphertext against one of the outputs.
  */
-extern int DES_bs_cmp_one(ARCH_WORD_32 *binary, int count, int index);
+extern int DES_bs_cmp_one(ARCH_WORD_32 * binary, int count, int index);
 
 #endif

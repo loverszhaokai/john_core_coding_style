@@ -35,6 +35,7 @@
 extern struct fmt_main fmt_DES, fmt_MD5, fmt_BF;
 
 int john_main_process = 0;
+
 #if OS_FORK
 int john_child_count = 0;
 int *john_child_pids = NULL;
@@ -48,7 +49,8 @@ int main(int argc, char **argv)
 	int64 tmp;
 	char s_real[64], s_virtual[64];
 
-	if (argc != 2) return 1;
+	if (argc != 2)
+		return 1;
 
 	switch (argv[1][0]) {
 	case '1':
@@ -71,8 +73,7 @@ int main(int argc, char **argv)
 	    format->params.label,
 	    format->params.format_name[0] ? ", " : "",
 	    format->params.format_name,
-	    format->params.benchmark_comment,
-	    format->params.algorithm_name);
+	    format->params.benchmark_comment, format->params.algorithm_name);
 
 	common_init();
 
@@ -93,7 +94,7 @@ int main(int argc, char **argv)
 		benchmark_cps(&results.crypts, results.virtual, s_virtual);
 
 		fprintf(stderr, "%s c/s real, %s c/s virtual\n",
-			s_real, s_virtual);
+		    s_real, s_virtual);
 	}
 
 	fmt_done(format);

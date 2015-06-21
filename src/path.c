@@ -33,6 +33,7 @@ void path_init(char **argv)
 {
 #if JOHN_SYSTEMWIDE
 	struct passwd *pw;
+
 #ifdef JOHN_PRIVATE_HOME
 	char *private;
 #endif
@@ -45,13 +46,16 @@ void path_init(char **argv)
 	strnzcpy(john_home_path, JOHN_SYSTEMWIDE_HOME "/", PATH_BUFFER_SIZE);
 	john_home_length = strlen(john_home_path);
 
-	if (user_home_path) return;
+	if (user_home_path)
+		return;
 	pw = getpwuid(getuid());
 	endpwent();
-	if (!pw) return;
+	if (!pw)
+		return;
 
 	user_home_length = strlen(pw->pw_dir) + 1;
-	if (user_home_length >= PATH_BUFFER_SIZE) return;
+	if (user_home_length >= PATH_BUFFER_SIZE)
+		return;
 
 	user_home_path = mem_alloc(PATH_BUFFER_SIZE);
 	memcpy(user_home_path, pw->pw_dir, user_home_length - 1);
@@ -60,19 +64,21 @@ void path_init(char **argv)
 #ifdef JOHN_PRIVATE_HOME
 	private = path_expand(JOHN_PRIVATE_HOME);
 	if (mkdir(private, S_IRUSR | S_IWUSR | S_IXUSR)) {
-		if (errno != EEXIST) pexit("mkdir: %s", private);
+		if (errno != EEXIST)
+			pexit("mkdir: %s", private);
 	} else
 		fprintf(stderr, "Created directory: %s\n", private);
 #endif
 #else
 	if (argv[0])
-	if (!john_home_path && (pos = strrchr(argv[0], '/'))) {
-		john_home_length = pos - argv[0] + 1;
-		if (john_home_length >= PATH_BUFFER_SIZE) return;
+		if (!john_home_path && (pos = strrchr(argv[0], '/'))) {
+			john_home_length = pos - argv[0] + 1;
+			if (john_home_length >= PATH_BUFFER_SIZE)
+				return;
 
-		john_home_path = mem_alloc(PATH_BUFFER_SIZE);
-		memcpy(john_home_path, argv[0], john_home_length);
-	}
+			john_home_path = mem_alloc(PATH_BUFFER_SIZE);
+			memcpy(john_home_path, argv[0], john_home_length);
+		}
 #endif
 }
 
@@ -82,18 +88,17 @@ char *path_expand(char *name)
 		if (john_home_path &&
 		    john_home_length + strlen(name) - 6 < PATH_BUFFER_SIZE) {
 			strnzcpy(&john_home_path[john_home_length], &name[6],
-				PATH_BUFFER_SIZE - john_home_length);
+			    PATH_BUFFER_SIZE - john_home_length);
 			return john_home_path;
 		}
 		return name + 6;
 	}
-
 #if JOHN_SYSTEMWIDE
 	if (!strncmp(name, "~/", 2)) {
 		if (user_home_path &&
 		    user_home_length + strlen(name) - 2 < PATH_BUFFER_SIZE) {
 			strnzcpy(&user_home_path[user_home_length], &name[2],
-				PATH_BUFFER_SIZE - user_home_length);
+			    PATH_BUFFER_SIZE - user_home_length);
 			return user_home_path;
 		}
 		return name + 2;

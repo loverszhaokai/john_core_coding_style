@@ -31,8 +31,8 @@
 /*
  * Error names.
  */
-static const char * const rules_errors[] = {
-	NULL,	/* No error */
+static const char *const rules_errors[] = {
+	NULL,			/* No error */
 	"Unexpected end of rule",
 	"Unknown command",
 	"Unallowed command",
@@ -188,8 +188,7 @@ static void rules_init_class(char name, char *valid)
 {
 	char *pos, inv;
 
-	rules_classes[ARCH_INDEX(name)] =
-		mem_alloc_tiny(0x100, MEM_ALIGN_NONE);
+	rules_classes[ARCH_INDEX(name)] = mem_alloc_tiny(0x100, MEM_ALIGN_NONE);
 	memset(rules_classes[ARCH_INDEX(name)], 0, 0x100);
 	for (pos = valid; ARCH_INDEX(*pos); pos++)
 		rules_classes[ARCH_INDEX(name)][ARCH_INDEX(*pos)] = 1;
@@ -197,7 +196,7 @@ static void rules_init_class(char name, char *valid)
 	if ((name | 0x20) >= 'a' && (name | 0x20) <= 'z') {
 		inv = name ^ 0x20;
 		rules_classes[ARCH_INDEX(inv)] =
-			mem_alloc_tiny(0x100, MEM_ALIGN_NONE);
+		    mem_alloc_tiny(0x100, MEM_ALIGN_NONE);
 		memset(rules_classes[ARCH_INDEX(inv)], 1, 0x100);
 		for (pos = valid; ARCH_INDEX(*pos); pos++)
 			rules_classes[ARCH_INDEX(inv)][ARCH_INDEX(*pos)] = 0;
@@ -228,7 +227,8 @@ static char *rules_init_conv(char *src, char *dst)
 	int pos;
 
 	conv = mem_alloc_tiny(0x100, MEM_ALIGN_NONE);
-	for (pos = 0; pos < 0x100; pos++) conv[pos] = pos;
+	for (pos = 0; pos < 0x100; pos++)
+		conv[pos] = pos;
 
 	while (*src)
 		conv[ARCH_INDEX(*src++)] = *dst++;
@@ -254,8 +254,10 @@ static void rules_init_length(int max_length)
 
 	memset(rules_vars, INVALID_LENGTH, sizeof(rules_vars));
 
-	for (c = '0'; c <= '9'; c++) rules_vars[c] = c - '0';
-	for (c = 'A'; c <= 'Z'; c++) rules_vars[c] = c - ('A' - 10);
+	for (c = '0'; c <= '9'; c++)
+		rules_vars[c] = c - '0';
+	for (c = 'A'; c <= 'Z'; c++)
+		rules_vars[c] = c - ('A' - 10);
 
 	rules_vars['*'] = rules_max_length = max_length;
 	rules_vars['-'] = max_length - 1;
@@ -272,7 +274,8 @@ void rules_init(int max_length)
 	if (max_length > RULE_WORD_SIZE - 1)
 		max_length = RULE_WORD_SIZE - 1;
 
-	if (max_length == rules_max_length) return;
+	if (max_length == rules_max_length)
+		return;
 
 	if (!rules_max_length) {
 		rules_init_classes();
@@ -286,48 +289,55 @@ char *rules_reject(char *rule, int split, char *last, struct db_main *db)
 	static char out_rule[RULE_BUFFER_SIZE];
 
 	while (RULE)
-	switch (LAST) {
-	case ':':
-	case ' ':
-	case '\t':
-		break;
-
-	case '-':
-		switch (RULE) {
+		switch (LAST) {
 		case ':':
-			continue;
+		case ' ':
+		case '\t':
+			break;
 
-		case 'c':
-			if (!db) continue;
-			if (db->format->params.flags & FMT_CASE) continue;
-			return NULL;
+		case '-':
+			switch (RULE) {
+			case ':':
+				continue;
 
-		case '8':
-			if (!db) continue;
-			if (db->format->params.flags & FMT_8_BIT) continue;
-			return NULL;
+			case 'c':
+				if (!db)
+					continue;
+				if (db->format->params.flags & FMT_CASE)
+					continue;
+				return NULL;
 
-		case 's':
-			if (!db) continue;
-			if (db->options->flags & DB_SPLIT) continue;
-			return NULL;
+			case '8':
+				if (!db)
+					continue;
+				if (db->format->params.flags & FMT_8_BIT)
+					continue;
+				return NULL;
 
-		case 'p':
-			if (split >= 0) continue;
-			return NULL;
+			case 's':
+				if (!db)
+					continue;
+				if (db->options->flags & DB_SPLIT)
+					continue;
+				return NULL;
 
-		case '\0':
-			rules_errno = RULES_ERROR_END;
-			return NULL;
+			case 'p':
+				if (split >= 0)
+					continue;
+				return NULL;
+
+			case '\0':
+				rules_errno = RULES_ERROR_END;
+				return NULL;
+
+			default:
+				rules_errno = RULES_ERROR_REJECT;
+				return NULL;
+			}
 
 		default:
-			rules_errno = RULES_ERROR_REJECT;
-			return NULL;
+			goto accept;
 		}
-
-	default:
-		goto accept;
-	}
 
 accept:
 	rules_pass--;
@@ -362,9 +372,9 @@ char *rules_apply(char *word, char *rule, int split, char *last)
 	if (!NEXT)
 		goto out_OK;
 
-	if (!length) REJECT
+	if (!length)
+		REJECT alt = buffer[1];
 
-	alt = buffer[1];
 	if (alt == last)
 		alt = buffer[2];
 
@@ -394,590 +404,693 @@ char *rules_apply(char *word, char *rule, int split, char *last)
 		case '<':
 			{
 				int pos;
+
 				POSITION(pos)
-				if (length >= pos) REJECT
-			}
-			break;
+				    if (length >= pos)
+					REJECT}
+					break;
 
 		case '>':
-			{
-				int pos;
-				POSITION(pos)
-				if (length <= pos) REJECT
-			}
-			break;
+				{
+					int pos;
+
+					POSITION(pos)
+					    if (length <= pos)
+						REJECT}
+						break;
 
 		case 'l':
-			CONV(conv_tolower)
-			break;
+					CONV(conv_tolower)
+					    break;
 
 		case 'u':
-			CONV(conv_toupper)
-			break;
+					CONV(conv_toupper)
+					    break;
 
 		case 'c':
-			{
-				int pos = 0;
-				if ((in[0] = conv_toupper[ARCH_INDEX(in[0])]))
-				while (in[++pos])
-					in[pos] =
-					    conv_tolower[ARCH_INDEX(in[pos])];
-				in[pos] = 0;
-			}
-			if (in[0] != 'M' || in[1] != 'c')
-				break;
-			in[2] = conv_toupper[ARCH_INDEX(in[2])];
-			break;
+					{
+						int pos = 0;
+
+						if ((in[0] =
+							conv_toupper[ARCH_INDEX
+							    (in[0])]))
+							while (in[++pos])
+								in[pos] =
+								    conv_tolower
+								    [ARCH_INDEX
+								    (in[pos])];
+						in[pos] = 0;
+					}
+					if (in[0] != 'M' || in[1] != 'c')
+						break;
+					in[2] = conv_toupper[ARCH_INDEX(in[2])];
+					break;
 
 		case 'r':
-			{
-				char *out;
-				GET_OUT
-				*(out += length) = 0;
-				while (*in)
-					*--out = *in++;
-				in = out;
-			}
-			break;
+					{
+						char *out;
+
+						GET_OUT *(out += length) = 0;
+
+						while (*in)
+							*--out = *in++;
+						in = out;
+					}
+					break;
 
 		case 'd':
-			memcpy(in + length, in, length);
-			in[length <<= 1] = 0;
-			break;
+					memcpy(in + length, in, length);
+					in[length <<= 1] = 0;
+					break;
 
 		case 'f':
-			{
-				int pos;
-				in[pos = (length <<= 1)] = 0;
-				{
-					char *p = in;
-					while (*p)
-						in[--pos] = *p++;
-				}
-			}
-			break;
+					{
+						int pos;
+
+						in[pos = (length <<= 1)] = 0;
+						{
+							char *p = in;
+
+							while (*p)
+								in[--pos] =
+								    *p++;
+						}
+					}
+					break;
 
 		case 'p':
-			if (length < 2) break;
-			{
-				int pos = length - 1;
-				if (strchr("sxz", in[pos]) ||
-				    (pos > 1 && in[pos] == 'h' &&
-				    (in[pos - 1] == 'c' || in[pos - 1] == 's')))
-					strcat(in, "es");
-				else
-				if (in[pos] == 'f' && in[pos - 1] != 'f')
-					strcpy(&in[pos], "ves");
-				else
-				if (pos > 1 &&
-				    in[pos] == 'e' && in[pos - 1] == 'f')
-					strcpy(&in[pos - 1], "ves");
-				else
-				if (pos > 1 && in[pos] == 'y') {
-					if (strchr("aeiou", in[pos - 1]))
-						strcat(in, "s");
-					else
-						strcpy(&in[pos], "ies");
-				} else
-					strcat(in, "s");
-			}
-			length = strlen(in);
-			break;
+					if (length < 2)
+						break;
+					{
+						int pos = length - 1;
+
+						if (strchr("sxz", in[pos]) ||
+						    (pos > 1 && in[pos] == 'h'
+							&& (in[pos - 1] == 'c'
+							    || in[pos - 1] ==
+							    's')))
+							strcat(in, "es");
+						else if (in[pos] == 'f' &&
+						    in[pos - 1] != 'f')
+							strcpy(&in[pos], "ves");
+						else if (pos > 1 &&
+						    in[pos] == 'e' &&
+						    in[pos - 1] == 'f')
+							strcpy(&in[pos - 1],
+							    "ves");
+						else if (pos > 1 &&
+						    in[pos] == 'y') {
+							if (strchr("aeiou",
+								in[pos - 1]))
+								strcat(in, "s");
+							else
+								strcpy(&in[pos],
+								    "ies");
+						} else
+							strcat(in, "s");
+					}
+					length = strlen(in);
+					break;
 
 		case '$':
-			VALUE(in[length++])
-			in[length] = 0;
-			break;
+					VALUE(in[length++])
+					    in[length] = 0;
+					break;
 
 		case '^':
-			{
-				char *out;
-				GET_OUT
-				VALUE(out[0])
-				strcpy(&out[1], in);
-				in = out;
-			}
-			length++;
-			break;
+					{
+						char *out;
+
+						GET_OUT VALUE(out[0])
+						    strcpy(&out[1], in);
+						in = out;
+					}
+					length++;
+					break;
 
 		case 'x':
-			{
-				int pos;
-				POSITION(pos)
-				if (pos < length) {
-					char *out;
-					GET_OUT
-					in += pos;
-					POSITION(pos)
-					strnzcpy(out, in, pos + 1);
-					length = strlen(in = out);
+					{
+						int pos;
+
+						POSITION(pos)
+						    if (pos < length) {
+							char *out;
+
+							GET_OUT in += pos;
+
+							POSITION(pos)
+							    strnzcpy(out, in,
+							    pos + 1);
+							length = strlen(in =
+							    out);
+							break;
+						}
+						POSITION(pos)
+						    in[length = 0] = 0;
+					}
 					break;
-				}
-				POSITION(pos)
-				in[length = 0] = 0;
-			}
-			break;
 
 		case 'i':
-			{
-				int pos;
-				POSITION(pos)
-				if (pos < length) {
-					char *p = in + pos;
-					memmove(p + 1, p, length++ - pos);
-					VALUE(*p)
-					in[length] = 0;
+					{
+						int pos;
+
+						POSITION(pos)
+						    if (pos < length) {
+							char *p = in + pos;
+
+							memmove(p + 1, p,
+							    length++ - pos);
+							VALUE(*p)
+							    in[length] = 0;
+							break;
+						}
+					}
+					VALUE(in[length++])
+					    in[length] = 0;
 					break;
-				}
-			}
-			VALUE(in[length++])
-			in[length] = 0;
-			break;
 
 		case 'o':
-			{
-				int pos;
-				char value;
-				POSITION(pos)
-				VALUE(value);
-				if (pos < length)
-					in[pos] = value;
-			}
-			break;
+					{
+						int pos;
+						char value;
+
+						POSITION(pos)
+						    VALUE(value);
+						if (pos < length)
+							in[pos] = value;
+					}
+					break;
 
 		case 's':
-			CLASS(0, in[pos] = NEXT, {})
-			{
-				char value;
-				VALUE(value)
-			}
-			break;
+					CLASS(0, in[pos] = NEXT, {
+					    }
+					) {
+						char value;
+
+						VALUE(value)
+					}
+					break;
 
 		case '@':
-			length = 0;
-			CLASS(0, {}, in[length++] = in[pos])
-			in[length] = 0;
-			break;
+					length = 0;
+					CLASS(0, {
+					    }
+					    , in[length++] = in[pos])
+					    in[length] = 0;
+					break;
 
 		case '!':
-			CLASS(0, REJECT, {})
-			break;
+					CLASS(0, REJECT, {
+					    }
+					)
+					    break;
 
 		case '/':
-			{
-				int pos;
-				CLASS_export_pos(0, break, {})
-				rules_vars['p'] = pos;
-				if (in[pos]) break;
-			}
-			REJECT
-			break;
+					{
+						int pos;
+
+						CLASS_export_pos(0, break, {
+						    }
+						)
+						    rules_vars['p'] = pos;
+						if (in[pos])
+							break;
+					}
+					REJECT break;
 
 		case '=':
-			{
-				int pos;
-				POSITION(pos)
-				if (pos >= length) {
-					SKIP_CLASS
-					REJECT
-				} else {
-					CLASS_export_pos(pos, break, REJECT)
-				}
-			}
-			break;
+					{
+						int pos;
+
+						POSITION(pos)
+						    if (pos >= length) {
+						SKIP_CLASS REJECT} else {
+							CLASS_export_pos(pos,
+							    break, REJECT)
+						}
+					}
+					break;
 
 /* Crack 5.0 rules */
 		case '[':
-			if (length) {
-				char *out;
-				GET_OUT
-				strcpy(out, &in[1]);
-				length--;
-				in = out;
-				break;
-			}
-			in[0] = 0;
-			break;
+					if (length) {
+						char *out;
+
+						GET_OUT strcpy(out, &in[1]);
+
+						length--;
+						in = out;
+						break;
+					}
+					in[0] = 0;
+					break;
 
 		case ']':
-			if (length)
-				in[--length] = 0;
-			break;
+					if (length)
+						in[--length] = 0;
+					break;
 
 		case 'C':
-			{
-				int pos = 0;
-				if ((in[0] = conv_tolower[ARCH_INDEX(in[0])]))
-				while (in[++pos])
-					in[pos] =
-					    conv_toupper[ARCH_INDEX(in[pos])];
-				in[pos] = 0;
-			}
-			if (in[0] == 'm' && in[1] == 'C')
-				in[2] = conv_tolower[ARCH_INDEX(in[2])];
-			break;
+					{
+						int pos = 0;
+
+						if ((in[0] =
+							conv_tolower[ARCH_INDEX
+							    (in[0])]))
+							while (in[++pos])
+								in[pos] =
+								    conv_toupper
+								    [ARCH_INDEX
+								    (in[pos])];
+						in[pos] = 0;
+					}
+					if (in[0] == 'm' && in[1] == 'C')
+						in[2] =
+						    conv_tolower[ARCH_INDEX(in
+							[2])];
+					break;
 
 		case 't':
-			CONV(conv_invert)
-			break;
+					CONV(conv_invert)
+					    break;
 
 		case '(':
-			CLASS(0, break, REJECT)
-			break;
+					CLASS(0, break, REJECT)
+					    break;
 
 		case ')':
-			if (!length) {
-				SKIP_CLASS
-				REJECT
-			} else {
-				CLASS(length - 1, break, REJECT)
-			}
-			break;
+					if (!length) {
+					SKIP_CLASS REJECT} else {
+						CLASS(length - 1, break, REJECT)
+					}
+					break;
 
 		case '\'':
-			{
-				int pos;
-				POSITION(pos)
-				if (pos < length)
-					in[length = pos] = 0;
-			}
-			break;
+					{
+						int pos;
+
+						POSITION(pos)
+						    if (pos < length)
+							in[length = pos] = 0;
+					}
+					break;
 
 		case '%':
-			{
-				int count = 0, required, pos;
-				POSITION(required)
-				CLASS_export_pos(0,
-				    if (++count >= required) break, {})
-				if (count < required) REJECT
-				rules_vars['p'] = pos;
-			}
-			break;
+					{
+						int count = 0, required, pos;
+
+						POSITION(required)
+						    CLASS_export_pos(0,
+						    if (++count >=
+							required) break, {
+						    }
+						)
+							if (count < required)
+								REJECT
+								    rules_vars
+								    ['p'] = pos;
+					}
+					break;
 
 /* Rules added in John */
-		case 'A': /* append/insert/prepend string */
-			{
-				int pos;
-				char term;
-				POSITION(pos)
-				VALUE(term)
-				if (pos >= length) { /* append */
-					char *start, *end, *p;
-					start = p = &in[pos = length];
-					end = &in[RULE_WORD_SIZE - 1];
-					do {
-						char c = RULE;
-						if (c == term)
+		case 'A':	/* append/insert/prepend string */
+					{
+						int pos;
+						char term;
+
+						POSITION(pos)
+						    VALUE(term)
+						    if (pos >= length) {	/* append */
+							char *start, *end, *p;
+
+							start = p = &in[pos =
+							    length];
+							end =
+							    &in[RULE_WORD_SIZE -
+							    1];
+							do {
+								char c = RULE;
+
+								if (c == term)
+									break;
+								if (p < end)
+									*p++ =
+									    c;
+								if (c)
+									continue;
+								goto out_ERROR_END;
+							} while (1);
+							*p = 0;
+							length += p - start;
 							break;
-						if (p < end)
-							*p++ = c;
-						if (c)
-							continue;
-						goto out_ERROR_END;
-					} while (1);
-					*p = 0;
-					length += p - start;
+						}
+						/* insert or prepend */
+						{
+							char *out, *start, *end,
+							    *p;
+							GET_OUT memcpy(out, in,
+							    pos);
+							start = p = &out[pos];
+							end =
+							    &out[RULE_WORD_SIZE
+							    - 1];
+							do {
+								char c = RULE;
+
+								if (c == term)
+									break;
+								if (p < end)
+									*p++ =
+									    c;
+								if (c)
+									continue;
+								goto out_ERROR_END;
+							} while (1);
+							strcpy(p, &in[pos]);
+							length += p - start;
+							in = out;
+						}
+					}
 					break;
-				}
-				/* insert or prepend */
-				{
-					char *out, *start, *end, *p;
-					GET_OUT
-					memcpy(out, in, pos);
-					start = p = &out[pos];
-					end = &out[RULE_WORD_SIZE - 1];
-					do {
-						char c = RULE;
-						if (c == term)
-							break;
-						if (p < end)
-							*p++ = c;
-						if (c)
-							continue;
-						goto out_ERROR_END;
-					} while (1);
-					strcpy(p, &in[pos]);
-					length += p - start;
-					in = out;
-				}
-			}
-			break;
 
 		case 'T':
-			{
-				int pos;
-				POSITION(pos)
-				in[pos] = conv_invert[ARCH_INDEX(in[pos])];
-			}
-			break;
+					{
+						int pos;
+
+						POSITION(pos)
+						    in[pos] =
+						    conv_invert[ARCH_INDEX(in
+							[pos])];
+					}
+					break;
 
 		case 'D':
-			{
-				int pos;
-				POSITION(pos)
-				if (pos < length) {
-					char *out;
-					GET_OUT
-					memcpy(out, in, pos);
-					strcpy(&out[pos], &in[pos + 1]);
-					length--;
-					in = out;
-				}
-			}
-			break;
+					{
+						int pos;
+
+						POSITION(pos)
+						    if (pos < length) {
+							char *out;
+
+							GET_OUT
+							    memcpy(out, in,
+							    pos);
+							strcpy(&out[pos],
+							    &in[pos + 1]);
+							length--;
+							in = out;
+						}
+					}
+					break;
 
 		case '{':
-			if (length) {
-				char *out;
-				GET_OUT
-				strcpy(out, &in[1]);
-				in[1] = 0;
-				strcat(out, in);
-				in = out;
-				break;
-			}
-			in[0] = 0;
-			break;
+					if (length) {
+						char *out;
+
+						GET_OUT strcpy(out, &in[1]);
+
+						in[1] = 0;
+						strcat(out, in);
+						in = out;
+						break;
+					}
+					in[0] = 0;
+					break;
 
 		case '}':
-			if (length) {
-				char *out;
-				int pos;
-				GET_OUT
-				out[0] = in[pos = length - 1];
-				in[pos] = 0;
-				strcpy(&out[1], in);
-				in = out;
-				break;
-			}
-			in[0] = 0;
-			break;
+					if (length) {
+						char *out;
+						int pos;
+
+						GET_OUT
+						    out[0] = in[pos =
+						    length - 1];
+						in[pos] = 0;
+						strcpy(&out[1], in);
+						in = out;
+						break;
+					}
+					in[0] = 0;
+					break;
 
 		case 'S':
-			CONV(conv_shift);
-			break;
+					CONV(conv_shift);
+					break;
 
 		case 'V':
-			CONV(conv_vowels);
-			break;
+					CONV(conv_vowels);
+					break;
 
 		case 'R':
-			CONV(conv_right);
-			break;
+					CONV(conv_right);
+					break;
 
 		case 'L':
-			CONV(conv_left);
-			break;
+					CONV(conv_left);
+					break;
 
 		case 'P':
-			{
-				int pos;
-				if ((pos = length - 1) < 2) break;
-				if (in[pos] == 'd' && in[pos - 1] == 'e') break;
-				if (in[pos] == 'y') in[pos] = 'i'; else
-				if (strchr("bgp", in[pos]) &&
-				    !strchr("bgp", in[pos - 1])) {
-					in[pos + 1] = in[pos];
-					in[pos + 2] = 0;
-				}
-				if (in[pos] == 'e')
-					strcat(in, "d");
-				else
-					strcat(in, "ed");
-			}
-			length = strlen(in);
-			break;
+					{
+						int pos;
+
+						if ((pos = length - 1) < 2)
+							break;
+						if (in[pos] == 'd' &&
+						    in[pos - 1] == 'e')
+							break;
+						if (in[pos] == 'y')
+							in[pos] = 'i';
+						else if (strchr("bgp", in[pos])
+						    && !strchr("bgp",
+							in[pos - 1])) {
+							in[pos + 1] = in[pos];
+							in[pos + 2] = 0;
+						}
+						if (in[pos] == 'e')
+							strcat(in, "d");
+						else
+							strcat(in, "ed");
+					}
+					length = strlen(in);
+					break;
 
 		case 'I':
-			{
-				int pos;
-				if ((pos = length - 1) < 2) break;
-				if (in[pos] == 'g' && in[pos - 1] == 'n' &&
-				    in[pos - 2] == 'i') break;
-				if (strchr("aeiou", in[pos]))
-					strcpy(&in[pos], "ing");
-				else {
-					if (strchr("bgp", in[pos]) &&
-					    !strchr("bgp", in[pos - 1])) {
-						in[pos + 1] = in[pos];
-						in[pos + 2] = 0;
+					{
+						int pos;
+
+						if ((pos = length - 1) < 2)
+							break;
+						if (in[pos] == 'g' &&
+						    in[pos - 1] == 'n' &&
+						    in[pos - 2] == 'i')
+							break;
+						if (strchr("aeiou", in[pos]))
+							strcpy(&in[pos], "ing");
+						else {
+							if (strchr("bgp",
+								in[pos]) &&
+							    !strchr("bgp",
+								in[pos - 1])) {
+								in[pos + 1] =
+								    in[pos];
+								in[pos + 2] = 0;
+							}
+							strcat(in, "ing");
+						}
 					}
-					strcat(in, "ing");
-				}
-			}
-			length = strlen(in);
-			break;
+					length = strlen(in);
+					break;
 
 		case 'M':
-			strnfcpy(memory = memory_buffer, in, rules_max_length);
-			rules_vars['m'] = (unsigned char)length - 1;
-			break;
+					strnfcpy(memory =
+					    memory_buffer, in,
+					    rules_max_length);
+					rules_vars['m'] =
+					    (unsigned char)length - 1;
+					break;
 
 		case 'Q':
-			if (!strncmp(memory, in, rules_max_length))
-				REJECT
-			break;
+					if (!strncmp(memory, in,
+						rules_max_length))
+						REJECT break;
 
-		case 'X': /* append/insert/prepend substring from memory */
-			{
-				int mpos, count, ipos, mleft;
-				char *inp, *mp;
-				POSITION(mpos)
-				POSITION(count)
-				POSITION(ipos)
-				mleft = (int)(rules_vars['m'] + 1) - mpos;
-				if (count > mleft)
-					count = mleft;
-				if (count <= 0)
-					break;
-				mp = memory + mpos;
-				if (ipos >= length) {
-					memcpy(&in[length], mp, count);
-					in[length += count] = 0;
-					break;
-				}
-				inp = in + ipos;
-				memmove(inp + count, inp, length - ipos);
-				in[length += count] = 0;
-				memcpy(inp, mp, count);
-			}
-			break;
+		case 'X':	/* append/insert/prepend substring from memory */
+					{
+						int mpos, count, ipos, mleft;
+						char *inp, *mp;
 
-		case 'v': /* assign value to numeric variable */
-			{
-				char var;
-				unsigned char a, s;
-				VALUE(var)
-				if (var < 'a' || var > 'k')
-					goto out_ERROR_POSITION;
-				rules_vars['l'] = length;
-				POSITION(a)
-				POSITION(s)
-				rules_vars[ARCH_INDEX(var)] = a - s;
-			}
-			break;
+						POSITION(mpos)
+						    POSITION(count)
+						    POSITION(ipos)
+						    mleft =
+						    (int)(rules_vars['m'] + 1) -
+						    mpos;
+						if (count > mleft)
+							count = mleft;
+						if (count <= 0)
+							break;
+						mp = memory + mpos;
+						if (ipos >= length) {
+							memcpy(&in[length], mp,
+							    count);
+							in[length += count] = 0;
+							break;
+						}
+						inp = in + ipos;
+						memmove(inp + count, inp,
+						    length - ipos);
+						in[length += count] = 0;
+						memcpy(inp, mp, count);
+					}
+					break;
+
+		case 'v':	/* assign value to numeric variable */
+					{
+						char var;
+						unsigned char a, s;
+
+						VALUE(var)
+						    if (var < 'a' || var > 'k')
+							goto out_ERROR_POSITION;
+						rules_vars['l'] = length;
+						POSITION(a)
+						    POSITION(s)
+						    rules_vars[ARCH_INDEX(var)]
+						    = a - s;
+					}
+					break;
 
 /* Additional "single crack" mode rules */
 		case '1':
-			if (split < 0)
-				goto out_ERROR_UNALLOWED;
-			if (!split) REJECT
-			if (which)
-				memcpy(buffer[2], in, length + 1);
-			else
-				strnzcpy(buffer[2], &word[split],
-				    RULE_WORD_SIZE);
-			length = split;
-			if (length > RULE_WORD_SIZE - 1)
-				length = RULE_WORD_SIZE - 1;
-			memcpy(in, word, length);
-			in[length] = 0;
-			which = 1;
-			break;
+					if (split < 0)
+						goto out_ERROR_UNALLOWED;
+					if (!split)
+					REJECT if (which)
+						 memcpy(buffer[2], in,
+						    length + 1);
+					else
+						strnzcpy(buffer[2],
+						    &word[split],
+						    RULE_WORD_SIZE);
+					length = split;
+					if (length > RULE_WORD_SIZE - 1)
+						length = RULE_WORD_SIZE - 1;
+					memcpy(in, word, length);
+					in[length] = 0;
+					which = 1;
+					break;
 
 		case '2':
-			if (split < 0)
-				goto out_ERROR_UNALLOWED;
-			if (!split) REJECT
-			if (which) {
-				memcpy(buffer[2], in, length + 1);
-			} else {
-				length = split;
-				if (length > RULE_WORD_SIZE - 1)
-					length = RULE_WORD_SIZE - 1;
-				strnzcpy(buffer[2], word, length + 1);
-			}
-			strnzcpy(in, &word[split], RULE_WORD_SIZE);
-			length = strlen(in);
-			which = 2;
-			break;
+					if (split < 0)
+						goto out_ERROR_UNALLOWED;
+					if (!split)
+					REJECT if (which) {
+						memcpy(buffer[2], in,
+						    length + 1);
+					} else {
+						length = split;
+						if (length > RULE_WORD_SIZE - 1)
+							length =
+							    RULE_WORD_SIZE - 1;
+						strnzcpy(buffer[2],
+						    word, length + 1);
+					}
+					strnzcpy(in, &word[split],
+					    RULE_WORD_SIZE);
+					length = strlen(in);
+					which = 2;
+					break;
 
 		case '+':
-			switch (which) {
-			case 1:
-				strcat(in, buffer[2]);
-				break;
+					switch (which) {
+					case 1:
+						strcat(in, buffer[2]);
+						break;
 
-			case 2:
-				{
-					char *out;
-					GET_OUT
-					strcpy(out, buffer[2]);
-					strcat(out, in);
-					in = out;
-				}
-				break;
+					case 2:
+						{
+							char *out;
 
-			default:
-				goto out_ERROR_UNALLOWED;
-			}
-			length = strlen(in);
-			which = 0;
-			break;
+							GET_OUT
+							    strcpy(out,
+							    buffer[2]);
+							strcat(out, in);
+							in = out;
+						}
+						break;
+
+					default:
+						goto out_ERROR_UNALLOWED;
+					}
+					length = strlen(in);
+					which = 0;
+					break;
 
 		default:
-			goto out_ERROR_UNKNOWN;
-		}
+					goto out_ERROR_UNKNOWN;
+				}
 
-		if (!length) REJECT
-	}
+				if (!length)
+					REJECT}
 
-	if (which)
-		goto out_which;
+					if (which)
+						goto out_which;
 
 out_OK:
-	in[rules_max_length] = 0;
-	if (last) {
-		if (length > rules_max_length)
-			length = rules_max_length;
-		if (length >= ARCH_SIZE - 1) {
-			if (*(ARCH_WORD *)in != *(ARCH_WORD *)last)
+				in[rules_max_length] = 0;
+				if (last) {
+					if (length > rules_max_length)
+						length = rules_max_length;
+					if (length >= ARCH_SIZE - 1) {
+						if (*(ARCH_WORD *) in !=
+						    *(ARCH_WORD *) last)
+							return in;
+						if (strcmp(&in[ARCH_SIZE - 1],
+							&last[ARCH_SIZE - 1]))
+							return in;
+						return NULL;
+					}
+					if (last[length])
+						return in;
+					if (memcmp(in, last, length))
+						return in;
+					return NULL;
+				}
 				return in;
-			if (strcmp(&in[ARCH_SIZE - 1], &last[ARCH_SIZE - 1]))
-				return in;
-			return NULL;
-		}
-		if (last[length])
-			return in;
-		if (memcmp(in, last, length))
-			return in;
-		return NULL;
-	}
-	return in;
 
 out_which:
-	if (which == 1) {
-		strcat(in, buffer[2]);
-		goto out_OK;
-	}
-	strcat(buffer[2], in);
-	in = buffer[2];
-	goto out_OK;
+				if (which == 1) {
+					strcat(in, buffer[2]);
+					goto out_OK;
+				}
+				strcat(buffer[2], in);
+				in = buffer[2];
+				goto out_OK;
 
 out_ERROR_POSITION:
-	rules_errno = RULES_ERROR_POSITION;
-	if (LAST)
-		goto out_NULL;
+				rules_errno = RULES_ERROR_POSITION;
+				if (LAST)
+					goto out_NULL;
 
 out_ERROR_END:
-	rules_errno = RULES_ERROR_END;
+				rules_errno = RULES_ERROR_END;
 out_NULL:
-	return NULL;
+				return NULL;
 
 out_ERROR_CLASS:
-	rules_errno = RULES_ERROR_CLASS;
-	if (LAST)
-		goto out_NULL;
-	goto out_ERROR_END;
+				rules_errno = RULES_ERROR_CLASS;
+				if (LAST)
+					goto out_NULL;
+				goto out_ERROR_END;
 
 out_ERROR_UNKNOWN:
-	rules_errno = RULES_ERROR_UNKNOWN;
-	goto out_NULL;
+				rules_errno = RULES_ERROR_UNKNOWN;
+				goto out_NULL;
 
 out_ERROR_UNALLOWED:
-	rules_errno = RULES_ERROR_UNALLOWED;
-	goto out_NULL;
-}
+				rules_errno = RULES_ERROR_UNALLOWED;
+				goto out_NULL;
+			}
 
 /*
  * This function is currently not used outside of rules.c, thus not exported.
@@ -988,43 +1101,47 @@ out_ERROR_UNALLOWED:
  * split == 0	"single crack" mode rules allowed
  * split < 0	"single crack" mode rules are invalid
  */
-static int rules_check(struct rpp_context *start, int split)
-{
-	struct rpp_context ctx;
-	char *rule;
-	int count;
+			static int rules_check(struct rpp_context *start,
+			    int split) {
+				struct rpp_context ctx;
+				char *rule;
+				int count;
 
-	rules_errno = RULES_ERROR_NONE;
+				rules_errno = RULES_ERROR_NONE;
 
-	memcpy(&ctx, start, sizeof(ctx));
-	rules_line = ctx.input->number;
-	count = 0;
+				memcpy(&ctx, start, sizeof(ctx));
+				rules_line = ctx.input->number;
+				count = 0;
 
-	rules_pass = -1; /* rules_reject() will turn this into -2 */
-	while ((rule = rpp_next(&ctx))) {
-		rules_reject(rule, split, NULL, NULL);
-		if (rules_errno) break;
+				rules_pass = -1;	/* rules_reject() will turn this into -2 */
+				while ((rule = rpp_next(&ctx))) {
+					rules_reject(rule, split, NULL, NULL);
+					if (rules_errno)
+						break;
 
-		if (ctx.input) rules_line = ctx.input->number;
-		count++;
-	}
-	rules_pass = 0;
+					if (ctx.input)
+						rules_line = ctx.input->number;
+					count++;
+				}
+				rules_pass = 0;
 
-	return rules_errno ? 0 : count;
-}
+				return rules_errno ? 0 : count;
+			}
 
-int rules_count(struct rpp_context *start, int split)
-{
-	int count;
+			int rules_count(struct rpp_context *start, int split) {
+				int count;
 
-	if (!(count = rules_check(start, split))) {
-		log_event("! Invalid rule at line %d: %.100s",
-			rules_line, rules_errors[rules_errno]);
-		fprintf(stderr, "Invalid rule in %s at line %d: %s\n",
-			cfg_name, rules_line,
-			rules_errors[rules_errno]);
-		error();
-	}
+				if (!(count = rules_check(start, split))) {
+					log_event
+					    ("! Invalid rule at line %d: %.100s",
+					    rules_line,
+					    rules_errors[rules_errno]);
+					fprintf(stderr,
+					    "Invalid rule in %s at line %d: %s\n",
+					    cfg_name, rules_line,
+					    rules_errors[rules_errno]);
+					error();
+				}
 
-	return count;
-}
+				return count;
+			}

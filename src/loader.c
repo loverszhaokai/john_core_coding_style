@@ -42,7 +42,7 @@ static int issep_initialized = 0;
 static char *no_username = "?";
 
 static void read_file(struct db_main *db, char *name, int flags,
-	void (*process_line)(struct db_main *db, char *line))
+    void (*process_line) (struct db_main * db, char *line))
 {
 	struct stat file_stat;
 	FILE *file;
@@ -51,14 +51,16 @@ static void read_file(struct db_main *db, char *name, int flags,
 	if (flags & RF_ALLOW_DIR) {
 		if (stat(name, &file_stat)) {
 			if (flags & RF_ALLOW_MISSING)
-				if (errno == ENOENT) return;
+				if (errno == ENOENT)
+					return;
 			pexit("stat: %s", path_expand(name));
-		} else
-			if (S_ISDIR(file_stat.st_mode)) return;
+		} else if (S_ISDIR(file_stat.st_mode))
+			return;
 	}
 
 	if (!(file = fopen(path_expand(name), "r"))) {
-		if ((flags & RF_ALLOW_MISSING) && errno == ENOENT) return;
+		if ((flags & RF_ALLOW_MISSING) && errno == ENOENT)
+			return;
 		pexit("fopen: %s", path_expand(name));
 	}
 
@@ -67,16 +69,19 @@ static void read_file(struct db_main *db, char *name, int flags,
 		check_abort(0);
 	}
 
-	if (ferror(file)) pexit("fgets");
+	if (ferror(file))
+		pexit("fgets");
 
-	if (fclose(file)) pexit("fclose");
+	if (fclose(file))
+		pexit("fclose");
 }
 
 static void ldr_init_issep(void)
 {
 	char *pos;
 
-	if (issep_initialized) return;
+	if (issep_initialized)
+		return;
 
 	memset(issep_map, 0, sizeof(issep_map));
 
@@ -102,15 +107,15 @@ void ldr_init_database(struct db_main *db, struct db_options *options)
 	if (options->flags & DB_CRACKED) {
 		db->salt_hash = NULL;
 
-		db->cracked_hash = mem_alloc(
-			CRACKED_HASH_SIZE * sizeof(struct db_cracked *));
+		db->cracked_hash =
+		    mem_alloc(CRACKED_HASH_SIZE * sizeof(struct db_cracked *));
 		memset(db->cracked_hash, 0,
-			CRACKED_HASH_SIZE * sizeof(struct db_cracked *));
+		    CRACKED_HASH_SIZE * sizeof(struct db_cracked *));
 	} else {
-		db->salt_hash = mem_alloc(
-			SALT_HASH_SIZE * sizeof(struct db_salt *));
+		db->salt_hash =
+		    mem_alloc(SALT_HASH_SIZE * sizeof(struct db_salt *));
 		memset(db->salt_hash, 0,
-			SALT_HASH_SIZE * sizeof(struct db_salt *));
+		    SALT_HASH_SIZE * sizeof(struct db_salt *));
 
 		db->cracked_hash = NULL;
 
@@ -137,7 +142,7 @@ void ldr_init_database(struct db_main *db, struct db_options *options)
  */
 static void ldr_init_password_hash(struct db_main *db)
 {
-	int (*func)(void *binary);
+	int (*func) (void *binary);
 	int size = PASSWORD_HASH_SIZE_FOR_LDR;
 
 	if (size > 0 && mem_saving_level >= 2)
@@ -160,14 +165,17 @@ static char *ldr_get_field(char **ptr)
 {
 	char *res, *pos;
 
-	if (!*ptr) return "";
+	if (!*ptr)
+		return "";
 
 	if ((pos = strchr(res = *ptr, ':'))) {
-		*pos++ = 0; *ptr = pos;
+		*pos++ = 0;
+		*ptr = pos;
 	} else {
 		pos = res;
 		do {
-			if (*pos == '\r' || *pos == '\n') *pos = 0;
+			if (*pos == '\r' || *pos == '\n')
+				*pos = 0;
 		} while (*pos++);
 		*ptr = NULL;
 	}
@@ -180,18 +188,22 @@ static int ldr_check_list(struct list_main *list, char *s1, char *s2)
 	struct list_entry *current;
 	char *data;
 
-	if (!(current = list->head)) return 0;
+	if (!(current = list->head))
+		return 0;
 
 	if (*current->data == '-') {
 		data = current->data + 1;
 		do {
-			if (!strcmp(s1, data) || !strcmp(s2, data)) return 1;
-			if ((current = current->next)) data = current->data;
+			if (!strcmp(s1, data) || !strcmp(s2, data))
+				return 1;
+			if ((current = current->next))
+				data = current->data;
 		} while (current);
 	} else {
 		do {
 			data = current->data;
-			if (!strcmp(s1, data) || !strcmp(s2, data)) return 0;
+			if (!strcmp(s1, data) || !strcmp(s2, data))
+				return 0;
 		} while ((current = current->next));
 		return 1;
 	}
@@ -204,7 +216,10 @@ static int ldr_check_shells(struct list_main *list, char *shell)
 	char *name;
 
 	if (list->head) {
-		if ((name = strrchr(shell, '/'))) name++; else name = shell;
+		if ((name = strrchr(shell, '/')))
+			name++;
+		else
+			name = shell;
 		return ldr_check_list(list, shell, name);
 	}
 
@@ -212,9 +227,9 @@ static int ldr_check_shells(struct list_main *list, char *shell)
 }
 
 static int ldr_split_line(char **login, char **ciphertext,
-	char **gecos, char **home,
-	char *source, struct fmt_main **format,
-	struct db_options *options, char *line)
+    char **gecos, char **home,
+    char *source, struct fmt_main **format,
+    struct db_options *options, char *line)
 {
 	struct fmt_main *alt;
 	char *fields[10], *uid, *gid, *shell;
@@ -231,16 +246,19 @@ static int ldr_split_line(char **login, char **ciphertext,
 	if (!**ciphertext && !line) {
 /* Possible hash on a line on its own (no colons) */
 		char *p = *login;
+
 /* Skip leading and trailing whitespace */
-		while (*p == ' ' || *p == '\t') p++;
+		while (*p == ' ' || *p == '\t')
+			p++;
 		*ciphertext = p;
 		p += strlen(p) - 1;
-		while (p > *ciphertext && (*p == ' ' || *p == '\t')) p--;
+		while (p > *ciphertext && (*p == ' ' || *p == '\t'))
+			p--;
 		p++;
 /* Some valid dummy hashes may be shorter than 10 characters, so don't subject
  * them to the length checks. */
 		if (strncmp(*ciphertext, "$dummy$", 7) &&
-		    p - *ciphertext != 10 /* not tripcode */) {
+		    p - *ciphertext != 10 /* not tripcode */ ) {
 /* Check for a special case: possibly a traditional crypt(3) hash with
  * whitespace in its invalid salt.  Only support such hashes at the very start
  * of a line (no leading whitespace other than the invalid salt). */
@@ -285,8 +303,7 @@ static int ldr_split_line(char **login, char **ciphertext,
 
 	if (fields[5][0] != '/' &&
 	    ((!strcmp(fields[5], "0") && !strcmp(fields[6], "0")) ||
-	    fields[8][0] == '/' ||
-	    fields[9][0] == '/')) {
+		fields[8][0] == '/' || fields[9][0] == '/')) {
 		/* /etc/master.passwd */
 		*gecos = fields[7];
 		*home = fields[8];
@@ -304,15 +321,19 @@ static int ldr_split_line(char **login, char **ciphertext,
 		/* Re-introduce the previously removed uid field */
 		if (source) {
 			int shift = strlen(uid);
+
 			memmove(source + shift + 1, source, strlen(source) + 1);
 			memcpy(source, uid, shift);
 			source[shift] = ':';
 		}
 	}
 
-	if (ldr_check_list(options->users, *login, uid)) return 0;
-	if (ldr_check_list(options->groups, gid, gid)) return 0;
-	if (ldr_check_shells(options->shells, shell)) return 0;
+	if (ldr_check_list(options->users, *login, uid))
+		return 0;
+	if (ldr_check_list(options->groups, gid, gid))
+		return 0;
+	if (ldr_check_shells(options->shells, shell))
+		return 0;
 
 	if (*format) {
 		char *prepared;
@@ -354,8 +375,7 @@ static int ldr_split_line(char **login, char **ciphertext,
 				    "Use the \"--format=%s\" option to force "
 				    "loading hashes of that type instead\n",
 				    (*format)->params.label,
-				    alt->params.label,
-				    alt->params.label);
+				    alt->params.label, alt->params.label);
 				break;
 			}
 		} while ((alt = alt->next));
@@ -365,9 +385,9 @@ static int ldr_split_line(char **login, char **ciphertext,
 
 	retval = -1;
 	if ((alt = fmt_list))
-	do {
-		char *prepared;
-		int valid;
+		do {
+			char *prepared;
+			int valid;
 
 #ifdef HAVE_CRYPT
 /*
@@ -376,44 +396,44 @@ static int ldr_split_line(char **login, char **ciphertext,
  * those that are only supported in that way.  Avoid the probe in other cases
  * because it may be slow and undesirable (false detection is possible).
  */
-		if (alt == &fmt_crypt &&
-		    fmt_list != &fmt_crypt /* not forced */ &&
+			if (alt == &fmt_crypt &&
+			    fmt_list != &fmt_crypt /* not forced */  &&
 #ifdef __sun
-		    strncmp(*ciphertext, "$md5$", 5) &&
-		    strncmp(*ciphertext, "$md5,", 5) &&
+			    strncmp(*ciphertext, "$md5$", 5) &&
+			    strncmp(*ciphertext, "$md5,", 5) &&
 #endif
-		    strncmp(*ciphertext, "$5$", 3) &&
-		    strncmp(*ciphertext, "$6$", 3))
-			continue;
-#endif
-
-		prepared = alt->methods.prepare(fields, alt);
-		if (!prepared)
-			continue;
-		valid = alt->methods.valid(prepared, alt);
-		if (!valid)
-			continue;
-
-		if (retval < 0) {
-			retval = valid;
-			*ciphertext = prepared;
-			fmt_init(*format = alt);
-#ifdef LDR_WARN_AMBIGUOUS
-			if (!source) /* not --show */
+			    strncmp(*ciphertext, "$5$", 3) &&
+			    strncmp(*ciphertext, "$6$", 3))
 				continue;
 #endif
-			break;
-		}
+
+			prepared = alt->methods.prepare(fields, alt);
+			if (!prepared)
+				continue;
+			valid = alt->methods.valid(prepared, alt);
+			if (!valid)
+				continue;
+
+			if (retval < 0) {
+				retval = valid;
+				*ciphertext = prepared;
+				fmt_init(*format = alt);
 #ifdef LDR_WARN_AMBIGUOUS
-		fprintf(stderr,
-		    "Warning: detected hash type \"%s\", but the string is "
-		    "also recognized as \"%s\"\n"
-		    "Use the \"--format=%s\" option to force loading these "
-		    "as that type instead\n",
-		    (*format)->params.label, alt->params.label,
-		    alt->params.label);
+				if (!source)	/* not --show */
+					continue;
 #endif
-	} while ((alt = alt->next));
+				break;
+			}
+#ifdef LDR_WARN_AMBIGUOUS
+			fprintf(stderr,
+			    "Warning: detected hash type \"%s\", but the string is "
+			    "also recognized as \"%s\"\n"
+			    "Use the \"--format=%s\" option to force loading these "
+			    "as that type instead\n",
+			    (*format)->params.label, alt->params.label,
+			    alt->params.label);
+#endif
+		} while ((alt = alt->next));
 
 	return retval;
 }
@@ -426,11 +446,14 @@ static void ldr_split_string(struct list_main *dst, char *src)
 	pos = src;
 	do {
 		word = pos;
-		while (*word && issep_map[ARCH_INDEX(*word)]) word++;
-		if (!*word) break;
+		while (*word && issep_map[ARCH_INDEX(*word)])
+			word++;
+		if (!*word)
+			break;
 
 		pos = word;
-		while (!issep_map[ARCH_INDEX(*pos)]) pos++;
+		while (!issep_map[ARCH_INDEX(*pos)])
+			pos++;
 		c = *pos;
 		*pos = 0;
 		list_add_unique(dst, word);
@@ -472,9 +495,11 @@ static void ldr_load_pw_line(struct db_main *db, char *line)
 	size_t pw_size, salt_size;
 
 	count = ldr_split_line(&login, &ciphertext, &gecos, &home,
-		NULL, &db->format, db->options, line);
-	if (count <= 0) return;
-	if (count >= 2) db->options->flags |= DB_SPLIT;
+	    NULL, &db->format, db->options, line);
+	if (count <= 0)
+		return;
+	if (count >= 2)
+		db->options->flags |= DB_SPLIT;
 
 	format = db->format;
 
@@ -486,12 +511,11 @@ static void ldr_load_pw_line(struct db_main *db, char *line)
 	} else {
 		if (db->options->flags & DB_LOGIN)
 			pw_size = sizeof(struct db_password) -
-				sizeof(struct list_main *);
+			    sizeof(struct list_main *);
 		else
 			pw_size = sizeof(struct db_password) -
-				(sizeof(char *) + sizeof(struct list_main *));
-		salt_size = sizeof(struct db_salt) -
-			sizeof(struct db_keys *);
+			    (sizeof(char *) + sizeof(struct list_main *));
+		salt_size = sizeof(struct db_salt) - sizeof(struct db_keys *);
 	}
 
 	if (!db->password_hash)
@@ -505,57 +529,64 @@ static void ldr_load_pw_line(struct db_main *db, char *line)
 
 		if (!(db->options->flags & DB_WORDS) && !skip_dupe_checking) {
 			int collisions = 0;
-			if ((current_pw = db->password_hash[pw_hash]))
-			do {
-				if (!memcmp(binary, current_pw->binary,
-				    format->params.binary_size) &&
-				    !strcmp(piece, format->methods.source(
-				    current_pw->source, current_pw->binary))) {
-					db->options->flags |= DB_NODUP;
-					break;
-				}
-				if (++collisions <= LDR_HASH_COLLISIONS_MAX)
-					continue;
-				if (format->params.binary_size)
-					fprintf(stderr, "Warning: "
-					    "excessive partial hash "
-					    "collisions detected\n%s",
-					    db->password_hash_func !=
-					    fmt_default_binary_hash ? "" :
-					    "(cause: the \"format\" lacks "
-					    "proper binary_hash() function "
-					    "definitions)\n");
-				else
-					fprintf(stderr, "Warning: "
-					    "check for duplicates partially "
-					    "bypassed to speedup loading\n");
-				skip_dupe_checking = 1;
-				current_pw = NULL; /* no match */
-				break;
-			} while ((current_pw = current_pw->next_hash));
 
-			if (current_pw) continue;
+			if ((current_pw = db->password_hash[pw_hash]))
+				do {
+					if (!memcmp(binary, current_pw->binary,
+						format->params.binary_size) &&
+					    !strcmp(piece,
+						format->
+						methods.source(current_pw->
+						    source,
+						    current_pw->binary))) {
+						db->options->flags |= DB_NODUP;
+						break;
+					}
+					if (++collisions <=
+					    LDR_HASH_COLLISIONS_MAX)
+						continue;
+					if (format->params.binary_size)
+						fprintf(stderr, "Warning: "
+						    "excessive partial hash "
+						    "collisions detected\n%s",
+						    db->password_hash_func !=
+						    fmt_default_binary_hash ? ""
+						    :
+						    "(cause: the \"format\" lacks "
+						    "proper binary_hash() function "
+						    "definitions)\n");
+					else
+						fprintf(stderr, "Warning: "
+						    "check for duplicates partially "
+						    "bypassed to speedup loading\n");
+					skip_dupe_checking = 1;
+					current_pw = NULL;	/* no match */
+					break;
+				} while ((current_pw = current_pw->next_hash));
+
+			if (current_pw)
+				continue;
 		}
 
 		salt = format->methods.salt(piece);
 		salt_hash = format->methods.salt_hash(salt);
 
 		if ((current_salt = db->salt_hash[salt_hash]))
-		do {
-			if (!memcmp(current_salt->salt, salt,
-			    format->params.salt_size))
-				break;
-		} while ((current_salt = current_salt->next));
+			do {
+				if (!memcmp(current_salt->salt, salt,
+					format->params.salt_size))
+					break;
+			} while ((current_salt = current_salt->next));
 
 		if (!current_salt) {
 			last_salt = db->salt_hash[salt_hash];
 			current_salt = db->salt_hash[salt_hash] =
-				mem_alloc_tiny(salt_size, MEM_ALIGN_WORD);
+			    mem_alloc_tiny(salt_size, MEM_ALIGN_WORD);
 			current_salt->next = last_salt;
 
 			current_salt->salt = mem_alloc_copy(salt,
-				format->params.salt_size,
-				format->params.salt_align);
+			    format->params.salt_size,
+			    format->params.salt_align);
 
 			current_salt->index = fmt_dummy_hash;
 			current_salt->bitmap = NULL;
@@ -575,8 +606,8 @@ static void ldr_load_pw_line(struct db_main *db, char *line)
 		db->password_count++;
 
 		last_pw = current_salt->list;
-		current_pw = current_salt->list = mem_alloc_tiny(
-			pw_size, MEM_ALIGN_WORD);
+		current_pw = current_salt->list =
+		    mem_alloc_tiny(pw_size, MEM_ALIGN_WORD);
 		current_pw->next = last_pw;
 
 		last_pw = db->password_hash[pw_hash];
@@ -588,11 +619,11 @@ static void ldr_load_pw_line(struct db_main *db, char *line)
 		if (format->methods.source != fmt_default_source &&
 		    sizeof(current_pw->source) >= format->params.binary_size)
 			current_pw->binary = memcpy(&current_pw->source,
-				binary, format->params.binary_size);
+			    binary, format->params.binary_size);
 		else
 			current_pw->binary = mem_alloc_copy(binary,
-				format->params.binary_size,
-				format->params.binary_align);
+			    format->params.binary_size,
+			    format->params.binary_align);
 
 		if (format->methods.source == fmt_default_source)
 			current_pw->source = str_alloc_copy(piece);
@@ -605,15 +636,14 @@ static void ldr_load_pw_line(struct db_main *db, char *line)
 
 		if (db->options->flags & DB_LOGIN) {
 			if (count >= 2 && count <= 9) {
-				current_pw->login = mem_alloc_tiny(
-					strlen(login) + 3, MEM_ALIGN_NONE);
-				sprintf(current_pw->login, "%s:%d",
-					login, index + 1);
-			} else
-			if (login == no_username)
+				current_pw->login =
+				    mem_alloc_tiny(strlen(login) + 3,
+				    MEM_ALIGN_NONE);
+				sprintf(current_pw->login, "%s:%d", login,
+				    index + 1);
+			} else if (login == no_username)
 				current_pw->login = login;
-			else
-			if (words && *login)
+			else if (words && *login)
 				current_pw->login = words->head->data;
 			else
 				current_pw->login = str_alloc_copy(login);
@@ -635,23 +665,26 @@ static void ldr_load_pot_line(struct db_main *db, char *line)
 	struct db_password *current;
 
 	ciphertext = ldr_get_field(&line);
-	if (format->methods.valid(ciphertext, format) != 1) return;
+	if (format->methods.valid(ciphertext, format) != 1)
+		return;
 
 	ciphertext = format->methods.split(ciphertext, 0, format);
 	binary = format->methods.binary(ciphertext);
 	hash = db->password_hash_func(binary);
 
 	if ((current = db->password_hash[hash]))
-	do {
-		if (!current->binary) /* already marked for removal */
-			continue;
-		if (memcmp(binary, current->binary, format->params.binary_size))
-			continue;
-		if (strcmp(ciphertext,
-		    format->methods.source(current->source, current->binary)))
-			continue;
-		current->binary = NULL; /* mark for removal */
-	} while ((current = current->next_hash));
+		do {
+			if (!current->binary)	/* already marked for removal */
+				continue;
+			if (memcmp(binary, current->binary,
+				format->params.binary_size))
+				continue;
+			if (strcmp(ciphertext,
+				format->methods.source(current->source,
+				    current->binary)))
+				continue;
+			current->binary = NULL;	/* mark for removal */
+		} while ((current = current->next_hash));
 }
 
 void ldr_load_pot_file(struct db_main *db, char *name)
@@ -682,12 +715,12 @@ static void ldr_init_salts(struct db_main *db)
 	int hash;
 
 	for (hash = 0, tail = &db->salts; hash < SALT_HASH_SIZE; hash++)
-	if ((current = db->salt_hash[hash])) {
-		*tail = current;
-		do {
-			tail = &current->next;
-		} while ((current = current->next));
-	}
+		if ((current = db->salt_hash[hash])) {
+			*tail = current;
+			do {
+				tail = &current->next;
+			} while ((current = current->next));
+		}
 }
 
 /*
@@ -701,32 +734,34 @@ static void ldr_remove_marked(struct db_main *db)
 
 	last_salt = NULL;
 	if ((current_salt = db->salts))
-	do {
-		last_pw = NULL;
-		if ((current_pw = current_salt->list))
 		do {
-			if (!current_pw->binary) {
-				db->password_count--;
-				current_salt->count--;
+			last_pw = NULL;
+			if ((current_pw = current_salt->list))
+				do {
+					if (!current_pw->binary) {
+						db->password_count--;
+						current_salt->count--;
 
-				if (last_pw)
-					last_pw->next = current_pw->next;
+						if (last_pw)
+							last_pw->next =
+							    current_pw->next;
+						else
+							current_salt->list =
+							    current_pw->next;
+					} else
+						last_pw = current_pw;
+				} while ((current_pw = current_pw->next));
+
+			if (!current_salt->list) {
+				db->salt_count--;
+
+				if (last_salt)
+					last_salt->next = current_salt->next;
 				else
-					current_salt->list = current_pw->next;
+					db->salts = current_salt->next;
 			} else
-				last_pw = current_pw;
-		} while ((current_pw = current_pw->next));
-
-		if (!current_salt->list) {
-			db->salt_count--;
-
-			if (last_salt)
-				last_salt->next = current_salt->next;
-			else
-				db->salts = current_salt->next;
-		} else
-			last_salt = current_salt;
-	} while ((current_salt = current_salt->next));
+				last_salt = current_salt;
+		} while ((current_salt = current_salt->next));
 }
 
 /*
@@ -739,24 +774,25 @@ static void ldr_filter_salts(struct db_main *db)
 	int max = db->options->max_pps;
 
 	if (!max) {
-		if (!min) return;
+		if (!min)
+			return;
 		max = ~(unsigned int)0 >> 1;
 	}
 
 	last = NULL;
 	if ((current = db->salts))
-	do {
-		if (current->count < min || current->count > max) {
-			if (last)
-				last->next = current->next;
-			else
-				db->salts = current->next;
+		do {
+			if (current->count < min || current->count > max) {
+				if (last)
+					last->next = current->next;
+				else
+					db->salts = current->next;
 
-			db->salt_count--;
-			db->password_count -= current->count;
-		} else
-			last = current;
-	} while ((current = current->next));
+				db->salt_count--;
+				db->password_count -= current->count;
+			} else
+				last = current;
+		} while ((current = current->next));
 }
 
 /*
@@ -766,17 +802,17 @@ static void ldr_filter_salts(struct db_main *db)
 static void ldr_init_hash_for_salt(struct db_main *db, struct db_salt *salt)
 {
 	struct db_password *current;
-	int (*hash_func)(void *binary);
+	int (*hash_func) (void *binary);
 	int bitmap_size, hash_size;
 	int hash;
 
 	if (salt->hash_size < 0) {
 		salt->count = 0;
 		if ((current = salt->list))
-		do {
-			current->next_hash = NULL; /* unused */
-			salt->count++;
-		} while ((current = current->next));
+			do {
+				current->next_hash = NULL;	/* unused */
+				salt->count++;
+			} while ((current = current->next));
 
 		return;
 	}
@@ -793,6 +829,7 @@ static void ldr_init_hash_for_salt(struct db_main *db, struct db_salt *salt)
 	hash_size = bitmap_size >> PASSWORD_HASH_SHR;
 	if (hash_size > 1) {
 		size_t size = hash_size * sizeof(struct db_password *);
+
 		salt->hash = mem_alloc_tiny(size, MEM_ALIGN_WORD);
 		memset(salt->hash, 0, size);
 	}
@@ -803,18 +840,18 @@ static void ldr_init_hash_for_salt(struct db_main *db, struct db_salt *salt)
 
 	salt->count = 0;
 	if ((current = salt->list))
-	do {
-		hash = hash_func(current->binary);
-		salt->bitmap[hash / (sizeof(*salt->bitmap) * 8)] |=
-		    1U << (hash % (sizeof(*salt->bitmap) * 8));
-		if (hash_size > 1) {
-			hash >>= PASSWORD_HASH_SHR;
-			current->next_hash = salt->hash[hash];
-			salt->hash[hash] = current;
-		} else
-			current->next_hash = current->next;
-		salt->count++;
-	} while ((current = current->next));
+		do {
+			hash = hash_func(current->binary);
+			salt->bitmap[hash / (sizeof(*salt->bitmap) * 8)] |=
+			    1U << (hash % (sizeof(*salt->bitmap) * 8));
+			if (hash_size > 1) {
+				hash >>= PASSWORD_HASH_SHR;
+				current->next_hash = salt->hash[hash];
+				salt->hash[hash] = current;
+			} else
+				current->next_hash = current->next;
+			salt->count++;
+		} while ((current = current->next));
 }
 
 /*
@@ -838,23 +875,26 @@ static void ldr_init_hash(struct db_main *db)
 	}
 
 	if ((current = db->salts))
-	do {
-		size = -1;
-		if (current->count >= threshold && mem_saving_level < 3)
-			for (size = PASSWORD_HASH_SIZES - 1; size >= 0; size--)
-				if (current->count >=
-				    password_hash_thresholds[size] &&
-				    db->format->methods.binary_hash[size] &&
-				    db->format->methods.binary_hash[size] !=
-				    fmt_default_binary_hash)
-					break;
+		do {
+			size = -1;
+			if (current->count >= threshold && mem_saving_level < 3)
+				for (size = PASSWORD_HASH_SIZES - 1; size >= 0;
+				    size--)
+					if (current->count >=
+					    password_hash_thresholds[size] &&
+					    db->format->
+					    methods.binary_hash[size] &&
+					    db->format->
+					    methods.binary_hash[size] !=
+					    fmt_default_binary_hash)
+						break;
 
-		if (mem_saving_level >= 2)
-			size--;
+			if (mem_saving_level >= 2)
+				size--;
 
-		current->hash_size = size;
-		ldr_init_hash_for_salt(db, current);
-	} while ((current = current->next));
+			current->hash_size = size;
+			ldr_init_hash_for_salt(db, current);
+		} while ((current = current->next));
 }
 
 void ldr_fix_database(struct db_main *db)
@@ -878,7 +918,7 @@ static int ldr_cracked_hash(char *ciphertext)
 
 	while (*p) {
 		hash <<= 1;
-		hash += (unsigned char)*p++ | 0x20; /* ASCII case insensitive */
+		hash += (unsigned char)*p++ | 0x20;	/* ASCII case insensitive */
 		if (hash >> (2 * CRACKED_HASH_LOG - 1)) {
 			hash ^= hash >> CRACKED_HASH_LOG;
 			hash &= CRACKED_HASH_SIZE - 1;
@@ -907,7 +947,8 @@ static void ldr_show_pot_line(struct db_main *db, char *line)
 
 		pos = line;
 		do {
-			if (*pos == '\r' || *pos == '\n') *pos = 0;
+			if (*pos == '\r' || *pos == '\n')
+				*pos = 0;
 		} while (*pos++);
 
 		if (db->options->flags & DB_PLAINTEXTS) {
@@ -919,8 +960,7 @@ static void ldr_show_pot_line(struct db_main *db, char *line)
 
 		last = db->cracked_hash[hash];
 		current = db->cracked_hash[hash] =
-			mem_alloc_tiny(sizeof(struct db_cracked),
-			MEM_ALIGN_WORD);
+		    mem_alloc_tiny(sizeof(struct db_cracked), MEM_ALIGN_WORD);
 		current->next = last;
 
 		current->ciphertext = str_alloc_copy(ciphertext);
@@ -944,7 +984,7 @@ static void ldr_show_pw_line(struct db_main *db, char *line)
 	int show;
 	char source[LINE_BUFFER_SIZE];
 	struct fmt_main *format;
-	char *(*split)(char *ciphertext, int index, struct fmt_main *self);
+	char *(*split) (char *ciphertext, int index, struct fmt_main * self);
 	int index, count, unify;
 	char *login, *ciphertext, *gecos, *home;
 	char *piece;
@@ -954,11 +994,13 @@ static void ldr_show_pw_line(struct db_main *db, char *line)
 
 	format = NULL;
 	count = ldr_split_line(&login, &ciphertext, &gecos, &home,
-		source, &format, db->options, line);
-	if (!count) return;
+	    source, &format, db->options, line);
+	if (!count)
+		return;
 
 /* If just one format was forced on the command line, insist on it */
-	if (!fmt_list->next && !format) return;
+	if (!fmt_list->next && !format)
+		return;
 
 	show = !(db->options->flags & DB_PLAINTEXTS);
 
@@ -973,64 +1015,76 @@ static void ldr_show_pw_line(struct db_main *db, char *line)
 
 	if (!*ciphertext) {
 		found = 1;
-		if (show) printf("%s:NO PASSWORD", login);
+		if (show)
+			printf("%s:NO PASSWORD", login);
 
 		db->guess_count++;
 	} else
-	for (found = pass = 0; pass == 0 || (pass == 1 && found); pass++)
-	for (index = 0; index < count; index++) {
-		piece = split(ciphertext, index, format);
-		if (unify)
-			piece = strcpy(mem_alloc(strlen(piece) + 1), piece);
+		for (found = pass = 0; pass == 0 || (pass == 1 && found);
+		    pass++)
+			for (index = 0; index < count; index++) {
+				piece = split(ciphertext, index, format);
+				if (unify)
+					piece =
+					    strcpy(mem_alloc(strlen(piece) + 1),
+					    piece);
 
-		hash = ldr_cracked_hash(piece);
+				hash = ldr_cracked_hash(piece);
 
-		if ((current = db->cracked_hash[hash]))
-		do {
-			char *pot = current->ciphertext;
-			if (!strcmp(pot, piece))
-				break;
+				if ((current = db->cracked_hash[hash]))
+					do {
+						char *pot = current->ciphertext;
+
+						if (!strcmp(pot, piece))
+							break;
 /* This extra check, along with ldr_cracked_hash() being case-insensitive,
  * is only needed for matching some pot file records produced by older
  * versions of John and contributed patches where split() didn't unify the
  * case of hex-encoded hashes. */
-			if (unify &&
-			    format->methods.valid(pot, format) == 1 &&
-			    !strcmp(split(pot, 0, format), piece))
-				break;
-		} while ((current = current->next));
+						if (unify &&
+						    format->methods.valid(pot,
+							format) == 1 &&
+						    !strcmp(split(pot, 0,
+							    format), piece))
+							break;
+					} while ((current = current->next));
 
-		if (unify)
-			MEM_FREE(piece);
+				if (unify)
+					MEM_FREE(piece);
 
-		if (pass) {
-			chars = 0;
-			if (show) {
-				if (format)
-					chars = format->params.plaintext_length;
-				if (index < count - 1 && current &&
-				    (int)strlen(current->plaintext) != chars)
-					current = NULL;
+				if (pass) {
+					chars = 0;
+					if (show) {
+						if (format)
+							chars =
+							    format->
+							    params.plaintext_length;
+						if (index < count - 1 && current
+						    && (int)
+						    strlen(current->plaintext)
+						    != chars)
+							current = NULL;
+					}
+
+					if (current) {
+						if (show) {
+							printf("%s",
+							    current->plaintext);
+						} else
+							list_add(db->plaintexts,
+							    current->plaintext);
+
+						db->guess_count++;
+					} else
+						while (chars--)
+							putchar('?');
+				} else if (current) {
+					found = 1;
+					if (show)
+						printf("%s:", login);
+					break;
+				}
 			}
-
-			if (current) {
-				if (show) {
-					printf("%s", current->plaintext);
-				} else
-					list_add(db->plaintexts,
-						current->plaintext);
-
-				db->guess_count++;
-			} else
-			while (chars--)
-				putchar('?');
-		} else
-		if (current) {
-			found = 1;
-			if (show) printf("%s:", login);
-			break;
-		}
-	}
 
 	if (found && show) {
 		if (source[0])
@@ -1039,7 +1093,8 @@ static void ldr_show_pw_line(struct db_main *db, char *line)
 			putchar('\n');
 	}
 
-	if (format || found) db->password_count += count;
+	if (format || found)
+		db->password_count += count;
 }
 
 void ldr_show_pw_file(struct db_main *db, char *name)

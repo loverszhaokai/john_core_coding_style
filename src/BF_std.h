@@ -74,7 +74,7 @@ extern void BF_std_set_key(char *key, int index, int sign_extension_bug);
  * Main hashing routine, sets first two words of BF_out
  * (or all words in an OpenMP-enabled build).
  */
-extern void BF_std_crypt(BF_salt *salt, int n);
+extern void BF_std_crypt(BF_salt * salt, int n);
 
 #if BF_mt == 1
 /*

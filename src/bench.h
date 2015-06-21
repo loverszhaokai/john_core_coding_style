@@ -54,12 +54,12 @@ extern unsigned int benchmark_time;
  * for this algorithm, or an empty string if aborted.
  */
 extern char *benchmark_format(struct fmt_main *format, int salts,
-	struct bench_results *results);
+    struct bench_results *results);
 
 /*
  * Converts benchmarked c/s into an ASCII string.
  */
-extern void benchmark_cps(int64 *crypts, clock_t time, char *buffer);
+extern void benchmark_cps(int64 * crypts, clock_t time, char *buffer);
 
 /*
  * Benchmarks all the registered cracking algorithms and prints the results

@@ -32,6 +32,7 @@ static union {
 #else
 
 extern ARCH_WORD DES_SPE_F[8][64];
+
 #if DES_128K
 extern ARCH_WORD DES_SPE_W[4][64 * 64];
 #endif
@@ -210,46 +211,46 @@ static ARCH_WORD DES_IP_E[8][16][2], DES_C_FP[16][16][2];
 
 static unsigned char DES_S[8][4][16] = {
 	{
-		{14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
-		{0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
-		{4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0},
-		{15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13}
-	}, {
-		{15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10},
-		{3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5},
-		{0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15},
-		{13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9}
-	}, {
-		{10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8},
-		{13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1},
-		{13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7},
-		{1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12}
-	}, {
-		{7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15},
-		{13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9},
-		{10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4},
-		{3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14}
-	}, {
-		{2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9},
-		{14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6},
-		{4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14},
-		{11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3}
-	}, {
-		{12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11},
-		{10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8},
-		{9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6},
-		{4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13}
-	}, {
-		{4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1},
-		{13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6},
-		{1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2},
-		{6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12}
-	}, {
-		{13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7},
-		{1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2},
-		{7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8},
-		{2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}
-	}
+		    {14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7},
+		    {0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8},
+		    {4, 1, 14, 8, 13, 6, 2, 11, 15, 12, 9, 7, 3, 10, 5, 0},
+		    {15, 12, 8, 2, 4, 9, 1, 7, 5, 11, 3, 14, 10, 0, 6, 13}
+	    }, {
+		    {15, 1, 8, 14, 6, 11, 3, 4, 9, 7, 2, 13, 12, 0, 5, 10},
+		    {3, 13, 4, 7, 15, 2, 8, 14, 12, 0, 1, 10, 6, 9, 11, 5},
+		    {0, 14, 7, 11, 10, 4, 13, 1, 5, 8, 12, 6, 9, 3, 2, 15},
+		    {13, 8, 10, 1, 3, 15, 4, 2, 11, 6, 7, 12, 0, 5, 14, 9}
+	    }, {
+		    {10, 0, 9, 14, 6, 3, 15, 5, 1, 13, 12, 7, 11, 4, 2, 8},
+		    {13, 7, 0, 9, 3, 4, 6, 10, 2, 8, 5, 14, 12, 11, 15, 1},
+		    {13, 6, 4, 9, 8, 15, 3, 0, 11, 1, 2, 12, 5, 10, 14, 7},
+		    {1, 10, 13, 0, 6, 9, 8, 7, 4, 15, 14, 3, 11, 5, 2, 12}
+	    }, {
+		    {7, 13, 14, 3, 0, 6, 9, 10, 1, 2, 8, 5, 11, 12, 4, 15},
+		    {13, 8, 11, 5, 6, 15, 0, 3, 4, 7, 2, 12, 1, 10, 14, 9},
+		    {10, 6, 9, 0, 12, 11, 7, 13, 15, 1, 3, 14, 5, 2, 8, 4},
+		    {3, 15, 0, 6, 10, 1, 13, 8, 9, 4, 5, 11, 12, 7, 2, 14}
+	    }, {
+		    {2, 12, 4, 1, 7, 10, 11, 6, 8, 5, 3, 15, 13, 0, 14, 9},
+		    {14, 11, 2, 12, 4, 7, 13, 1, 5, 0, 15, 10, 3, 9, 8, 6},
+		    {4, 2, 1, 11, 10, 13, 7, 8, 15, 9, 12, 5, 6, 3, 0, 14},
+		    {11, 8, 12, 7, 1, 14, 2, 13, 6, 15, 0, 9, 10, 4, 5, 3}
+	    }, {
+		    {12, 1, 10, 15, 9, 2, 6, 8, 0, 13, 3, 4, 14, 7, 5, 11},
+		    {10, 15, 4, 2, 7, 12, 9, 5, 6, 1, 13, 14, 0, 11, 3, 8},
+		    {9, 14, 15, 5, 2, 8, 12, 3, 7, 0, 4, 10, 1, 13, 11, 6},
+		    {4, 3, 2, 12, 9, 5, 15, 10, 11, 14, 1, 7, 6, 0, 8, 13}
+	    }, {
+		    {4, 11, 2, 14, 15, 0, 8, 13, 3, 12, 9, 7, 5, 10, 6, 1},
+		    {13, 0, 11, 7, 4, 9, 1, 10, 14, 3, 5, 12, 2, 15, 8, 6},
+		    {1, 4, 11, 13, 12, 3, 7, 14, 10, 15, 6, 8, 0, 5, 9, 2},
+		    {6, 11, 13, 8, 1, 4, 10, 7, 9, 5, 0, 15, 14, 2, 3, 12}
+	    }, {
+		    {13, 2, 8, 4, 6, 15, 11, 1, 10, 9, 3, 14, 5, 0, 12, 7},
+		    {1, 15, 13, 8, 10, 3, 7, 4, 12, 5, 6, 11, 0, 14, 9, 2},
+		    {7, 11, 4, 1, 9, 12, 14, 2, 0, 6, 10, 13, 15, 3, 5, 8},
+		    {2, 1, 14, 7, 4, 10, 8, 13, 15, 12, 9, 0, 3, 5, 6, 11}
+	    }
 };
 
 static unsigned char DES_P[32] = {
@@ -328,39 +329,40 @@ static void init_SPE(void)
 	unsigned int mask, l, h;
 
 	for (box = 0; box < 8; box++)
-	for (index = 0; index < 64; index++) {
-		row =
-			((index & 1) << 1) |
-			(index >> 5);
-		column =
-			(((index >> 1) & 1) << 3) |
-			(((index >> 2) & 1) << 2) |
-			(((index >> 3) & 1) << 1) |
-			((index >> 4) & 1);
+		for (index = 0; index < 64; index++) {
+			row = ((index & 1) << 1) | (index >> 5);
+			column =
+			    (((index >> 1) & 1) << 3) |
+			    (((index >> 2) & 1) << 2) |
+			    (((index >> 3) & 1) << 1) | ((index >> 4) & 1);
 
-		mask = (ARCH_WORD)DES_S[box][row][column] << ((7 - box) << 2);
+			mask =
+			    (ARCH_WORD) DES_S[box][row][column] << ((7 -
+				box) << 2);
 
-		h = l = 0;
-		for (bit = 0; bit < 24; bit++) {
-			if (((unsigned int)0x80000000 >>
-			    DES_P[ARCH_INDEX(DES_E[bit])]) & mask)
-				l |= 1 << bit;
-			if (((unsigned int)0x80000000 >>
-			    DES_P[ARCH_INDEX(DES_E[bit + 24])]) & mask)
-				h |= 1 << bit;
-		}
+			h = l = 0;
+			for (bit = 0; bit < 24; bit++) {
+				if (((unsigned int)0x80000000 >>
+					DES_P[ARCH_INDEX(DES_E[bit])]) & mask)
+					l |= 1 << bit;
+				if (((unsigned int)0x80000000 >>
+					DES_P[ARCH_INDEX(DES_E[bit +
+						    24])]) & mask)
+					h |= 1 << bit;
+			}
 
-		l = DES_24_TO_32(l); h = DES_24_TO_32(h);
+			l = DES_24_TO_32(l);
+			h = DES_24_TO_32(h);
 
 #if ARCH_BITS >= 64
-		DES_SPE[box][index] =
-			DES_DO_SIZE_FIX(l) |
-			((unsigned ARCH_WORD)DES_DO_SIZE_FIX(h) << 32);
+			DES_SPE[box][index] =
+			    DES_DO_SIZE_FIX(l) |
+			    ((unsigned ARCH_WORD)DES_DO_SIZE_FIX(h) << 32);
 #else
-		DES_SPE[box][index][0] = DES_DO_SIZE_FIX(l);
-		DES_SPE[box][index][1] = DES_DO_SIZE_FIX(h);
+			DES_SPE[box][index][0] = DES_DO_SIZE_FIX(l);
+			DES_SPE[box][index][1] = DES_DO_SIZE_FIX(h);
 #endif
-	}
+		}
 }
 
 static void init_IP_E(void)
@@ -371,25 +373,29 @@ static void init_IP_E(void)
 	memset(DES_IP_E, 0, sizeof(DES_IP_E));
 
 	for (dst1 = 0; dst1 < 8; dst1++)
-	for (dst2 = 0; dst2 < 6; dst2++) {
-		dst = (dst1 << 3) + dst2;
-		src = DES_IP[ARCH_INDEX(DES_E[dst1 * 6 + dst2])];
-		if (src >= 32) src -= 32; else src--;
-		src ^= 7;
+		for (dst2 = 0; dst2 < 6; dst2++) {
+			dst = (dst1 << 3) + dst2;
+			src = DES_IP[ARCH_INDEX(DES_E[dst1 * 6 + dst2])];
+			if (src >= 32)
+				src -= 32;
+			else
+				src--;
+			src ^= 7;
 
-		chunk = src >> 2;
-		mask = 1 << (src & 3);
+			chunk = src >> 2;
+			mask = 1 << (src & 3);
 
-		for (value = 0; value < 16; value++)
-		if (value & mask)
+			for (value = 0; value < 16; value++)
+				if (value & mask)
 #if ARCH_BITS >= 64
-			DES_IP_E[chunk][value] |=
-				(unsigned ARCH_WORD)1 << dst;
+					DES_IP_E[chunk][value] |=
+					    (unsigned ARCH_WORD)1 << dst;
 #else
-			DES_IP_E[chunk][value][dst >> 5] |=
-				(unsigned ARCH_WORD)1 << (dst & 0x1F);
+					DES_IP_E[chunk][value][dst >> 5] |=
+					    (unsigned ARCH_WORD)1 << (dst &
+					    0x1F);
 #endif
-	}
+		}
 }
 
 static void init_C_FP(void)
@@ -406,13 +412,13 @@ static void init_C_FP(void)
 		mask = 1 << (src & 3);
 
 		for (value = 0; value < 16; value++)
-		if (value & mask)
+			if (value & mask)
 #if ARCH_BITS >= 64
-			DES_C_FP[chunk][value] |=
-				(unsigned ARCH_WORD)1 << dst;
+				DES_C_FP[chunk][value] |=
+				    (unsigned ARCH_WORD)1 << dst;
 #else
-			DES_C_FP[chunk][value][dst >> 5] |=
-				(unsigned ARCH_WORD)1 << (dst & 0x1F);
+				DES_C_FP[chunk][value][dst >> 5] |=
+				    (unsigned ARCH_WORD)1 << (dst & 0x1F);
 #endif
 	}
 }
@@ -427,38 +433,41 @@ static void init_KS(void)
 	memset(block, 0, sizeof(block));
 
 	for (pos = 0; pos < 8; pos++)
-	for (chr = 0x7F; chr >= 0; chr--) {
-		for (bit = 0; bit < 7; bit++)
-			block[(pos << 3) + bit] = (chr >> (6 - bit)) & 1;
+		for (chr = 0x7F; chr >= 0; chr--) {
+			for (bit = 0; bit < 7; bit++)
+				block[(pos << 3) + bit] =
+				    (chr >> (6 - bit)) & 1;
 
-		s = 0;
-		for (round = 0; round < 16; round++) {
-			s += DES_ROT[round];
-			value[0] = value[1] = 0;
-			k = 0;
-			for (ofs = 0; ofs < 64; ofs += 8)
-			for (bit = 0; bit < 6; bit++) {
-				p = DES_PC2[k++];
-				q = p < 28 ? 0 : 28;
-				p += s;
-				while (p >= 28) p -= 28;
-				r = DES_PC1[p + q];
-				value[ofs >> 5] |= (ARCH_WORD)block[r] <<
-					((ofs & 31) + bit);
-			}
+			s = 0;
+			for (round = 0; round < 16; round++) {
+				s += DES_ROT[round];
+				value[0] = value[1] = 0;
+				k = 0;
+				for (ofs = 0; ofs < 64; ofs += 8)
+					for (bit = 0; bit < 6; bit++) {
+						p = DES_PC2[k++];
+						q = p < 28 ? 0 : 28;
+						p += s;
+						while (p >= 28)
+							p -= 28;
+						r = DES_PC1[p + q];
+						value[ofs >> 5] |=
+						    (ARCH_WORD) block[r] <<
+						    ((ofs & 31) + bit);
+					}
 
 #if ARCH_BITS >= 64
-			DES_KS_table[pos][chr][round] =
-				DES_DO_SIZE_FIX(value[0]) |
-				(DES_DO_SIZE_FIX(value[1]) << 32);
+				DES_KS_table[pos][chr][round] =
+				    DES_DO_SIZE_FIX(value[0]) |
+				    (DES_DO_SIZE_FIX(value[1]) << 32);
 #else
-			DES_KS_table[pos][chr][round << 1] =
-				DES_DO_SIZE_FIX(value[0]);
-			DES_KS_table[pos][chr][(round << 1) + 1] =
-				DES_DO_SIZE_FIX(value[1]);
+				DES_KS_table[pos][chr][round << 1] =
+				    DES_DO_SIZE_FIX(value[0]);
+				DES_KS_table[pos][chr][(round << 1) + 1] =
+				    DES_DO_SIZE_FIX(value[1]);
 #endif
+			}
 		}
-	}
 
 	DES_KS_updates = 0;
 	memset(DES_key, 0, sizeof(DES_key));
@@ -480,6 +489,7 @@ void DES_std_set_salt(ARCH_WORD salt)
 {
 	int box, index;
 	ARCH_WORD xor;
+
 #if ARCH_BITS >= 64
 	unsigned ARCH_WORD src;
 #else
@@ -487,43 +497,43 @@ void DES_std_set_salt(ARCH_WORD salt)
 #endif
 
 	for (box = 0; box < 8; box++)
-	for (index = 0; index < 64; index++) {
+		for (index = 0; index < 64; index++) {
 #if ARCH_BITS >= 64
-		src = DES_SPE[box][index];
-		xor = (src ^ (src >> 32)) & salt;
+			src = DES_SPE[box][index];
+			xor = (src ^ (src >> 32)) & salt;
 
-		DES_SPE_F[box][index] = src ^ (xor | (xor << 32));
+			DES_SPE_F[box][index] = src ^ (xor | (xor << 32));
 #else
-		l = DES_SPE[box][index][0];
-		h = DES_SPE[box][index][1];
-		xor = (l ^ h) & salt;
+			l = DES_SPE[box][index][0];
+			h = DES_SPE[box][index][1];
+			xor = (l ^ h) & salt;
 
 #if DES_X2
-		DES_SPE_F[box][index][0] = l ^ xor;
-		DES_SPE_F[box][index][1] = h ^ xor;
+			DES_SPE_F[box][index][0] = l ^ xor;
+			DES_SPE_F[box][index][1] = h ^ xor;
 #else
-		DES_SPE_L[box][index] = l ^ xor;
-		DES_SPE_H[box][index] = h ^ xor;
+			DES_SPE_L[box][index] = l ^ xor;
+			DES_SPE_H[box][index] = h ^ xor;
 #endif
 #endif
-	}
+		}
 
 #if DES_128K
 	for (box = 0; box < 4; box++)
-	for (index = 0; index < 64 * 64; index++) {
+		for (index = 0; index < 64 * 64; index++) {
 #if ARCH_BITS >= 64
-		DES_SPE_W[box][index] =
-			DES_SPE_F[box << 1][index & 0x3F] ^
-			DES_SPE_F[(box << 1) + 1][index >> 6];
+			DES_SPE_W[box][index] =
+			    DES_SPE_F[box << 1][index & 0x3F] ^
+			    DES_SPE_F[(box << 1) + 1][index >> 6];
 #else
-		DES_SPE_W[box][index][0] =
-			DES_SPE_L[box << 1][index & 0x3F] ^
-			DES_SPE_L[(box << 1) + 1][index >> 6];
-		DES_SPE_W[box][index][1] =
-			DES_SPE_H[box << 1][index & 0x3F] ^
-			DES_SPE_H[(box << 1) + 1][index >> 6];
+			DES_SPE_W[box][index][0] =
+			    DES_SPE_L[box << 1][index & 0x3F] ^
+			    DES_SPE_L[(box << 1) + 1][index >> 6];
+			DES_SPE_W[box][index][1] =
+			    DES_SPE_H[box << 1][index & 0x3F] ^
+			    DES_SPE_H[(box << 1) + 1][index >> 6];
 #endif
-	}
+		}
 #endif
 }
 
@@ -590,8 +600,8 @@ void DES_std_set_salt(ARCH_WORD salt)
 
 #else
 
-extern void DES_xor_key1(ARCH_WORD *value);
-extern void DES_xor_key2(ARCH_WORD *value1, ARCH_WORD *value2);
+extern void DES_xor_key1(ARCH_WORD * value);
+extern void DES_xor_key2(ARCH_WORD * value1, ARCH_WORD * value2);
 
 #endif
 
@@ -599,15 +609,16 @@ void DES_raw_set_key(char *key)
 {
 	int i;
 	DES_KS *pos;
+
 #if !DES_ASM
 	ARCH_WORD *value1;
 #endif
 
 	memcpy(DES_KS_current,
-		DES_KS_table[0][ARCH_INDEX(DES_key[0] = key[0] & 0x7F)],
-		sizeof(DES_KS));
+	    DES_KS_table[0][ARCH_INDEX(DES_key[0] = key[0] & 0x7F)],
+	    sizeof(DES_KS));
 
-	pos = (DES_KS *)DES_KS_table[1][0];
+	pos = (DES_KS *) DES_KS_table[1][0];
 	for (i = 1; i < 8; i++) {
 		DES_xor_key1(pos[ARCH_INDEX(DES_key[i] = key[i] & 0x7F)]);
 		pos += 128;
@@ -617,47 +628,53 @@ void DES_raw_set_key(char *key)
 void DES_std_set_key(char *key)
 {
 	int i, j, k, l;
+
 #if !DES_ASM
 	ARCH_WORD *value1, *value2;
 #endif
 
 	j = key[0];
 	for (k = i = 0; (l = DES_key[i]) && (j = key[i]); i++)
-	if (j != l) k += 3;
+		if (j != l)
+			k += 3;
 
 	if (j) {
 		while (i < 8 && key[i]) {
-			i++; k += 2;
+			i++;
+			k += 2;
 		}
 		j = i;
 	} else {
 		j = i;
-		while (DES_key[i++]) k += 2;
+		while (DES_key[i++])
+			k += 2;
 	}
 
 	if ((k < (j << 1)) && (++DES_KS_updates & 0xFFF)) {
-		j = 0; l = 1;
+		j = 0;
+		l = 1;
 		for (i = 0; i < 8 && (k = key[i]); i++) {
 			if (l)
-			if (k == (l = DES_key[j++])) continue;
+				if (k == (l = DES_key[j++]))
+					continue;
 
 			if (l) {
 				DES_xor_key2(DES_KS_table[i][l],
-					DES_KS_table[i][k & 0x7F]);
+				    DES_KS_table[i][k & 0x7F]);
 			} else
 				DES_xor_key1(DES_KS_table[i][k & 0x7F]);
 		}
 
 		if (l)
-		for (; j < 8 && (l = DES_key[j]); j++)
-			DES_xor_key1(DES_KS_table[j][l]);
+			for (; j < 8 && (l = DES_key[j]); j++)
+				DES_xor_key1(DES_KS_table[j][l]);
 	} else {
 		memcpy(DES_KS_current, DES_KS_table[0][(k = key[0]) & 0x7F],
-			sizeof(DES_KS));
+		    sizeof(DES_KS));
 
 		if (k)
-		for (i = 1; i < 8 && (k = key[i]); i++)
-			DES_xor_key1(DES_KS_table[i][k & 0x7F]);
+			for (i = 1; i < 8 && (k = key[i]); i++)
+				DES_xor_key1(DES_KS_table[i][k & 0x7F]);
 	}
 
 	DES_key[0] = key[0] & 0x7F;
@@ -674,6 +691,7 @@ void DES_std_set_block(ARCH_WORD R, ARCH_WORD L)
 {
 	ARCH_WORD Rl, Rh, Ll, Lh;
 	unsigned ARCH_WORD C;
+
 #if ARCH_BITS >= 64
 	ARCH_WORD mask;
 #else
@@ -730,6 +748,7 @@ void DES_std_get_block(DES_binary binary, unsigned ARCH_WORD out[2])
 	ARCH_WORD Rl, Rh, Ll, Lh;
 	ARCH_WORD R, L;
 	unsigned ARCH_WORD C;
+
 #if ARCH_BITS >= 64
 	unsigned ARCH_WORD mask;
 #else
@@ -964,6 +983,7 @@ void DES_std_crypt(DES_KS KS, DES_binary DES_out)
 #endif
 #if ARCH_BITS >= 64
 	ARCH_WORD R, L;
+
 #if !DES_128K
 	ARCH_WORD T;
 #endif
@@ -1051,12 +1071,14 @@ static unsigned char DES_atoi64[0x100] = {
 
 ARCH_WORD DES_raw_get_salt(char *ciphertext)
 {
-	if (ciphertext[13]) return DES_atoi64[ARCH_INDEX(ciphertext[5])] |
-		((ARCH_WORD)DES_atoi64[ARCH_INDEX(ciphertext[6])] << 6) |
-		((ARCH_WORD)DES_atoi64[ARCH_INDEX(ciphertext[7])] << 12) |
-		((ARCH_WORD)DES_atoi64[ARCH_INDEX(ciphertext[8])] << 18);
-	else return DES_atoi64[ARCH_INDEX(ciphertext[0])] |
-		((ARCH_WORD)DES_atoi64[ARCH_INDEX(ciphertext[1])] << 6);
+	if (ciphertext[13])
+		return DES_atoi64[ARCH_INDEX(ciphertext[5])] |
+		    ((ARCH_WORD) DES_atoi64[ARCH_INDEX(ciphertext[6])] << 6) |
+		    ((ARCH_WORD) DES_atoi64[ARCH_INDEX(ciphertext[7])] << 12) |
+		    ((ARCH_WORD) DES_atoi64[ARCH_INDEX(ciphertext[8])] << 18);
+	else
+		return DES_atoi64[ARCH_INDEX(ciphertext[0])] |
+		    ((ARCH_WORD) DES_atoi64[ARCH_INDEX(ciphertext[1])] << 6);
 }
 
 ARCH_WORD DES_std_get_salt(char *ciphertext)
@@ -1065,16 +1087,18 @@ ARCH_WORD DES_std_get_salt(char *ciphertext)
 
 	salt = DES_raw_get_salt(ciphertext);
 	salt = DES_24_TO_32(salt);
-	return (ARCH_WORD)DES_DO_SIZE_FIX(salt);
+	return (ARCH_WORD) DES_DO_SIZE_FIX(salt);
 }
 
 ARCH_WORD DES_raw_get_count(char *ciphertext)
 {
-	if (ciphertext[13]) return DES_atoi64[ARCH_INDEX(ciphertext[1])] |
-		((ARCH_WORD)DES_atoi64[ARCH_INDEX(ciphertext[2])] << 6) |
-		((ARCH_WORD)DES_atoi64[ARCH_INDEX(ciphertext[3])] << 12) |
-		((ARCH_WORD)DES_atoi64[ARCH_INDEX(ciphertext[4])] << 18);
-	else return 25;
+	if (ciphertext[13])
+		return DES_atoi64[ARCH_INDEX(ciphertext[1])] |
+		    ((ARCH_WORD) DES_atoi64[ARCH_INDEX(ciphertext[2])] << 6) |
+		    ((ARCH_WORD) DES_atoi64[ARCH_INDEX(ciphertext[3])] << 12) |
+		    ((ARCH_WORD) DES_atoi64[ARCH_INDEX(ciphertext[4])] << 18);
+	else
+		return 25;
 }
 
 ARCH_WORD *DES_do_IP(ARCH_WORD in[2])
@@ -1115,7 +1139,10 @@ ARCH_WORD *DES_raw_get_binary(char *ciphertext)
 	ARCH_WORD mask;
 	int ofs, chr, src, dst, value;
 
-	if (ciphertext[13]) ofs = 9; else ofs = 2;
+	if (ciphertext[13])
+		ofs = 9;
+	else
+		ofs = 2;
 
 	block[0] = block[1] = 0;
 	dst = 0;
@@ -1125,7 +1152,8 @@ ARCH_WORD *DES_raw_get_binary(char *ciphertext)
 
 		for (src = 0; src < 6; src++) {
 			if (value & mask)
-				block[dst >> 5] |= (unsigned ARCH_WORD)1 << (dst & 0x1F);
+				block[dst >> 5] |=
+				    (unsigned ARCH_WORD)1 << (dst & 0x1F);
 			mask >>= 1;
 			dst++;
 		}

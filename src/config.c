@@ -28,11 +28,14 @@ static char *trim(char *s)
 {
 	char *e;
 
-	while (*s && (*s == ' ' || *s == '\t')) s++;
-	if (!*s) return s;
+	while (*s && (*s == ' ' || *s == '\t'))
+		s++;
+	if (!*s)
+		return s;
 
 	e = s + strlen(s) - 1;
-	while (e >= s && (*e == ' ' || *e == '\t')) e--;
+	while (e >= s && (*e == ' ' || *e == '\t'))
+		e--;
 	*++e = 0;
 	return s;
 }
@@ -42,16 +45,16 @@ static void cfg_add_section(char *name)
 	struct cfg_section *last;
 
 	last = cfg_database;
-	cfg_database = mem_alloc_tiny(
-		sizeof(struct cfg_section), MEM_ALIGN_WORD);
+	cfg_database =
+	    mem_alloc_tiny(sizeof(struct cfg_section), MEM_ALIGN_WORD);
 	cfg_database->next = last;
 
 	cfg_database->name = str_alloc_copy(name);
 	cfg_database->params = NULL;
 
 	if (!strncmp(name, "list.", 5)) {
-		cfg_database->list = mem_alloc_tiny(
-			sizeof(struct cfg_list), MEM_ALIGN_WORD);
+		cfg_database->list =
+		    mem_alloc_tiny(sizeof(struct cfg_list), MEM_ALIGN_WORD);
 		cfg_database->list->head = cfg_database->list->tail = NULL;
 	} else {
 		cfg_database->list = NULL;
@@ -81,8 +84,8 @@ static void cfg_add_param(char *name, char *value)
 	struct cfg_param *current, *last;
 
 	last = cfg_database->params;
-	current = cfg_database->params = mem_alloc_tiny(
-		sizeof(struct cfg_param), MEM_ALIGN_WORD);
+	current = cfg_database->params =
+	    mem_alloc_tiny(sizeof(struct cfg_param), MEM_ALIGN_WORD);
 	current->next = last;
 
 	current->name = str_alloc_copy(name);
@@ -94,16 +97,18 @@ static int cfg_process_line(char *line, int number)
 	char *p;
 
 	line = trim(line);
-	if (!*line || *line == '#' || *line == ';') return 0;
+	if (!*line || *line == '#' || *line == ';')
+		return 0;
 
 	if (*line == '[') {
-		if ((p = strchr(line, ']'))) *p = 0; else return 1;
+		if ((p = strchr(line, ']')))
+			*p = 0;
+		else
+			return 1;
 		cfg_add_section(strlwr(trim(line + 1)));
-	} else
-	if (cfg_database && cfg_database->list) {
+	} else if (cfg_database && cfg_database->list) {
 		cfg_add_line(line, number);
-	} else
-	if (cfg_database && (p = strchr(line, '='))) {
+	} else if (cfg_database && (p = strchr(line, '='))) {
 		*p++ = 0;
 		cfg_add_param(strlwr(trim(line)), trim(p));
 	} else {
@@ -127,20 +132,25 @@ void cfg_init(char *name, int allow_missing)
 	char line[LINE_BUFFER_SIZE];
 	int number;
 
-	if (cfg_database) return;
+	if (cfg_database)
+		return;
 
 	if (!(file = fopen(path_expand(name), "r"))) {
-		if (allow_missing && errno == ENOENT) return;
+		if (allow_missing && errno == ENOENT)
+			return;
 		pexit("fopen: %s", path_expand(name));
 	}
 
 	number = 0;
 	while (fgetl(line, sizeof(line), file))
-	if (cfg_process_line(line, ++number)) cfg_error(name, number);
+		if (cfg_process_line(line, ++number))
+			cfg_error(name, number);
 
-	if (ferror(file)) pexit("fgets");
+	if (ferror(file))
+		pexit("fgets");
 
-	if (fclose(file)) pexit("fclose");
+	if (fclose(file))
+		pexit("fclose");
 
 	cfg_name = str_alloc_copy(path_expand(name));
 }
@@ -151,22 +161,30 @@ static struct cfg_section *cfg_get_section(char *section, char *subsection)
 	char *p1, *p2;
 
 	if ((current = cfg_database))
-	do {
-		p1 = current->name; p2 = section;
-		while (*p1 && *p1 == tolower((int)(unsigned char)*p2)) {
-			p1++; p2++;
-		}
-		if (*p2) continue;
+		do {
+			p1 = current->name;
+			p2 = section;
+			while (*p1 && *p1 == tolower((int)(unsigned char)*p2)) {
+				p1++;
+				p2++;
+			}
+			if (*p2)
+				continue;
 
-		if ((p2 = subsection))
-		while (*p1 && *p1 == tolower((int)(unsigned char)*p2)) {
-			p1++; p2++;
-		}
-		if (*p1) continue;
-		if (p2) if (*p2) continue;
+			if ((p2 = subsection))
+				while (*p1 &&
+				    *p1 == tolower((int)(unsigned char)*p2)) {
+					p1++;
+					p2++;
+				}
+			if (*p1)
+				continue;
+			if (p2)
+				if (*p2)
+					continue;
 
-		return current;
-	} while ((current = current->next));
+			return current;
+		} while ((current = current->next));
 
 	return NULL;
 }
@@ -188,16 +206,20 @@ char *cfg_get_param(char *section, char *subsection, char *param)
 	char *p1, *p2;
 
 	if ((current_section = cfg_get_section(section, subsection)))
-	if ((current_param = current_section->params))
-	do {
-		p1 = current_param->name; p2 = param;
-		while (*p1 && *p1 == tolower((int)(unsigned char)*p2)) {
-			p1++; p2++;
-		}
-		if (*p1 || *p2) continue;
+		if ((current_param = current_section->params))
+			do {
+				p1 = current_param->name;
+				p2 = param;
+				while (*p1 &&
+				    *p1 == tolower((int)(unsigned char)*p2)) {
+					p1++;
+					p2++;
+				}
+				if (*p1 || *p2)
+					continue;
 
-		return current_param->value;
-	} while ((current_param = current_param->next));
+				return current_param->value;
+			} while ((current_param = current_param->next));
 
 	return NULL;
 }

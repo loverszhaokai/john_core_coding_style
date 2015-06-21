@@ -98,19 +98,23 @@ static int valid(char *ciphertext, struct fmt_main *self)
 {
 	char *pos;
 
-	if (!ciphertext[0] || !ciphertext[1]) return 0;
+	if (!ciphertext[0] || !ciphertext[1])
+		return 0;
 
 	for (pos = &ciphertext[2]; atoi64[ARCH_INDEX(*pos)] != 0x7F; pos++);
-	if (*pos && *pos != ',') return 0;
+	if (*pos && *pos != ',')
+		return 0;
 
-	if (atoi64[ARCH_INDEX(*(pos - 1))] & 3) return 0;
+	if (atoi64[ARCH_INDEX(*(pos - 1))] & 3)
+		return 0;
 
 	switch (pos - ciphertext) {
 	case CIPHERTEXT_LENGTH_1:
 		return 1;
 
 	case CIPHERTEXT_LENGTH_2:
-		if (atoi64[ARCH_INDEX(ciphertext[12])] & 3) return 0;
+		if (atoi64[ARCH_INDEX(ciphertext[12])] & 3)
+			return 0;
 		return 2;
 
 	default:
@@ -149,37 +153,37 @@ static void *salt(char *ciphertext)
 
 static int binary_hash_0(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xF;
+	return *(ARCH_WORD_32 *) binary & 0xF;
 }
 
 static int binary_hash_1(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFF;
+	return *(ARCH_WORD_32 *) binary & 0xFF;
 }
 
 static int binary_hash_2(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFF;
 }
 
 static int binary_hash_3(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFFF;
 }
 
 static int binary_hash_4(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFFFF;
 }
 
 static int binary_hash_5(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0xFFFFFF;
+	return *(ARCH_WORD_32 *) binary & 0xFFFFFF;
 }
 
 static int binary_hash_6(void *binary)
 {
-	return *(ARCH_WORD_32 *)binary & 0x7FFFFFF;
+	return *(ARCH_WORD_32 *) binary & 0x7FFFFFF;
 }
 
 #define get_hash_0 DES_bs_get_hash_0
@@ -192,24 +196,25 @@ static int binary_hash_6(void *binary)
 
 static int salt_hash(void *salt)
 {
-	return *(ARCH_WORD *)salt & (SALT_HASH_SIZE - 1);
+	return *(ARCH_WORD *) salt & (SALT_HASH_SIZE - 1);
 }
 
 static void set_salt(void *salt)
 {
-	DES_bs_set_salt(*(ARCH_WORD *)salt);
+	DES_bs_set_salt(*(ARCH_WORD *) salt);
 }
 
 static int crypt_all(int *pcount, struct db_salt *salt)
 {
 	int count = *pcount;
+
 	DES_bs_crypt_25(count);
 	return count;
 }
 
 static int cmp_one(void *binary, int index)
 {
-	return DES_bs_cmp_one((ARCH_WORD_32 *)binary, 32, index);
+	return DES_bs_cmp_one((ARCH_WORD_32 *) binary, 32, index);
 }
 
 static int cmp_exact(char *source, int index)
@@ -221,17 +226,17 @@ static int cmp_exact(char *source, int index)
 
 static int binary_hash_0(void *binary)
 {
-	return DES_STD_HASH_0(*(ARCH_WORD *)binary);
+	return DES_STD_HASH_0(*(ARCH_WORD *) binary);
 }
 
 static int binary_hash_1(void *binary)
 {
-	return DES_STD_HASH_1(*(ARCH_WORD *)binary);
+	return DES_STD_HASH_1(*(ARCH_WORD *) binary);
 }
 
 static int binary_hash_2(void *binary)
 {
-	return DES_STD_HASH_2(*(ARCH_WORD *)binary);
+	return DES_STD_HASH_2(*(ARCH_WORD *) binary);
 }
 
 #define binary_hash_3 NULL
@@ -267,12 +272,12 @@ static int get_hash_2(int index)
 
 static int salt_hash(void *salt)
 {
-	return DES_STD_HASH_2(*(ARCH_WORD *)salt) & (SALT_HASH_SIZE - 1);
+	return DES_STD_HASH_2(*(ARCH_WORD *) salt) & (SALT_HASH_SIZE - 1);
 }
 
 static void set_salt(void *salt)
 {
-	DES_std_set_salt(*(ARCH_WORD *)salt);
+	DES_std_set_salt(*(ARCH_WORD *) salt);
 }
 
 static int crypt_all(int *pcount, struct db_salt *salt)
@@ -282,7 +287,7 @@ static int crypt_all(int *pcount, struct db_salt *salt)
 
 	for (index = 0; index < count; index++)
 		DES_std_crypt(buffer[index].aligned.data.KS,
-			buffer[index].aligned.data.binary);
+		    buffer[index].aligned.data.binary);
 
 	return count;
 }
@@ -292,9 +297,9 @@ static int cmp_all(void *binary, int count)
 	int index;
 
 	for (index = 0; index < count; index++)
-	if (*(unsigned ARCH_WORD *)binary ==
-	    (buffer[index].aligned.data.binary[0] & DES_BINARY_MASK))
-		return 1;
+		if (*(unsigned ARCH_WORD *)binary ==
+		    (buffer[index].aligned.data.binary[0] & DES_BINARY_MASK))
+			return 1;
 
 	return 0;
 }
@@ -302,7 +307,7 @@ static int cmp_all(void *binary, int count)
 static int cmp_one(void *binary, int index)
 {
 	return *(unsigned ARCH_WORD *)binary ==
-		(buffer[index].aligned.data.binary[0] & DES_BINARY_MASK);
+	    (buffer[index].aligned.data.binary[0] & DES_BINARY_MASK);
 }
 
 static int cmp_exact(char *source, int index)
@@ -313,9 +318,9 @@ static int cmp_exact(char *source, int index)
 	binary = DES_std_get_binary(source);
 
 	for (word = 0; word < 16 / DES_SIZE; word++)
-	if ((unsigned ARCH_WORD)binary[word] !=
-	    (buffer[index].aligned.data.binary[word] & DES_BINARY_MASK))
-		return 0;
+		if ((unsigned ARCH_WORD)binary[word] !=
+		    (buffer[index].aligned.data.binary[word] & DES_BINARY_MASK))
+			return 0;
 
 	return 1;
 }
@@ -334,6 +339,7 @@ static void set_key(char *key, int index)
 static char *get_key(int index)
 {
 	static char out[PLAINTEXT_LENGTH + 1];
+
 #if DES_BS
 	unsigned char *src;
 	char *dst;
@@ -357,76 +363,72 @@ static char *get_key(int index)
 
 struct fmt_main fmt_DES = {
 	{
-		FORMAT_LABEL,
-		FORMAT_NAME,
-		ALGORITHM_NAME,
-		BENCHMARK_COMMENT,
-		BENCHMARK_LENGTH,
-		PLAINTEXT_LENGTH,
-		BINARY_SIZE,
-		BINARY_ALIGN,
-		SALT_SIZE,
-		SALT_ALIGN,
-		MIN_KEYS_PER_CRYPT,
-		MAX_KEYS_PER_CRYPT,
+		    FORMAT_LABEL,
+		    FORMAT_NAME,
+		    ALGORITHM_NAME,
+		    BENCHMARK_COMMENT,
+		    BENCHMARK_LENGTH,
+		    PLAINTEXT_LENGTH,
+		    BINARY_SIZE,
+		    BINARY_ALIGN,
+		    SALT_SIZE,
+		    SALT_ALIGN,
+		    MIN_KEYS_PER_CRYPT,
+		    MAX_KEYS_PER_CRYPT,
 #if DES_BS && DES_bs_mt
-		FMT_OMP |
+		    FMT_OMP |
 #endif
 #if DES_BS
-		FMT_CASE | FMT_BS,
+		    FMT_CASE | FMT_BS,
 #else
-		FMT_CASE,
+		    FMT_CASE,
 #endif
-		tests
-	}, {
-		init,
-		fmt_default_done,
-		fmt_default_reset,
-		fmt_default_prepare,
-		valid,
-		split,
-		(void *(*)(char *))
+	    tests}, {
+		    init,
+		    fmt_default_done,
+		    fmt_default_reset,
+		    fmt_default_prepare,
+		    valid,
+		    split,
+		    (void *(*)(char *))
 #if DES_BS
-			DES_bs_get_binary,
+		    DES_bs_get_binary,
 #else
-			DES_std_get_binary,
+		    DES_std_get_binary,
 #endif
-		salt,
-		fmt_default_source,
-		{
-			binary_hash_0,
-			binary_hash_1,
-			binary_hash_2,
-			binary_hash_3,
-			binary_hash_4,
-			binary_hash_5,
-			binary_hash_6
-		},
-		salt_hash,
-		set_salt,
+		    salt,
+		    fmt_default_source,
+		    {
+				binary_hash_0,
+				binary_hash_1,
+				binary_hash_2,
+				binary_hash_3,
+				binary_hash_4,
+				binary_hash_5,
+			binary_hash_6},
+		    salt_hash,
+		    set_salt,
 #if DES_BS
-		DES_bs_set_key,
+		    DES_bs_set_key,
 #else
-		set_key,
+		    set_key,
 #endif
-		get_key,
-		fmt_default_clear_keys,
-		crypt_all,
-		{
-			get_hash_0,
-			get_hash_1,
-			get_hash_2,
-			get_hash_3,
-			get_hash_4,
-			get_hash_5,
-			get_hash_6
-		},
+		    get_key,
+		    fmt_default_clear_keys,
+		    crypt_all,
+		    {
+				get_hash_0,
+				get_hash_1,
+				get_hash_2,
+				get_hash_3,
+				get_hash_4,
+				get_hash_5,
+			get_hash_6},
 #if DES_BS
-		(int (*)(void *, int))DES_bs_cmp_all,
+		    (int (*)(void *, int))DES_bs_cmp_all,
 #else
-		cmp_all,
+		    cmp_all,
 #endif
-		cmp_one,
-		cmp_exact
-	}
+		    cmp_one,
+	    cmp_exact}
 };

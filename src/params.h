@@ -79,7 +79,7 @@
 #endif
 
 #if JOHN_SYSTEMWIDE
-#ifndef JOHN_SYSTEMWIDE_EXEC /* please refer to the notes above */
+#ifndef JOHN_SYSTEMWIDE_EXEC	/* please refer to the notes above */
 #define JOHN_SYSTEMWIDE_EXEC		"/usr/libexec/john"
 #endif
 #ifndef JOHN_SYSTEMWIDE_HOME

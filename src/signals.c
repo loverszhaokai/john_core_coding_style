@@ -8,7 +8,7 @@
  * There's ABSOLUTELY NO WARRANTY, express or implied.
  */
 
-#define _XOPEN_SOURCE 500 /* for setitimer(2) and siginterrupt(3) */
+#define _XOPEN_SOURCE 500	/* for setitimer(2) and siginterrupt(3) */
 
 #ifdef __ultrix__
 #define __POSIX
@@ -65,7 +65,8 @@ static unsigned int timer_emu_count = 0, timer_emu_max = 0;
 void sig_timer_emu_init(clock_t interval)
 {
 	timer_emu_interval = interval;
-	timer_emu_count = 0; timer_emu_max = 0;
+	timer_emu_count = 0;
+	timer_emu_max = 0;
 }
 
 void sig_timer_emu_tick(void)
@@ -74,7 +75,8 @@ void sig_timer_emu_tick(void)
 	clock_t current;
 	struct tms buf;
 
-	if (++timer_emu_count < timer_emu_max) return;
+	if (++timer_emu_count < timer_emu_max)
+		return;
 
 	current = times(&buf);
 
@@ -129,7 +131,8 @@ static void sig_remove_update(void)
 
 void check_abort(int be_async_signal_safe)
 {
-	if (!event_abort) return;
+	if (!event_abort)
+		return;
 
 	tty_done();
 
@@ -209,6 +212,7 @@ static void sig_remove_abort(void)
 static void signal_children(int signum)
 {
 	int i;
+
 	for (i = 0; i < john_child_count; i++)
 		if (john_child_pids[i])
 			kill(john_child_pids[i], signum);
@@ -235,6 +239,7 @@ static void sig_handle_timer(int signum)
 
 	if (john_main_process) {
 		int c;
+
 #if OS_FORK
 		int new_abort = 0, new_status = 0;
 #endif
@@ -257,7 +262,6 @@ static void sig_handle_timer(int signum)
 			signal_children(new_abort ? SIGTERM : SIGUSR2);
 #endif
 	}
-
 #if !OS_TIMER
 	signal(SIGALRM, sig_handle_timer);
 #elif !defined(SA_RESTART) && !defined(__DJGPP__)
@@ -312,7 +316,8 @@ static void sig_remove_timer(void)
 	struct itimerval it;
 
 	memset(&it, 0, sizeof(it));
-	if (setitimer(ITIMER_REAL, &it, NULL)) perror("setitimer");
+	if (setitimer(ITIMER_REAL, &it, NULL))
+		perror("setitimer");
 #endif
 
 	signal(SIGALRM, SIG_DFL);
@@ -335,12 +340,11 @@ void sig_init(void)
 	timer_save_interval = cfg_get_int(SECTION_OPTIONS, NULL, "Save");
 	if (timer_save_interval < 0)
 		timer_save_interval = TIMER_SAVE_DELAY;
-	else
-	if ((timer_save_interval /= TIMER_INTERVAL) <= 0)
+	else if ((timer_save_interval /= TIMER_INTERVAL) <= 0)
 		timer_save_interval = 1;
 	timer_save_value = timer_save_interval;
 
-	timer_ticksafety_interval = (clock_t)1 << (sizeof(clock_t) * 8 - 4);
+	timer_ticksafety_interval = (clock_t) 1 << (sizeof(clock_t) * 8 - 4);
 	timer_ticksafety_interval /= clk_tck;
 	if ((timer_ticksafety_interval /= TIMER_INTERVAL) <= 0)
 		timer_ticksafety_interval = 1;

@@ -66,6 +66,7 @@ extern int CPU_detect(void);
 
 extern struct fmt_main fmt_DES, fmt_BSDI, fmt_MD5, fmt_BF;
 extern struct fmt_main fmt_AFS, fmt_LM;
+
 #ifdef HAVE_CRYPT
 extern struct fmt_main fmt_crypt;
 #endif
@@ -77,6 +78,7 @@ extern int unafs(int argc, char **argv);
 extern int unique(int argc, char **argv);
 
 int john_main_process = 1;
+
 #if OS_FORK
 int john_child_count = 0;
 int *john_child_pids = NULL;
@@ -134,12 +136,11 @@ static void john_log_format(void)
 	chunk = min_chunk = database.format->params.max_keys_per_crypt;
 	if (options.flags & (FLG_SINGLE_CHK | FLG_BATCH_CHK) &&
 	    chunk < SINGLE_HASH_MIN)
-			chunk = SINGLE_HASH_MIN;
+		chunk = SINGLE_HASH_MIN;
 	if (chunk > 1)
 		log_event("- Candidate passwords %s be buffered and "
-			"tried in chunks of %d",
-			min_chunk > 1 ? "will" : "may",
-			chunk);
+		    "tried in chunks of %d",
+		    min_chunk > 1 ? "will" : "may", chunk);
 }
 
 #ifdef _OPENMP
@@ -155,7 +156,8 @@ static void john_omp_init(void)
 #error OMP_FALLBACK is incompatible with the current DOS and Win32 code
 #endif
 #define HAVE_JOHN_OMP_FALLBACK
-static void john_omp_fallback(char **argv) {
+static void john_omp_fallback(char **argv)
+{
 	if (!getenv("JOHN_NO_OMP_FALLBACK") && john_omp_threads_new <= 1) {
 		rec_done(-2);
 #define OMP_FALLBACK_PATHNAME JOHN_SYSTEMWIDE_EXEC "/" OMP_FALLBACK_BINARY
@@ -184,6 +186,7 @@ static void john_omp_show_info(void)
 	if (!options.fork && john_omp_threads_orig > 1 &&
 	    database.format && !rec_restoring_now) {
 		const char *msg = NULL;
+
 		if (!(database.format->params.flags & FMT_OMP))
 			msg = "no OpenMP support";
 		else if ((database.format->params.flags & FMT_OMP_BAD))
@@ -191,8 +194,7 @@ static void john_omp_show_info(void)
 		if (msg)
 #if OS_FORK
 			fprintf(stderr, "Warning: %s for this hash type, "
-			    "consider --fork=%d\n",
-			    msg, john_omp_threads_orig);
+			    "consider --fork=%d\n", msg, john_omp_threads_orig);
 #else
 			fprintf(stderr, "Warning: %s for this hash type\n",
 			    msg);
@@ -208,6 +210,7 @@ static void john_omp_show_info(void)
  */
 	{
 		int show = 0;
+
 		if (database.format &&
 		    (database.format->params.flags & FMT_OMP))
 			show = 1;
@@ -277,6 +280,7 @@ static void john_fork(void)
 			options.node_max = options.node_min;
 			if (rec_restoring_now) {
 				unsigned int node_id = options.node_min;
+
 				rec_done(-2);
 				rec_restore_args(1);
 				if (node_id != options.node_min + i)
@@ -316,19 +320,21 @@ static void john_wait(void)
 	while (waiting_for) {
 		int i, status;
 		int pid = wait(&status);
+
 		if (pid == -1) {
 			if (errno != EINTR)
 				perror("wait");
 		} else
-		for (i = 0; i < john_child_count; i++) {
-			if (john_child_pids[i] == pid) {
-				john_child_pids[i] = 0;
-				waiting_for--;
-				children_ok = children_ok &&
-				    WIFEXITED(status) && !WEXITSTATUS(status);
-				break;
+			for (i = 0; i < john_child_count; i++) {
+				if (john_child_pids[i] == pid) {
+					john_child_pids[i] = 0;
+					waiting_for--;
+					children_ok = children_ok &&
+					    WIFEXITED(status) &&
+					    !WEXITSTATUS(status);
+					break;
+				}
 			}
-		}
 	}
 
 /* Close and possibly remove our .rec file now */
@@ -344,11 +350,10 @@ static char *john_loaded_counts(void)
 		return "1 password hash";
 
 	sprintf(s_loaded_counts,
-		database.salt_count > 1 ?
-		"%d password hashes with %d different salts" :
-		"%d password hashes with no different salts",
-		database.password_count,
-		database.salt_count);
+	    database.salt_count > 1 ?
+	    "%d password hashes with %d different salts" :
+	    "%d password hashes with no different salts",
+	    database.password_count, database.salt_count);
 
 	return s_loaded_counts;
 }
@@ -371,9 +376,10 @@ static void john_load(void)
 
 			database.options->flags |= DB_PLAINTEXTS;
 			if ((current = options.passwd->head))
-			do {
-				ldr_show_pw_file(&database, current->data);
-			} while ((current = current->next));
+				do {
+					ldr_show_pw_file(&database,
+					    current->data);
+				} while ((current = current->next));
 		} else {
 			database.options->flags |= DB_PLAINTEXTS;
 			ldr_show_pot_file(&database, POT_NAME);
@@ -400,16 +406,16 @@ static void john_load(void)
 			ldr_show_pot_file(&database, POT_NAME);
 
 			if ((current = options.passwd->head))
-			do {
-				ldr_show_pw_file(&database, current->data);
-			} while ((current = current->next));
+				do {
+					ldr_show_pw_file(&database,
+					    current->data);
+				} while ((current = current->next));
 
 			printf("%s%d password hash%s cracked, %d left\n",
-				database.guess_count ? "\n" : "",
-				database.guess_count,
-				database.guess_count != 1 ? "es" : "",
-				database.password_count -
-				database.guess_count);
+			    database.guess_count ? "\n" : "",
+			    database.guess_count,
+			    database.guess_count != 1 ? "es" : "",
+			    database.password_count - database.guess_count);
 
 			return;
 		}
@@ -417,15 +423,14 @@ static void john_load(void)
 		if (options.flags & (FLG_SINGLE_CHK | FLG_BATCH_CHK) &&
 		    status.pass <= 1)
 			options.loader.flags |= DB_WORDS;
-		else
-		if (mem_saving_level)
+		else if (mem_saving_level)
 			options.loader.flags &= ~DB_LOGIN;
 		ldr_init_database(&database, &options.loader);
 
 		if ((current = options.passwd->head))
-		do {
-			ldr_load_pw_file(&database, current->data);
-		} while ((current = current->next));
+			do {
+				ldr_load_pw_file(&database, current->data);
+			} while ((current = current->next));
 
 		if ((options.flags & FLG_CRACKING_CHK) &&
 		    database.password_count) {
@@ -451,15 +456,14 @@ static void john_load(void)
 			log_discard();
 			printf("No password hashes %s (see FAQ)\n",
 			    total ? "left to crack" : "loaded");
-		} else
-		if (database.password_count < total) {
+		} else if (database.password_count < total) {
 			log_event("Remaining %s", john_loaded_counts());
 			printf("Remaining %s\n", john_loaded_counts());
 		}
 
-		if ((options.flags & FLG_PWD_REQ) && !database.salts) exit(0);
+		if ((options.flags & FLG_PWD_REQ) && !database.salts)
+			exit(0);
 	}
-
 #ifdef _OPENMP
 	john_omp_show_info();
 #endif
@@ -516,6 +520,7 @@ static void CPU_detect_or_fallback(char **argv, int make_check)
 static void john_init(char *name, int argc, char **argv)
 {
 	int make_check = (argc == 2 && !strcmp(argv[1], "--make_check"));
+
 	if (make_check)
 		argv[1] = "--test=0";
 
@@ -542,12 +547,12 @@ static void john_init(char *name, int argc, char **argv)
 
 	status_init(NULL, 1);
 	if (argc < 2)
-		john_register_all(); /* for printing by opt_init() */
+		john_register_all();	/* for printing by opt_init() */
 	opt_init(name, argc, argv);
 #ifdef _OPENMP
 	john_omp_maybe_adjust_or_fallback(argv);
 #endif
-	john_register_all(); /* maybe restricted to one format by options */
+	john_register_all();	/* maybe restricted to one format by options */
 	common_init();
 	sig_init();
 
@@ -557,16 +562,15 @@ static void john_init(char *name, int argc, char **argv)
 static void john_run(void)
 {
 	if (options.flags & FLG_TEST_CHK)
-		exit_status = benchmark_all() ? 1 : 0;
-	else
-	if (options.flags & FLG_MAKECHR_CHK)
+		exit_status = benchmark_all()? 1 : 0;
+	else if (options.flags & FLG_MAKECHR_CHK)
 		do_makechars(&database, options.charset);
-	else
-	if (options.flags & FLG_CRACKING_CHK) {
+	else if (options.flags & FLG_CRACKING_CHK) {
 		int remaining = database.password_count;
 
 		if (!(options.flags & FLG_STDOUT)) {
 			char *where = fmt_self_test(database.format);
+
 			if (where) {
 				fprintf(stderr, "Self test failed (%s)\n",
 				    where);
@@ -578,24 +582,20 @@ static void john_run(void)
 			john_log_format();
 			if (idle_requested(database.format))
 				log_event("- Configured to use otherwise idle "
-					"processor cycles only");
+				    "processor cycles only");
 		}
 		tty_init(options.flags & FLG_STDIN_CHK);
 
 		if (options.flags & FLG_SINGLE_CHK)
 			do_single_crack(&database);
-		else
-		if (options.flags & FLG_WORDLIST_CHK)
+		else if (options.flags & FLG_WORDLIST_CHK)
 			do_wordlist_crack(&database, options.wordlist,
-				(options.flags & FLG_RULES) != 0);
-		else
-		if (options.flags & FLG_INC_CHK)
+			    (options.flags & FLG_RULES) != 0);
+		else if (options.flags & FLG_INC_CHK)
 			do_incremental_crack(&database, options.charset);
-		else
-		if (options.flags & FLG_EXTERNAL_CHK)
+		else if (options.flags & FLG_EXTERNAL_CHK)
 			do_external_crack(&database);
-		else
-		if (options.flags & FLG_BATCH_CHK)
+		else if (options.flags & FLG_BATCH_CHK)
 			do_batch_crack(&database);
 
 		status_print();
@@ -611,8 +611,8 @@ static void john_run(void)
 			char *might = "Warning: passwords printed above might";
 			char *partial = " be partial";
 			char *not_all = " not be all those cracked";
-			switch (database.options->flags &
-			    (DB_SPLIT | DB_NODUP)) {
+
+			switch (database.options->flags & (DB_SPLIT | DB_NODUP)) {
 			case DB_SPLIT:
 				fprintf(stderr, "%s%s\n", might, partial);
 				break;
@@ -662,7 +662,8 @@ int main(int argc, char **argv)
 	char *name;
 
 #ifdef __DJGPP__
-	if (--argc <= 0) return 1;
+	if (--argc <= 0)
+		return 1;
 	if ((name = strrchr(argv[0], '/')))
 		strcpy(name + 1, argv[1]);
 	name = argv[1];
@@ -671,8 +672,7 @@ int main(int argc, char **argv)
 #else
 	if (!argv[0])
 		name = "john";
-	else
-	if ((name = strrchr(argv[0], '/')))
+	else if ((name = strrchr(argv[0], '/')))
 		name++;
 	else
 		name = argv[0];

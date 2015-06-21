@@ -72,7 +72,7 @@ struct opt_entry {
  * Processes all the command line options. Updates the supplied flags and
  * parameters specified in the options list.
  */
-extern void opt_process(struct opt_entry *list, opt_flags *flg, char **argv);
+extern void opt_process(struct opt_entry *list, opt_flags * flg, char **argv);
 
 /*
  * Checks option dependencies.

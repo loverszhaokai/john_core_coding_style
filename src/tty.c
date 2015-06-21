@@ -45,7 +45,8 @@ void tty_init(int stdin_mode)
 	int fd;
 	struct termios ti;
 
-	if (tty_fd >= 0) return;
+	if (tty_fd >= 0)
+		return;
 
 /*
  * If we're in "--stdin" mode (reading candidate passwords from stdin), then
@@ -56,11 +57,13 @@ void tty_init(int stdin_mode)
 	if (stdin_mode && !tcgetattr(0, &ti))
 		return;
 
-	if ((fd = open("/dev/tty", O_RDONLY | O_NONBLOCK)) < 0) return;
+	if ((fd = open("/dev/tty", O_RDONLY | O_NONBLOCK)) < 0)
+		return;
 
 #ifndef __CYGWIN32__
 	if (tcgetpgrp(fd) != getpid()) {
-		close(fd); return;
+		close(fd);
+		return;
 	}
 #endif
 
@@ -81,6 +84,7 @@ int tty_getchar(void)
 {
 #ifndef __DJGPP__
 	int c;
+
 #ifdef __CYGWIN32__
 	fd_set set;
 	struct timeval tv;
@@ -88,13 +92,16 @@ int tty_getchar(void)
 
 	if (tty_fd >= 0) {
 #ifdef __CYGWIN32__
-		FD_ZERO(&set); FD_SET(tty_fd, &set);
-		tv.tv_sec = 0; tv.tv_usec = 0;
+		FD_ZERO(&set);
+		FD_SET(tty_fd, &set);
+		tv.tv_sec = 0;
+		tv.tv_usec = 0;
 		if (select(tty_fd + 1, &set, NULL, NULL, &tv) <= 0)
 			return -1;
 #endif
 		c = 0;
-		if (read(tty_fd, &c, 1) > 0) return c;
+		if (read(tty_fd, &c, 1) > 0)
+			return c;
 	}
 #else
 	if (_bios_keybrd(_KEYBRD_READY))
@@ -109,9 +116,11 @@ void tty_done(void)
 #ifndef __DJGPP__
 	int fd;
 
-	if (tty_fd < 0) return;
+	if (tty_fd < 0)
+		return;
 
-	fd = tty_fd; tty_fd = -1;
+	fd = tty_fd;
+	tty_fd = -1;
 	tcsetattr(fd, TCSANOW, &saved_ti);
 
 	close(fd);

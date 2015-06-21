@@ -28,9 +28,9 @@ extern void error(void);
  */
 extern void pexit(char *format, ...)
 #ifdef __GNUC__
-	__attribute__ ((format (printf, 1, 2)));
+    __attribute__ ((format(printf, 1, 2)));
 #else
-	;
+;
 #endif
 
 /*
@@ -44,7 +44,7 @@ extern int write_loop(int fd, char *buffer, int count);
  * and skips to the end of long lines. Handles both Unix and DOS style text
  * files correctly.
  */
-extern char *fgetl(char *s, int size, FILE *stream);
+extern char *fgetl(char *s, int size, FILE * stream);
 
 /*
  * Similar to strncpy(), but terminates with only one NUL if there's room

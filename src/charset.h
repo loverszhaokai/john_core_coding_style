@@ -62,14 +62,14 @@ struct charset_header {
  * CHARSET_SIZE characters large.
  */
 	unsigned char order
-		[CHARSET_LENGTH * (CHARSET_LENGTH + 1) / 2 * CHARSET_SIZE * 3];
+	    [CHARSET_LENGTH * (CHARSET_LENGTH + 1) / 2 * CHARSET_SIZE * 3];
 };
 
 /*
  * Reads a charset file header.
  * Returns zero on success, non-zero on error.
  */
-extern int charset_read_header(FILE *file, struct charset_header *header);
+extern int charset_read_header(FILE * file, struct charset_header *header);
 
 /*
  * Generates a charset file, based on plaintexts in the database.

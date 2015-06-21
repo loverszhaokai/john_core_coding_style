@@ -8,7 +8,7 @@
  * There's ABSOLUTELY NO WARRANTY, express or implied.
  */
 
-#define _XOPEN_SOURCE /* for nice(2) */
+#define _XOPEN_SOURCE		/* for nice(2) */
 #include <unistd.h>
 #include <stdio.h>
 
@@ -55,7 +55,7 @@ int idle_requested(struct fmt_main *format)
 void idle_init(struct fmt_main *format)
 {
 #if defined(_POSIX_PRIORITY_SCHEDULING) && defined(SCHED_IDLE)
-	struct sched_param param = {0};
+	struct sched_param param = { 0 };
 #endif
 
 	if (!idle_requested(format) || (options.flags & FLG_STDOUT))
@@ -97,14 +97,17 @@ void idle_yield(void)
 	int yield_calls;
 	struct tms buf;
 
-	if (!use_yield) return;
+	if (!use_yield)
+		return;
 
-	if (++calls_since_tick < calls_to_skip) return;
+	if (++calls_since_tick < calls_to_skip)
+		return;
 	calls_since_adj += calls_since_tick;
 	calls_since_tick = 0;
 
 	current = times(&buf);
-	if (!last_adj) last_adj = current;
+	if (!last_adj)
+		last_adj = current;
 
 	if (current - last_adj >= clk_tck) {
 		calls_per_tick = calls_since_adj / (current - last_adj);
@@ -121,7 +124,8 @@ void idle_yield(void)
 
 	yield_calls = 0;
 	do {
-		if (event_pending) break;
+		if (event_pending)
+			break;
 		last_check = current;
 		sched_yield();
 		yield_calls++;
@@ -135,6 +139,7 @@ void idle_yield(void)
 	{
 		/* 1/16th of a second */
 		unsigned int max_calls_to_skip = calls_per_tick * clk_tck >> 4;
+
 		if (max_calls_to_skip < calls_per_tick)
 			max_calls_to_skip = calls_per_tick;
 		if (calls_to_skip > max_calls_to_skip)

@@ -114,7 +114,7 @@ struct db_salt {
 /* Pointer to a hash function to get the bit index into the bitmap above for
  * the crypt_all() method output with given index.  The function always returns
  * zero if there's no bitmap for this salt. */
-	int (*index)(int index);
+	int (*index) (int index);
 
 /* List of passwords with this salt */
 	struct db_password *list;
@@ -191,7 +191,7 @@ struct db_main {
 	struct db_password **password_hash;
 
 /* binary_hash function used by the loader itself */
-	int (*password_hash_func)(void *binary);
+	int (*password_hash_func) (void *binary);
 
 /* Cracked passwords */
 	struct db_cracked **cracked_hash;

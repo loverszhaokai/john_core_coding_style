@@ -62,9 +62,9 @@ static void init(struct fmt_main *self)
 	fmt_MD5.params.max_keys_per_crypt = MD5_std_max_kpc;
 #endif
 
-	saved_key = mem_alloc_tiny(
-	    sizeof(*saved_key) * fmt_MD5.params.max_keys_per_crypt,
-	    MEM_ALIGN_CACHE);
+	saved_key =
+	    mem_alloc_tiny(sizeof(*saved_key) *
+	    fmt_MD5.params.max_keys_per_crypt, MEM_ALIGN_CACHE);
 }
 
 static int valid(char *ciphertext, struct fmt_main *self)
@@ -78,50 +78,54 @@ static int valid(char *ciphertext, struct fmt_main *self)
 	}
 
 	for (pos = &ciphertext[3]; *pos && *pos != '$'; pos++);
-	if (!*pos || pos < &ciphertext[3] || pos > &ciphertext[11]) return 0;
+	if (!*pos || pos < &ciphertext[3] || pos > &ciphertext[11])
+		return 0;
 
 	start = ++pos;
-	while (atoi64[ARCH_INDEX(*pos)] != 0x7F) pos++;
-	if (*pos || pos - start != CIPHERTEXT_LENGTH) return 0;
+	while (atoi64[ARCH_INDEX(*pos)] != 0x7F)
+		pos++;
+	if (*pos || pos - start != CIPHERTEXT_LENGTH)
+		return 0;
 
-	if (atoi64[ARCH_INDEX(*(pos - 1))] & 0x3C) return 0;
+	if (atoi64[ARCH_INDEX(*(pos - 1))] & 0x3C)
+		return 0;
 
 	return 1;
 }
 
 static int binary_hash_0(void *binary)
 {
-	return *(MD5_word *)binary & 0xF;
+	return *(MD5_word *) binary & 0xF;
 }
 
 static int binary_hash_1(void *binary)
 {
-	return *(MD5_word *)binary & 0xFF;
+	return *(MD5_word *) binary & 0xFF;
 }
 
 static int binary_hash_2(void *binary)
 {
-	return *(MD5_word *)binary & 0xFFF;
+	return *(MD5_word *) binary & 0xFFF;
 }
 
 static int binary_hash_3(void *binary)
 {
-	return *(MD5_word *)binary & 0xFFFF;
+	return *(MD5_word *) binary & 0xFFFF;
 }
 
 static int binary_hash_4(void *binary)
 {
-	return *(MD5_word *)binary & 0xFFFFF;
+	return *(MD5_word *) binary & 0xFFFFF;
 }
 
 static int binary_hash_5(void *binary)
 {
-	return *(MD5_word *)binary & 0xFFFFFF;
+	return *(MD5_word *) binary & 0xFFFFFF;
 }
 
 static int binary_hash_6(void *binary)
 {
-	return *(MD5_word *)binary & 0x7FFFFFF;
+	return *(MD5_word *) binary & 0x7FFFFFF;
 }
 
 static int get_hash_0(int index)
@@ -203,6 +207,7 @@ static char *get_key(int index)
 static int crypt_all(int *pcount, struct db_salt *salt)
 {
 	int count = *pcount;
+
 	MD5_std_crypt(count);
 	return count;
 }
@@ -214,11 +219,11 @@ static int cmp_all(void *binary, int count)
 #endif
 	for_each_t(n) {
 #if MD5_X2
-		if (*(MD5_word *)binary == MD5_out[0][0] ||
-		    *(MD5_word *)binary == MD5_out[1][0])
+		if (*(MD5_word *) binary == MD5_out[0][0] ||
+		    *(MD5_word *) binary == MD5_out[1][0])
 			return 1;
 #else
-		if (*(MD5_word *)binary == MD5_out[0][0])
+		if (*(MD5_word *) binary == MD5_out[0][0])
 			return 1;
 #endif
 	}
@@ -228,7 +233,7 @@ static int cmp_all(void *binary, int count)
 static int cmp_one(void *binary, int index)
 {
 	init_t();
-	return *(MD5_word *)binary == MD5_out[index][0];
+	return *(MD5_word *) binary == MD5_out[index][0];
 }
 
 static int cmp_exact(char *source, int index)
@@ -240,59 +245,55 @@ static int cmp_exact(char *source, int index)
 
 struct fmt_main fmt_MD5 = {
 	{
-		FORMAT_LABEL,
-		FORMAT_NAME,
-		MD5_ALGORITHM_NAME,
-		BENCHMARK_COMMENT,
-		BENCHMARK_LENGTH,
-		PLAINTEXT_LENGTH,
-		BINARY_SIZE,
-		BINARY_ALIGN,
-		SALT_SIZE,
-		SALT_ALIGN,
-		MIN_KEYS_PER_CRYPT,
-		MAX_KEYS_PER_CRYPT,
+		    FORMAT_LABEL,
+		    FORMAT_NAME,
+		    MD5_ALGORITHM_NAME,
+		    BENCHMARK_COMMENT,
+		    BENCHMARK_LENGTH,
+		    PLAINTEXT_LENGTH,
+		    BINARY_SIZE,
+		    BINARY_ALIGN,
+		    SALT_SIZE,
+		    SALT_ALIGN,
+		    MIN_KEYS_PER_CRYPT,
+		    MAX_KEYS_PER_CRYPT,
 #if MD5_std_mt
-		FMT_OMP |
+		    FMT_OMP |
 #endif
-		FMT_CASE | FMT_8_BIT,
-		tests
-	}, {
-		init,
-		fmt_default_done,
-		fmt_default_reset,
-		fmt_default_prepare,
-		valid,
-		fmt_default_split,
-		(void *(*)(char *))MD5_std_get_binary,
-		(void *(*)(char *))MD5_std_get_salt,
-		fmt_default_source,
-		{
-			binary_hash_0,
-			binary_hash_1,
-			binary_hash_2,
-			binary_hash_3,
-			binary_hash_4,
-			binary_hash_5,
-			binary_hash_6
-		},
-		salt_hash,
-		(void (*)(void *))MD5_std_set_salt,
-		set_key,
-		get_key,
-		fmt_default_clear_keys,
-		crypt_all,
-		{
-			get_hash_0,
-			get_hash_1,
-			get_hash_2,
-			get_hash_3,
-			get_hash_4,
-			get_hash_5,
-			get_hash_6
-		},
-		cmp_all,
-		cmp_one,
-		cmp_exact
-	}
+		    FMT_CASE | FMT_8_BIT,
+	    tests}, {
+		    init,
+		    fmt_default_done,
+		    fmt_default_reset,
+		    fmt_default_prepare,
+		    valid,
+		    fmt_default_split,
+		    (void *(*)(char *))MD5_std_get_binary,
+		    (void *(*)(char *))MD5_std_get_salt,
+		    fmt_default_source,
+		    {
+				binary_hash_0,
+				binary_hash_1,
+				binary_hash_2,
+				binary_hash_3,
+				binary_hash_4,
+				binary_hash_5,
+			binary_hash_6},
+		    salt_hash,
+		    (void (*)(void *))MD5_std_set_salt,
+		    set_key,
+		    get_key,
+		    fmt_default_clear_keys,
+		    crypt_all,
+		    {
+				get_hash_0,
+				get_hash_1,
+				get_hash_2,
+				get_hash_3,
+				get_hash_4,
+				get_hash_5,
+			get_hash_6},
+		    cmp_all,
+		    cmp_one,
+	    cmp_exact}
 };

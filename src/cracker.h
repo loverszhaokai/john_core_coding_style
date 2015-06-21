@@ -19,8 +19,8 @@
  * the future. If guesses is not NULL, the cracker will save guessed keys
  * in there (the caller must make sure there's room).
  */
-extern void crk_init(struct db_main *db, void (*fix_state)(void),
-	struct db_keys *guesses);
+extern void crk_init(struct db_main *db, void (*fix_state) (void),
+    struct db_keys *guesses);
 
 /*
  * Tries the key against all passwords in the database (should not be empty).

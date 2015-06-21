@@ -88,6 +88,7 @@ typedef struct {
 extern MD5_std_combined *MD5_std_all_p;
 extern int MD5_std_min_kpc, MD5_std_max_kpc;
 extern int MD5_std_nt;
+
 #define MD5_std_all_align		64
 #define MD5_std_all_size \
 	((sizeof(MD5_std_combined) + (MD5_std_all_align - 1)) & \
@@ -116,6 +117,7 @@ extern int MD5_std_nt;
 #else
 #define MD5_std_mt			0
 extern MD5_std_combined MD5_std_all;
+
 #define for_each_t(n)
 #define init_t()
 #endif

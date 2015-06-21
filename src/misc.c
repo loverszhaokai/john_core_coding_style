@@ -51,7 +51,8 @@ int write_loop(int fd, char *buffer, int count)
 /* If any write(2) fails, we consider that the entire write_loop() has
  * failed to do its job, unless we were interrupted by a signal. */
 		if (block < 0) {
-			if (errno == EINTR) continue;
+			if (errno == EINTR)
+				continue;
 			return block;
 		}
 
@@ -63,25 +64,27 @@ int write_loop(int fd, char *buffer, int count)
 	return offset;
 }
 
-char *fgetl(char *s, int size, FILE *stream)
+char *fgetl(char *s, int size, FILE * stream)
 {
 	char *res, *pos;
 	int c;
 
 	if ((res = fgets(s, size, stream))) {
-		if (!*res) return res;
+		if (!*res)
+			return res;
 
 		pos = res + strlen(res) - 1;
 		if (*pos == '\n') {
 			*pos = 0;
 			if (pos > res)
-			if (*--pos == '\r') *pos = 0;
+				if (*--pos == '\r')
+					*pos = 0;
+		} else if ((c = getc(stream)) == '\n') {
+			if (*pos == '\r')
+				*pos = 0;
 		} else
-		if ((c = getc(stream)) == '\n') {
-			if (*pos == '\r') *pos = 0;
-		} else
-		while (c != EOF && c != '\n')
-			c = getc(stream);
+			while (c != EOF && c != '\n')
+				c = getc(stream);
 	}
 
 	return res;
@@ -93,7 +96,8 @@ char *strnfcpy(char *dst, char *src, int size)
 	int count = size;
 
 	while (count--)
-		if (!(*dptr++ = *sptr++)) break;
+		if (!(*dptr++ = *sptr++))
+			break;
 
 	return dst;
 }
@@ -105,7 +109,8 @@ char *strnzcpy(char *dst, char *src, int size)
 
 	if (count)
 		while (--count)
-			if (!(*dptr++ = *sptr++)) break;
+			if (!(*dptr++ = *sptr++))
+				break;
 	*dptr = 0;
 
 	return dst;
@@ -118,11 +123,13 @@ char *strnzcat(char *dst, char *src, int size)
 
 	if (count) {
 		while (count && *dptr) {
-			count--; dptr++;
+			count--;
+			dptr++;
 		}
 		if (count)
 			while (--count)
-				if (!(*dptr++ = *sptr++)) break;
+				if (!(*dptr++ = *sptr++))
+					break;
 	}
 	*dptr = 0;
 
@@ -134,10 +141,10 @@ char *strlwr(char *s)
 	unsigned char *ptr = (unsigned char *)s;
 
 	while (*ptr)
-	if (*ptr >= 'A' && *ptr <= 'Z')
-		*ptr++ |= 0x20;
-	else
-		ptr++;
+		if (*ptr >= 'A' && *ptr <= 'Z')
+			*ptr++ |= 0x20;
+		else
+			ptr++;
 
 	return s;
 }

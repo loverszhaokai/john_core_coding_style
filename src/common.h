@@ -40,7 +40,7 @@ typedef unsigned int ARCH_WORD_32;
 #define CC_CACHE_ALIGN \
 	__attribute__ ((aligned (MEM_ALIGN_CACHE)))
 #else
-#define CC_CACHE_ALIGN			/* nothing */
+#define CC_CACHE_ALIGN		/* nothing */
 #endif
 
 /*

@@ -31,7 +31,7 @@ extern void rules_init(int max_length);
  * last may specify which internal buffer must not be touched.
  */
 extern char *rules_reject(char *rule, int split, char *last,
-	struct db_main *db);
+    struct db_main *db);
 
 /*
  * Applies rule to a word. Returns the updated word, or NULL if rejected or

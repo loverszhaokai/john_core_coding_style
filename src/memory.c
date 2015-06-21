@@ -23,7 +23,8 @@ void *mem_alloc(size_t size)
 {
 	void *res;
 
-	if (!size) return NULL;
+	if (!size)
+		return NULL;
 
 	if (!(res = malloc(size))) {
 		fprintf(stderr, "malloc: %s\n", strerror(ENOMEM));
@@ -50,11 +51,11 @@ void *mem_alloc_tiny(size_t size, size_t align)
 	do {
 		if (buffer) {
 			size_t need =
-			    size + mask - (((size_t)buffer + mask) & mask);
+			    size + mask - (((size_t) buffer + mask) & mask);
 			if (bufree >= need) {
 				p = buffer;
 				p += mask;
-				p -= (size_t)p & mask;
+				p -= (size_t) p & mask;
 				bufree -= need;
 				buffer = p + size;
 				return p;
@@ -71,7 +72,7 @@ void *mem_alloc_tiny(size_t size, size_t align)
 
 	p = mem_alloc(size + mask);
 	p += mask;
-	p -= (size_t)p & mask;
+	p -= (size_t) p & mask;
 	return p;
 }
 
@@ -84,8 +85,10 @@ char *str_alloc_copy(char *src)
 {
 	size_t size;
 
-	if (!src) return "";
-	if (!*src) return "";
+	if (!src)
+		return "";
+	if (!*src)
+		return "";
 
 	size = strlen(src) + 1;
 	return (char *)memcpy(mem_alloc_tiny(size, MEM_ALIGN_NONE), src, size);

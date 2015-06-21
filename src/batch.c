@@ -29,8 +29,8 @@ static void do_wordlist_pass(struct db_main *db)
 	char *name;
 
 	if (!(name = cfg_get_param(SECTION_OPTIONS, NULL, "Wordlist")))
-	if (!(name = cfg_get_param(SECTION_OPTIONS, NULL, "Wordfile")))
-		name = WORDLIST_NAME;
+		if (!(name = cfg_get_param(SECTION_OPTIONS, NULL, "Wordfile")))
+			name = WORDLIST_NAME;
 
 	do_wordlist_crack(db, name, 1);
 }
@@ -47,12 +47,14 @@ void do_batch_crack(struct db_main *db)
 	case 1:
 		status.pass = 1;
 		do_single_pass(db);
-		if (event_abort || !db->salts) break;
+		if (event_abort || !db->salts)
+			break;
 
 	case 2:
 		status.pass = 2;
 		do_wordlist_pass(db);
-		if (event_abort || !db->salts) break;
+		if (event_abort || !db->salts)
+			break;
 
 	case 3:
 		status.pass = 3;

@@ -24,8 +24,7 @@ int main(int argc, char **argv)
 
 	if (!argv[0])
 		name = path;
-	else
-	if ((name = strrchr(strcpy(path, argv[0]), '/')))
+	else if ((name = strrchr(strcpy(path, argv[0]), '/')))
 		name++;
 	else
 		name = path;

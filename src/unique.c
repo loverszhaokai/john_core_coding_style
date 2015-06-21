@@ -8,7 +8,7 @@
  * There's ABSOLUTELY NO WARRANTY, express or implied.
  */
 
-#define _POSIX_SOURCE /* for fdopen(3) */
+#define _POSIX_SOURCE		/* for fdopen(3) */
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -20,7 +20,7 @@
 #include "params.h"
 #include "memory.h"
 
-#define ENTRY_END_HASH			0xFFFFFFFF /* also hard-coded */
+#define ENTRY_END_HASH			0xFFFFFFFF	/* also hard-coded */
 #define ENTRY_END_LIST			0xFFFFFFFE
 #define ENTRY_DUPE			0xFFFFFFFD
 
@@ -46,10 +46,9 @@ static unsigned int get_int(unsigned int *ptr)
 	unsigned char *bytes = (unsigned char *)ptr;
 
 	return
-		(unsigned int)bytes[0] |
-		((unsigned int)bytes[1] << 8) |
-		((unsigned int)bytes[2] << 16) |
-		((unsigned int)bytes[3] << 24);
+	    (unsigned int)bytes[0] |
+	    ((unsigned int)bytes[1] << 8) |
+	    ((unsigned int)bytes[2] << 16) | ((unsigned int)bytes[3] << 24);
 }
 
 static void put_int(unsigned int *ptr, unsigned int value)
@@ -88,9 +87,11 @@ static unsigned int line_hash(char *line)
 #endif
 
 	while (*p) {
-		hash <<= 3; extra <<= 2;
+		hash <<= 3;
+		extra <<= 2;
 		hash += (unsigned char)p[0];
-		if (!p[1]) break;
+		if (!p[1])
+			break;
 		extra += (unsigned char)p[1];
 		p += 2;
 		if (hash & 0xe0000000) {
@@ -142,11 +143,13 @@ static void read_buffer(void)
 		current = get_int(last);
 #endif
 		while (current != ENTRY_END_HASH) {
-			if (!strcmp(line, &buffer.data[current + 4])) break;
+			if (!strcmp(line, &buffer.data[current + 4]))
+				break;
 			last = (unsigned int *)&buffer.data[current];
 			current = get_int(last);
 		}
-		if (current != ENTRY_END_HASH) continue;
+		if (current != ENTRY_END_HASH)
+			continue;
 
 		put_int(last, ptr);
 
@@ -156,10 +159,12 @@ static void read_buffer(void)
 		strcpy(&buffer.data[ptr], line);
 		ptr += strlen(line) + 1;
 
-		if (ptr > UNIQUE_BUFFER_SIZE - sizeof(line) - 8) break;
+		if (ptr > UNIQUE_BUFFER_SIZE - sizeof(line) - 8)
+			break;
 	}
 
-	if (ferror(stdin)) pexit("fgets");
+	if (ferror(stdin))
+		pexit("fgets");
 
 	put_data(ptr, ENTRY_END_LIST);
 }
@@ -171,6 +176,7 @@ static void write_buffer(void)
 	ptr = 0;
 	while ((hash = get_data(ptr)) != ENTRY_END_LIST) {
 		unsigned int length, size;
+
 		ptr += 4;
 		length = strlen(&buffer.data[ptr]);
 		size = length + 1;
@@ -188,7 +194,8 @@ static void clean_buffer(void)
 	char line[LINE_BUFFER_SIZE];
 	unsigned int current, *last;
 
-	if (fseek(output, 0, SEEK_SET) < 0) pexit("fseek");
+	if (fseek(output, 0, SEEK_SET) < 0)
+		pexit("fseek");
 
 	while (fgetl(line, sizeof(line), output)) {
 		last = &buffer.hash[line_hash(line)];
@@ -208,10 +215,12 @@ static void clean_buffer(void)
 		}
 	}
 
-	if (ferror(output)) pexit("fgets");
+	if (ferror(output))
+		pexit("fgets");
 
 /* Workaround a Solaris stdio bug */
-	if (fseek(output, 0, SEEK_END) < 0) pexit("fseek");
+	if (fseek(output, 0, SEEK_END) < 0)
+		pexit("fseek");
 }
 
 static void unique_init(char *name)
@@ -223,7 +232,8 @@ static void unique_init(char *name)
 
 	if ((fd = open(name, O_RDWR | O_CREAT | O_EXCL, 0600)) < 0)
 		pexit("open: %s", name);
-	if (!(output = fdopen(fd, "w+"))) pexit("fdopen");
+	if (!(output = fdopen(fd, "w+")))
+		pexit("fdopen");
 }
 
 static void unique_run(void)
@@ -240,7 +250,8 @@ static void unique_run(void)
 
 static void unique_done(void)
 {
-	if (fclose(output)) pexit("fclose");
+	if (fclose(output))
+		pexit("fclose");
 }
 
 int unique(int argc, char **argv)

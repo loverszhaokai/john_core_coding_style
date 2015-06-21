@@ -21,7 +21,8 @@ static void process_entry(unsigned char *entry, char *cell)
 	unsigned char *key = &entry[168];
 	int index;
 
-	if (!name[0]) return;
+	if (!name[0])
+		return;
 
 	name[63] = 0;
 	printf("%s", name);
@@ -37,25 +38,26 @@ static void process_entry(unsigned char *entry, char *cell)
 	printf(",%s\n", cell);
 }
 
-static int process_db(FILE *file, char *cell)
+static int process_db(FILE * file, char *cell)
 {
 	unsigned char buffer[DB_ENTRY_SIZE];
 	long size;
 
-	if (fread(buffer, 8, 1, file) != 1) return 1;
-	size =
-		((long)buffer[6] << 8) |
-		(long)buffer[7];
-	if (size == 0) size = 64; /* OpenAFS */
-	if (fseek(file, size, SEEK_SET)) pexit("fseek");
+	if (fread(buffer, 8, 1, file) != 1)
+		return 1;
+	size = ((long)buffer[6] << 8) | (long)buffer[7];
+	if (size == 0)
+		size = 64;	/* OpenAFS */
+	if (fseek(file, size, SEEK_SET))
+		pexit("fseek");
 
-	if (fread(buffer, 8, 1, file) != 1) return 1;
+	if (fread(buffer, 8, 1, file) != 1)
+		return 1;
 	size +=
-		((long)buffer[4] << 24) |
-		((long)buffer[5] << 16) |
-		((long)buffer[6] << 8) |
-		(long)buffer[7];
-	if (fseek(file, size, SEEK_SET)) pexit("fseek");
+	    ((long)buffer[4] << 24) |
+	    ((long)buffer[5] << 16) | ((long)buffer[6] << 8) | (long)buffer[7];
+	if (fseek(file, size, SEEK_SET))
+		pexit("fseek");
 
 	while (fread(buffer, 1, DB_ENTRY_SIZE, file) == DB_ENTRY_SIZE)
 		process_entry(buffer, cell);
@@ -80,14 +82,16 @@ int unafs(int argc, char **argv)
 		pexit("fopen: %s", argv[1]);
 
 	if (process_db(file, argv[2]))
-	if (!ferror(file)) {
-		fprintf(stderr, "fread: Unexpected EOF\n");
-		error();
-	}
+		if (!ferror(file)) {
+			fprintf(stderr, "fread: Unexpected EOF\n");
+			error();
+		}
 
-	if (ferror(file)) pexit("fread");
+	if (ferror(file))
+		pexit("fread");
 
-	if (fclose(file)) pexit("fclose");
+	if (fclose(file))
+		pexit("fclose");
 
 	return 0;
 }

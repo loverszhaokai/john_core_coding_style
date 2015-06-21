@@ -32,27 +32,24 @@ MD5_std_combined CC_CACHE_ALIGN MD5_std_all;
 #if !MD5_IMM
 static MD5_data MD5_data_init = {
 	{
-		0xd76aa477, 0xf8fa0bcc, 0xbcdb4dd9, 0xb18b7a77,
-		0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
-		0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
-		0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
-		0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
-		0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
-		0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
-		0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
-		0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
-		0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
-		0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
-		0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
-		0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
-		0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
-		0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
-		0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
-	}, {
-		0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476
-	}, {
-		0x77777777, 0x00ff00ff
-	}
+		    0xd76aa477, 0xf8fa0bcc, 0xbcdb4dd9, 0xb18b7a77,
+		    0xf57c0faf, 0x4787c62a, 0xa8304613, 0xfd469501,
+		    0x698098d8, 0x8b44f7af, 0xffff5bb1, 0x895cd7be,
+		    0x6b901122, 0xfd987193, 0xa679438e, 0x49b40821,
+		    0xf61e2562, 0xc040b340, 0x265e5a51, 0xe9b6c7aa,
+		    0xd62f105d, 0x02441453, 0xd8a1e681, 0xe7d3fbc8,
+		    0x21e1cde6, 0xc33707d6, 0xf4d50d87, 0x455a14ed,
+		    0xa9e3e905, 0xfcefa3f8, 0x676f02d9, 0x8d2a4c8a,
+		    0xfffa3942, 0x8771f681, 0x6d9d6122, 0xfde5380c,
+		    0xa4beea44, 0x4bdecfa9, 0xf6bb4b60, 0xbebfbc70,
+		    0x289b7ec6, 0xeaa127fa, 0xd4ef3085, 0x04881d05,
+		    0xd9d4d039, 0xe6db99e5, 0x1fa27cf8, 0xc4ac5665,
+		    0xf4292244, 0x432aff97, 0xab9423a7, 0xfc93a039,
+		    0x655b59c3, 0x8f0ccc92, 0xffeff47d, 0x85845dd1,
+		    0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
+	    0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391}, {
+	    0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476}, {
+	    0x77777777, 0x00ff00ff}
 };
 #endif
 
@@ -320,6 +317,7 @@ void MD5_std_init(void)
 {
 	int index;
 	MD5_pool *current;
+
 #if MD5_std_mt
 	int t, n;
 
@@ -332,6 +330,7 @@ void MD5_std_init(void)
 		MD5_std_min_kpc = n * MD5_N;
 		{
 			int max = n * MD5_std_cpt;
+
 			while (max > MD5_std_mt_max)
 				max -= n;
 			n = max;
@@ -435,7 +434,7 @@ void MD5_std_set_key(char *key, int index)
 	memcpy(&current->o.pp.b[length], key, length);
 	current->l.pp = length << 1;
 	memcpy(&current->o.pp.b[current->l.pp + 16], PADDING,
-		40 - current->l.pp);
+	    40 - current->l.pp);
 	current->o.pp.w[14] = (current->l.pp + 16) << 3;
 
 	memcpy(&current->e.p.b[16], key, length);
@@ -445,7 +444,7 @@ void MD5_std_set_key(char *key, int index)
 
 	memcpy(&current->e.pp.b[16], current->o.pp.b, current->l.pp);
 	memcpy(&current->e.pp.b[16 + current->l.pp], PADDING,
-		40 - current->l.pp);
+	    40 - current->l.pp);
 	current->e.pp.w[14] = (current->l.pp + 16) << 3;
 	MD5_swap(current->e.pp.w, current->e.pp.w, 14);
 
@@ -478,7 +477,7 @@ extern void MD5_body(MD5_word x[15], MD5_word out[4]);
 #define MD5_body(x, out) \
 	MD5_body_for_thread(t, x, out)
 static MAYBE_INLINE_BODY void MD5_body_for_thread(int t,
-	MD5_word x[15], MD5_word out[4])
+    MD5_word x[15], MD5_word out[4])
 #else
 static MAYBE_INLINE_BODY void MD5_body(MD5_word x[15], MD5_word out[4])
 #endif
@@ -487,83 +486,91 @@ static MAYBE_INLINE_BODY void MD5_body(MD5_word x[15], MD5_word out[4])
 
 /* Round 1 */
 	a = AC1 + x[0];
-	ROTATE_LEFT (a, S11); a += b;			/* 1 */
+	ROTATE_LEFT(a, S11);
+	a += b;			/* 1 */
 	d = (c ^ (a & MASK1)) + x[1] + AC2pCd;
-	ROTATE_LEFT (d, S12); d += a;			/* 2 */
+	ROTATE_LEFT(d, S12);
+	d += a;			/* 2 */
 	c = F(d, a, b) + x[2] + AC3pCc;
-	ROTATE_LEFT(c, S13); c += d;			/* 3 */
+	ROTATE_LEFT(c, S13);
+	c += d;			/* 3 */
 	b = F(c, d, a) + x[3] + AC4pCb;
-	ROTATE_LEFT(b, S14); b += c;			/* 4 */
-	FF (a, b, c, d, x[ 4], S11, AC5);		/* 5 */
-	FF (d, a, b, c, x[ 5], S12, AC6);		/* 6 */
-	FF (c, d, a, b, x[ 6], S13, AC7);		/* 7 */
-	FF (b, c, d, a, x[ 7], S14, AC8);		/* 8 */
-	FF (a, b, c, d, x[ 8], S11, AC9);		/* 9 */
-	FF (d, a, b, c, x[ 9], S12, AC10);		/* 10 */
-	FF (c, d, a, b, x[10], S13, AC11);		/* 11 */
-	FF (b, c, d, a, x[11], S14, AC12);		/* 12 */
-	FF (a, b, c, d, x[12], S11, AC13);		/* 13 */
-	FF (d, a, b, c, x[13], S12, AC14);		/* 14 */
-	FF (c, d, a, b, x[14], S13, AC15);		/* 15 */
-	b += F (c, d, a) + AC16;
-	ROTATE_LEFT (b, S14); b += c;			/* 16 */
+	ROTATE_LEFT(b, S14);
+	b += c;			/* 4 */
+	FF(a, b, c, d, x[4], S11, AC5);	/* 5 */
+	FF(d, a, b, c, x[5], S12, AC6);	/* 6 */
+	FF(c, d, a, b, x[6], S13, AC7);	/* 7 */
+	FF(b, c, d, a, x[7], S14, AC8);	/* 8 */
+	FF(a, b, c, d, x[8], S11, AC9);	/* 9 */
+	FF(d, a, b, c, x[9], S12, AC10);	/* 10 */
+	FF(c, d, a, b, x[10], S13, AC11);	/* 11 */
+	FF(b, c, d, a, x[11], S14, AC12);	/* 12 */
+	FF(a, b, c, d, x[12], S11, AC13);	/* 13 */
+	FF(d, a, b, c, x[13], S12, AC14);	/* 14 */
+	FF(c, d, a, b, x[14], S13, AC15);	/* 15 */
+	b += F(c, d, a) + AC16;
+	ROTATE_LEFT(b, S14);
+	b += c;			/* 16 */
 
 /* Round 2 */
-	GG (a, b, c, d, x[ 1], S21, AC17);		/* 17 */
-	GG (d, a, b, c, x[ 6], S22, AC18);		/* 18 */
-	GG (c, d, a, b, x[11], S23, AC19);		/* 19 */
-	GG (b, c, d, a, x[ 0], S24, AC20);		/* 20 */
-	GG (a, b, c, d, x[ 5], S21, AC21);		/* 21 */
-	GG (d, a, b, c, x[10], S22, AC22);		/* 22 */
-	c += G (d, a, b) + AC23;
-	ROTATE_LEFT (c, S23); c += d;			/* 23 */
-	GG (b, c, d, a, x[ 4], S24, AC24);		/* 24 */
-	GG (a, b, c, d, x[ 9], S21, AC25);		/* 25 */
-	GG (d, a, b, c, x[14], S22, AC26);		/* 26 */
-	GG (c, d, a, b, x[ 3], S23, AC27);		/* 27 */
-	GG (b, c, d, a, x[ 8], S24, AC28);		/* 28 */
-	GG (a, b, c, d, x[13], S21, AC29);		/* 29 */
-	GG (d, a, b, c, x[ 2], S22, AC30);		/* 30 */
-	GG (c, d, a, b, x[ 7], S23, AC31);		/* 31 */
-	GG (b, c, d, a, x[12], S24, AC32);		/* 32 */
+	GG(a, b, c, d, x[1], S21, AC17);	/* 17 */
+	GG(d, a, b, c, x[6], S22, AC18);	/* 18 */
+	GG(c, d, a, b, x[11], S23, AC19);	/* 19 */
+	GG(b, c, d, a, x[0], S24, AC20);	/* 20 */
+	GG(a, b, c, d, x[5], S21, AC21);	/* 21 */
+	GG(d, a, b, c, x[10], S22, AC22);	/* 22 */
+	c += G(d, a, b) + AC23;
+	ROTATE_LEFT(c, S23);
+	c += d;			/* 23 */
+	GG(b, c, d, a, x[4], S24, AC24);	/* 24 */
+	GG(a, b, c, d, x[9], S21, AC25);	/* 25 */
+	GG(d, a, b, c, x[14], S22, AC26);	/* 26 */
+	GG(c, d, a, b, x[3], S23, AC27);	/* 27 */
+	GG(b, c, d, a, x[8], S24, AC28);	/* 28 */
+	GG(a, b, c, d, x[13], S21, AC29);	/* 29 */
+	GG(d, a, b, c, x[2], S22, AC30);	/* 30 */
+	GG(c, d, a, b, x[7], S23, AC31);	/* 31 */
+	GG(b, c, d, a, x[12], S24, AC32);	/* 32 */
 
 /* Round 3 */
-	HH (a, b, c, d, x[ 5], S31, AC33);		/* 33 */
-	HH (d, a, b, c, x[ 8], S32, AC34);		/* 34 */
-	HH (c, d, a, b, x[11], S33, AC35);		/* 35 */
-	HH (b, c, d, a, x[14], S34, AC36);		/* 36 */
-	HH (a, b, c, d, x[ 1], S31, AC37);		/* 37 */
-	HH (d, a, b, c, x[ 4], S32, AC38);		/* 38 */
-	HH (c, d, a, b, x[ 7], S33, AC39);		/* 39 */
-	HH (b, c, d, a, x[10], S34, AC40);		/* 40 */
-	HH (a, b, c, d, x[13], S31, AC41);		/* 41 */
-	HH (d, a, b, c, x[ 0], S32, AC42);		/* 42 */
-	HH (c, d, a, b, x[ 3], S33, AC43);		/* 43 */
-	HH (b, c, d, a, x[ 6], S34, AC44);		/* 44 */
-	HH (a, b, c, d, x[ 9], S31, AC45);		/* 45 */
-	HH (d, a, b, c, x[12], S32, AC46);		/* 46 */
-	c += H (d, a, b) + AC47;
-	ROTATE_LEFT (c, S33); c += d;			/* 47 */
-	HH (b, c, d, a, x[ 2], S34, AC48);		/* 48 */
+	HH(a, b, c, d, x[5], S31, AC33);	/* 33 */
+	HH(d, a, b, c, x[8], S32, AC34);	/* 34 */
+	HH(c, d, a, b, x[11], S33, AC35);	/* 35 */
+	HH(b, c, d, a, x[14], S34, AC36);	/* 36 */
+	HH(a, b, c, d, x[1], S31, AC37);	/* 37 */
+	HH(d, a, b, c, x[4], S32, AC38);	/* 38 */
+	HH(c, d, a, b, x[7], S33, AC39);	/* 39 */
+	HH(b, c, d, a, x[10], S34, AC40);	/* 40 */
+	HH(a, b, c, d, x[13], S31, AC41);	/* 41 */
+	HH(d, a, b, c, x[0], S32, AC42);	/* 42 */
+	HH(c, d, a, b, x[3], S33, AC43);	/* 43 */
+	HH(b, c, d, a, x[6], S34, AC44);	/* 44 */
+	HH(a, b, c, d, x[9], S31, AC45);	/* 45 */
+	HH(d, a, b, c, x[12], S32, AC46);	/* 46 */
+	c += H(d, a, b) + AC47;
+	ROTATE_LEFT(c, S33);
+	c += d;			/* 47 */
+	HH(b, c, d, a, x[2], S34, AC48);	/* 48 */
 
 /* Round 4 */
-	II (a, b, c, d, x[ 0], S41, AC49);		/* 49 */
-	II (d, a, b, c, x[ 7], S42, AC50);		/* 50 */
-	II (c, d, a, b, x[14], S43, AC51);		/* 51 */
-	II (b, c, d, a, x[ 5], S44, AC52);		/* 52 */
-	II (a, b, c, d, x[12], S41, AC53);		/* 53 */
-	II (d, a, b, c, x[ 3], S42, AC54);		/* 54 */
-	II (c, d, a, b, x[10], S43, AC55);		/* 55 */
-	II (b, c, d, a, x[ 1], S44, AC56);		/* 56 */
-	II (a, b, c, d, x[ 8], S41, AC57);		/* 57 */
-	d += I (a, b, c) + AC58;
-	ROTATE_LEFT (d, S42); d += a;			/* 58 */
-	II (c, d, a, b, x[ 6], S43, AC59);		/* 59 */
-	II (b, c, d, a, x[13], S44, AC60);		/* 60 */
-	II (a, b, c, d, x[ 4], S41, AC61);		/* 61 */
-	II (d, a, b, c, x[11], S42, AC62);		/* 62 */
-	II (c, d, a, b, x[ 2], S43, AC63);		/* 63 */
-	II (b, c, d, a, x[ 9], S44, AC64);		/* 64 */
+	II(a, b, c, d, x[0], S41, AC49);	/* 49 */
+	II(d, a, b, c, x[7], S42, AC50);	/* 50 */
+	II(c, d, a, b, x[14], S43, AC51);	/* 51 */
+	II(b, c, d, a, x[5], S44, AC52);	/* 52 */
+	II(a, b, c, d, x[12], S41, AC53);	/* 53 */
+	II(d, a, b, c, x[3], S42, AC54);	/* 54 */
+	II(c, d, a, b, x[10], S43, AC55);	/* 55 */
+	II(b, c, d, a, x[1], S44, AC56);	/* 56 */
+	II(a, b, c, d, x[8], S41, AC57);	/* 57 */
+	d += I(a, b, c) + AC58;
+	ROTATE_LEFT(d, S42);
+	d += a;			/* 58 */
+	II(c, d, a, b, x[6], S43, AC59);	/* 59 */
+	II(b, c, d, a, x[13], S44, AC60);	/* 60 */
+	II(a, b, c, d, x[4], S41, AC61);	/* 61 */
+	II(d, a, b, c, x[11], S42, AC62);	/* 62 */
+	II(c, d, a, b, x[2], S43, AC63);	/* 63 */
+	II(b, c, d, a, x[9], S44, AC64);	/* 64 */
 
 	out[0] = Ca + a;
 	out[1] = Cb + b;
@@ -577,11 +584,10 @@ static MAYBE_INLINE_BODY void MD5_body(MD5_word x[15], MD5_word out[4])
 #define MD5_body(x0, x1, out0, out1) \
 	MD5_body_for_thread(t, x0, x1, out0, out1)
 static MAYBE_INLINE_BODY void MD5_body_for_thread(int t,
-	MD5_word x0[15], MD5_word x1[15],
-	MD5_word out0[4], MD5_word out1[4])
+    MD5_word x0[15], MD5_word x1[15], MD5_word out0[4], MD5_word out1[4])
 #else
 static MAYBE_INLINE_BODY void MD5_body(MD5_word x0[15], MD5_word x1[15],
-	MD5_word out0[4], MD5_word out1[4])
+    MD5_word out0[4], MD5_word out1[4])
 #endif
 {
 	MD5_word a0, b0 = Cb, c0 = Cc, d0;
@@ -590,155 +596,171 @@ static MAYBE_INLINE_BODY void MD5_body(MD5_word x0[15], MD5_word x1[15],
 
 /* Round 1 */
 	a0 = (u = AC1) + x0[0];
-	ROTATE_LEFT (a0, S11); a0 += b0;		/* 1 */
+	ROTATE_LEFT(a0, S11);
+	a0 += b0;		/* 1 */
 	a1 = u + x1[0];
-	ROTATE_LEFT (a1, S11); a1 += b0;		/* 1 */
+	ROTATE_LEFT(a1, S11);
+	a1 += b0;		/* 1 */
 	d0 = (c0 ^ (a0 & (u = MASK1))) + x0[1] + (v = AC2pCd);
-	ROTATE_LEFT (d0, S12); d0 += a0;		/* 2 */
+	ROTATE_LEFT(d0, S12);
+	d0 += a0;		/* 2 */
 	d1 = (c0 ^ (a1 & u)) + x1[1] + v;
-	ROTATE_LEFT (d1, S12); d1 += a1;		/* 2 */
+	ROTATE_LEFT(d1, S12);
+	d1 += a1;		/* 2 */
 	c0 = F(d0, a0, b0) + x0[2] + (u = AC3pCc);
-	ROTATE_LEFT(c0, S13); c0 += d0;			/* 3 */
+	ROTATE_LEFT(c0, S13);
+	c0 += d0;		/* 3 */
 	c1 = F(d1, a1, b0) + x1[2] + u;
-	ROTATE_LEFT(c1, S13); c1 += d1;			/* 3 */
+	ROTATE_LEFT(c1, S13);
+	c1 += d1;		/* 3 */
 	b0 = F(c0, d0, a0) + x0[3] + (u = AC4pCb);
-	ROTATE_LEFT(b0, S14); b0 += c0;			/* 4 */
+	ROTATE_LEFT(b0, S14);
+	b0 += c0;		/* 4 */
 	b1 = F(c1, d1, a1) + x1[3] + u;
-	ROTATE_LEFT(b1, S14); b1 += c1;			/* 4 */
-	FF (a0, b0, c0, d0, x0[ 4], S11, (u = AC5));	/* 5 */
-	FF (a1, b1, c1, d1, x1[ 4], S11, u);		/* 5 */
-	FF (d0, a0, b0, c0, x0[ 5], S12, (u = AC6));	/* 6 */
-	FF (d1, a1, b1, c1, x1[ 5], S12, u);		/* 6 */
-	FF (c0, d0, a0, b0, x0[ 6], S13, (u = AC7));	/* 7 */
-	FF (c1, d1, a1, b1, x1[ 6], S13, u);		/* 7 */
-	FF (b0, c0, d0, a0, x0[ 7], S14, (u = AC8));	/* 8 */
-	FF (b1, c1, d1, a1, x1[ 7], S14, u);		/* 8 */
-	FF (a0, b0, c0, d0, x0[ 8], S11, (u = AC9));	/* 9 */
-	FF (a1, b1, c1, d1, x1[ 8], S11, u);		/* 9 */
-	FF (d0, a0, b0, c0, x0[ 9], S12, (u = AC10));	/* 10 */
-	FF (d1, a1, b1, c1, x1[ 9], S12, u);		/* 10 */
-	FF (c0, d0, a0, b0, x0[10], S13, (u = AC11));	/* 11 */
-	FF (c1, d1, a1, b1, x1[10], S13, u);		/* 11 */
-	FF (b0, c0, d0, a0, x0[11], S14, (u = AC12));	/* 12 */
-	FF (b1, c1, d1, a1, x1[11], S14, u);		/* 12 */
-	FF (a0, b0, c0, d0, x0[12], S11, (u = AC13));	/* 13 */
-	FF (a1, b1, c1, d1, x1[12], S11, u);		/* 13 */
-	FF (d0, a0, b0, c0, x0[13], S12, (u = AC14));	/* 14 */
-	FF (d1, a1, b1, c1, x1[13], S12, u);		/* 14 */
-	FF (c0, d0, a0, b0, x0[14], S13, (u = AC15));	/* 15 */
-	FF (c1, d1, a1, b1, x1[14], S13, u);		/* 15 */
-	b0 += F (c0, d0, a0) + (u = AC16);
-	ROTATE_LEFT (b0, S14); b0 += c0;		/* 16 */
-	b1 += F (c1, d1, a1) + u;
-	ROTATE_LEFT (b1, S14); b1 += c1;		/* 16 */
+	ROTATE_LEFT(b1, S14);
+	b1 += c1;		/* 4 */
+	FF(a0, b0, c0, d0, x0[4], S11, (u = AC5));	/* 5 */
+	FF(a1, b1, c1, d1, x1[4], S11, u);	/* 5 */
+	FF(d0, a0, b0, c0, x0[5], S12, (u = AC6));	/* 6 */
+	FF(d1, a1, b1, c1, x1[5], S12, u);	/* 6 */
+	FF(c0, d0, a0, b0, x0[6], S13, (u = AC7));	/* 7 */
+	FF(c1, d1, a1, b1, x1[6], S13, u);	/* 7 */
+	FF(b0, c0, d0, a0, x0[7], S14, (u = AC8));	/* 8 */
+	FF(b1, c1, d1, a1, x1[7], S14, u);	/* 8 */
+	FF(a0, b0, c0, d0, x0[8], S11, (u = AC9));	/* 9 */
+	FF(a1, b1, c1, d1, x1[8], S11, u);	/* 9 */
+	FF(d0, a0, b0, c0, x0[9], S12, (u = AC10));	/* 10 */
+	FF(d1, a1, b1, c1, x1[9], S12, u);	/* 10 */
+	FF(c0, d0, a0, b0, x0[10], S13, (u = AC11));	/* 11 */
+	FF(c1, d1, a1, b1, x1[10], S13, u);	/* 11 */
+	FF(b0, c0, d0, a0, x0[11], S14, (u = AC12));	/* 12 */
+	FF(b1, c1, d1, a1, x1[11], S14, u);	/* 12 */
+	FF(a0, b0, c0, d0, x0[12], S11, (u = AC13));	/* 13 */
+	FF(a1, b1, c1, d1, x1[12], S11, u);	/* 13 */
+	FF(d0, a0, b0, c0, x0[13], S12, (u = AC14));	/* 14 */
+	FF(d1, a1, b1, c1, x1[13], S12, u);	/* 14 */
+	FF(c0, d0, a0, b0, x0[14], S13, (u = AC15));	/* 15 */
+	FF(c1, d1, a1, b1, x1[14], S13, u);	/* 15 */
+	b0 += F(c0, d0, a0) + (u = AC16);
+	ROTATE_LEFT(b0, S14);
+	b0 += c0;		/* 16 */
+	b1 += F(c1, d1, a1) + u;
+	ROTATE_LEFT(b1, S14);
+	b1 += c1;		/* 16 */
 
 /* Round 2 */
-	GG (a0, b0, c0, d0, x0[ 1], S21, (u = AC17));	/* 17 */
-	GG (a1, b1, c1, d1, x1[ 1], S21, u);		/* 17 */
-	GG (d0, a0, b0, c0, x0[ 6], S22, (u = AC18));	/* 18 */
-	GG (d1, a1, b1, c1, x1[ 6], S22, u);		/* 18 */
-	GG (c0, d0, a0, b0, x0[11], S23, (u = AC19));	/* 19 */
-	GG (c1, d1, a1, b1, x1[11], S23, u);		/* 19 */
-	GG (b0, c0, d0, a0, x0[ 0], S24, (u = AC20));	/* 20 */
-	GG (b1, c1, d1, a1, x1[ 0], S24, u);		/* 20 */
-	GG (a0, b0, c0, d0, x0[ 5], S21, (u = AC21));	/* 21 */
-	GG (a1, b1, c1, d1, x1[ 5], S21, u);		/* 21 */
-	GG (d0, a0, b0, c0, x0[10], S22, (u = AC22));	/* 22 */
-	GG (d1, a1, b1, c1, x1[10], S22, u);		/* 22 */
-	c0 += G (d0, a0, b0) + (u = AC23);
-	ROTATE_LEFT (c0, S23); c0 += d0;		/* 23 */
-	c1 += G (d1, a1, b1) + u;
-	ROTATE_LEFT (c1, S23); c1 += d1;		/* 23 */
-	GG (b0, c0, d0, a0, x0[ 4], S24, (u = AC24));	/* 24 */
-	GG (b1, c1, d1, a1, x1[ 4], S24, u);		/* 24 */
-	GG (a0, b0, c0, d0, x0[ 9], S21, (u = AC25));	/* 25 */
-	GG (a1, b1, c1, d1, x1[ 9], S21, u);		/* 25 */
-	GG (d0, a0, b0, c0, x0[14], S22, (u = AC26));	/* 26 */
-	GG (d1, a1, b1, c1, x1[14], S22, u);		/* 26 */
-	GG (c0, d0, a0, b0, x0[ 3], S23, (u = AC27));	/* 27 */
-	GG (c1, d1, a1, b1, x1[ 3], S23, u);		/* 27 */
-	GG (b0, c0, d0, a0, x0[ 8], S24, (u = AC28));	/* 28 */
-	GG (b1, c1, d1, a1, x1[ 8], S24, u);		/* 28 */
-	GG (a0, b0, c0, d0, x0[13], S21, (u = AC29));	/* 29 */
-	GG (a1, b1, c1, d1, x1[13], S21, u);		/* 29 */
-	GG (d0, a0, b0, c0, x0[ 2], S22, (u = AC30));	/* 30 */
-	GG (d1, a1, b1, c1, x1[ 2], S22, u);		/* 30 */
-	GG (c0, d0, a0, b0, x0[ 7], S23, (u = AC31));	/* 31 */
-	GG (c1, d1, a1, b1, x1[ 7], S23, u);		/* 31 */
-	GG (b0, c0, d0, a0, x0[12], S24, (u = AC32));	/* 32 */
-	GG (b1, c1, d1, a1, x1[12], S24, u);		/* 32 */
+	GG(a0, b0, c0, d0, x0[1], S21, (u = AC17));	/* 17 */
+	GG(a1, b1, c1, d1, x1[1], S21, u);	/* 17 */
+	GG(d0, a0, b0, c0, x0[6], S22, (u = AC18));	/* 18 */
+	GG(d1, a1, b1, c1, x1[6], S22, u);	/* 18 */
+	GG(c0, d0, a0, b0, x0[11], S23, (u = AC19));	/* 19 */
+	GG(c1, d1, a1, b1, x1[11], S23, u);	/* 19 */
+	GG(b0, c0, d0, a0, x0[0], S24, (u = AC20));	/* 20 */
+	GG(b1, c1, d1, a1, x1[0], S24, u);	/* 20 */
+	GG(a0, b0, c0, d0, x0[5], S21, (u = AC21));	/* 21 */
+	GG(a1, b1, c1, d1, x1[5], S21, u);	/* 21 */
+	GG(d0, a0, b0, c0, x0[10], S22, (u = AC22));	/* 22 */
+	GG(d1, a1, b1, c1, x1[10], S22, u);	/* 22 */
+	c0 += G(d0, a0, b0) + (u = AC23);
+	ROTATE_LEFT(c0, S23);
+	c0 += d0;		/* 23 */
+	c1 += G(d1, a1, b1) + u;
+	ROTATE_LEFT(c1, S23);
+	c1 += d1;		/* 23 */
+	GG(b0, c0, d0, a0, x0[4], S24, (u = AC24));	/* 24 */
+	GG(b1, c1, d1, a1, x1[4], S24, u);	/* 24 */
+	GG(a0, b0, c0, d0, x0[9], S21, (u = AC25));	/* 25 */
+	GG(a1, b1, c1, d1, x1[9], S21, u);	/* 25 */
+	GG(d0, a0, b0, c0, x0[14], S22, (u = AC26));	/* 26 */
+	GG(d1, a1, b1, c1, x1[14], S22, u);	/* 26 */
+	GG(c0, d0, a0, b0, x0[3], S23, (u = AC27));	/* 27 */
+	GG(c1, d1, a1, b1, x1[3], S23, u);	/* 27 */
+	GG(b0, c0, d0, a0, x0[8], S24, (u = AC28));	/* 28 */
+	GG(b1, c1, d1, a1, x1[8], S24, u);	/* 28 */
+	GG(a0, b0, c0, d0, x0[13], S21, (u = AC29));	/* 29 */
+	GG(a1, b1, c1, d1, x1[13], S21, u);	/* 29 */
+	GG(d0, a0, b0, c0, x0[2], S22, (u = AC30));	/* 30 */
+	GG(d1, a1, b1, c1, x1[2], S22, u);	/* 30 */
+	GG(c0, d0, a0, b0, x0[7], S23, (u = AC31));	/* 31 */
+	GG(c1, d1, a1, b1, x1[7], S23, u);	/* 31 */
+	GG(b0, c0, d0, a0, x0[12], S24, (u = AC32));	/* 32 */
+	GG(b1, c1, d1, a1, x1[12], S24, u);	/* 32 */
 
 /* Round 3 */
-	HH (a0, b0, c0, d0, x0[ 5], S31, (u = AC33));	/* 33 */
-	HH (a1, b1, c1, d1, x1[ 5], S31, u);		/* 33 */
-	HH (d0, a0, b0, c0, x0[ 8], S32, (u = AC34));	/* 34 */
-	HH (d1, a1, b1, c1, x1[ 8], S32, u);		/* 34 */
-	HH (c0, d0, a0, b0, x0[11], S33, (u = AC35));	/* 35 */
-	HH (c1, d1, a1, b1, x1[11], S33, u);		/* 35 */
-	HH (b0, c0, d0, a0, x0[14], S34, (u = AC36));	/* 36 */
-	HH (b1, c1, d1, a1, x1[14], S34, u);		/* 36 */
-	HH (a0, b0, c0, d0, x0[ 1], S31, (u = AC37));	/* 37 */
-	HH (a1, b1, c1, d1, x1[ 1], S31, u);		/* 37 */
-	HH (d0, a0, b0, c0, x0[ 4], S32, (u = AC38));	/* 38 */
-	HH (d1, a1, b1, c1, x1[ 4], S32, u);		/* 38 */
-	HH (c0, d0, a0, b0, x0[ 7], S33, (u = AC39));	/* 39 */
-	HH (c1, d1, a1, b1, x1[ 7], S33, u);		/* 39 */
-	HH (b0, c0, d0, a0, x0[10], S34, (u = AC40));	/* 40 */
-	HH (b1, c1, d1, a1, x1[10], S34, u);		/* 40 */
-	HH (a0, b0, c0, d0, x0[13], S31, (u = AC41));	/* 41 */
-	HH (a1, b1, c1, d1, x1[13], S31, u);		/* 41 */
-	HH (d0, a0, b0, c0, x0[ 0], S32, (u = AC42));	/* 42 */
-	HH (d1, a1, b1, c1, x1[ 0], S32, u);		/* 42 */
-	HH (c0, d0, a0, b0, x0[ 3], S33, (u = AC43));	/* 43 */
-	HH (c1, d1, a1, b1, x1[ 3], S33, u);		/* 43 */
-	HH (b0, c0, d0, a0, x0[ 6], S34, (u = AC44));	/* 44 */
-	HH (b1, c1, d1, a1, x1[ 6], S34, u);		/* 44 */
-	HH (a0, b0, c0, d0, x0[ 9], S31, (u = AC45));	/* 45 */
-	HH (a1, b1, c1, d1, x1[ 9], S31, u);		/* 45 */
-	HH (d0, a0, b0, c0, x0[12], S32, (u = AC46));	/* 46 */
-	HH (d1, a1, b1, c1, x1[12], S32, u);		/* 46 */
-	c0 += H (d0, a0, b0) + (u = AC47);
-	ROTATE_LEFT (c0, S33); c0 += d0;		/* 47 */
-	c1 += H (d1, a1, b1) + u;
-	ROTATE_LEFT (c1, S33); c1 += d1;		/* 47 */
-	HH (b0, c0, d0, a0, x0[ 2], S34, (u = AC48));	/* 48 */
-	HH (b1, c1, d1, a1, x1[ 2], S34, u);		/* 48 */
+	HH(a0, b0, c0, d0, x0[5], S31, (u = AC33));	/* 33 */
+	HH(a1, b1, c1, d1, x1[5], S31, u);	/* 33 */
+	HH(d0, a0, b0, c0, x0[8], S32, (u = AC34));	/* 34 */
+	HH(d1, a1, b1, c1, x1[8], S32, u);	/* 34 */
+	HH(c0, d0, a0, b0, x0[11], S33, (u = AC35));	/* 35 */
+	HH(c1, d1, a1, b1, x1[11], S33, u);	/* 35 */
+	HH(b0, c0, d0, a0, x0[14], S34, (u = AC36));	/* 36 */
+	HH(b1, c1, d1, a1, x1[14], S34, u);	/* 36 */
+	HH(a0, b0, c0, d0, x0[1], S31, (u = AC37));	/* 37 */
+	HH(a1, b1, c1, d1, x1[1], S31, u);	/* 37 */
+	HH(d0, a0, b0, c0, x0[4], S32, (u = AC38));	/* 38 */
+	HH(d1, a1, b1, c1, x1[4], S32, u);	/* 38 */
+	HH(c0, d0, a0, b0, x0[7], S33, (u = AC39));	/* 39 */
+	HH(c1, d1, a1, b1, x1[7], S33, u);	/* 39 */
+	HH(b0, c0, d0, a0, x0[10], S34, (u = AC40));	/* 40 */
+	HH(b1, c1, d1, a1, x1[10], S34, u);	/* 40 */
+	HH(a0, b0, c0, d0, x0[13], S31, (u = AC41));	/* 41 */
+	HH(a1, b1, c1, d1, x1[13], S31, u);	/* 41 */
+	HH(d0, a0, b0, c0, x0[0], S32, (u = AC42));	/* 42 */
+	HH(d1, a1, b1, c1, x1[0], S32, u);	/* 42 */
+	HH(c0, d0, a0, b0, x0[3], S33, (u = AC43));	/* 43 */
+	HH(c1, d1, a1, b1, x1[3], S33, u);	/* 43 */
+	HH(b0, c0, d0, a0, x0[6], S34, (u = AC44));	/* 44 */
+	HH(b1, c1, d1, a1, x1[6], S34, u);	/* 44 */
+	HH(a0, b0, c0, d0, x0[9], S31, (u = AC45));	/* 45 */
+	HH(a1, b1, c1, d1, x1[9], S31, u);	/* 45 */
+	HH(d0, a0, b0, c0, x0[12], S32, (u = AC46));	/* 46 */
+	HH(d1, a1, b1, c1, x1[12], S32, u);	/* 46 */
+	c0 += H(d0, a0, b0) + (u = AC47);
+	ROTATE_LEFT(c0, S33);
+	c0 += d0;		/* 47 */
+	c1 += H(d1, a1, b1) + u;
+	ROTATE_LEFT(c1, S33);
+	c1 += d1;		/* 47 */
+	HH(b0, c0, d0, a0, x0[2], S34, (u = AC48));	/* 48 */
+	HH(b1, c1, d1, a1, x1[2], S34, u);	/* 48 */
 
 /* Round 4 */
-	II (a0, b0, c0, d0, x0[ 0], S41, (u = AC49));	/* 49 */
-	II (a1, b1, c1, d1, x1[ 0], S41, u);		/* 49 */
-	II (d0, a0, b0, c0, x0[ 7], S42, (u = AC50));	/* 50 */
-	II (d1, a1, b1, c1, x1[ 7], S42, u);		/* 50 */
-	II (c0, d0, a0, b0, x0[14], S43, (u = AC51));	/* 51 */
-	II (c1, d1, a1, b1, x1[14], S43, u);		/* 51 */
-	II (b0, c0, d0, a0, x0[ 5], S44, (u = AC52));	/* 52 */
-	II (b1, c1, d1, a1, x1[ 5], S44, u);		/* 52 */
-	II (a0, b0, c0, d0, x0[12], S41, (u = AC53));	/* 53 */
-	II (a1, b1, c1, d1, x1[12], S41, u);		/* 53 */
-	II (d0, a0, b0, c0, x0[ 3], S42, (u = AC54));	/* 54 */
-	II (d1, a1, b1, c1, x1[ 3], S42, u);		/* 54 */
-	II (c0, d0, a0, b0, x0[10], S43, (u = AC55));	/* 55 */
-	II (c1, d1, a1, b1, x1[10], S43, u);		/* 55 */
-	II (b0, c0, d0, a0, x0[ 1], S44, (u = AC56));	/* 56 */
-	II (b1, c1, d1, a1, x1[ 1], S44, u);		/* 56 */
-	II (a0, b0, c0, d0, x0[ 8], S41, (u = AC57));	/* 57 */
-	II (a1, b1, c1, d1, x1[ 8], S41, u);		/* 57 */
-	d0 += I (a0, b0, c0) + (u = AC58);
-	ROTATE_LEFT (d0, S42); d0 += a0;		/* 58 */
-	d1 += I (a1, b1, c1) + u;
-	ROTATE_LEFT (d1, S42); d1 += a1;		/* 58 */
-	II (c0, d0, a0, b0, x0[ 6], S43, (u = AC59));	/* 59 */
-	II (c1, d1, a1, b1, x1[ 6], S43, u);		/* 59 */
-	II (b0, c0, d0, a0, x0[13], S44, (u = AC60));	/* 60 */
-	II (b1, c1, d1, a1, x1[13], S44, u);		/* 60 */
-	II (a0, b0, c0, d0, x0[ 4], S41, (u = AC61));	/* 61 */
-	II (a1, b1, c1, d1, x1[ 4], S41, u);		/* 61 */
-	II (d0, a0, b0, c0, x0[11], S42, (u = AC62));	/* 62 */
-	II (d1, a1, b1, c1, x1[11], S42, u);		/* 62 */
-	II (c0, d0, a0, b0, x0[ 2], S43, (u = AC63));	/* 63 */
-	II (c1, d1, a1, b1, x1[ 2], S43, u);		/* 63 */
-	II (b0, c0, d0, a0, x0[ 9], S44, (u = AC64));	/* 64 */
-	II (b1, c1, d1, a1, x1[ 9], S44, u);		/* 64 */
+	II(a0, b0, c0, d0, x0[0], S41, (u = AC49));	/* 49 */
+	II(a1, b1, c1, d1, x1[0], S41, u);	/* 49 */
+	II(d0, a0, b0, c0, x0[7], S42, (u = AC50));	/* 50 */
+	II(d1, a1, b1, c1, x1[7], S42, u);	/* 50 */
+	II(c0, d0, a0, b0, x0[14], S43, (u = AC51));	/* 51 */
+	II(c1, d1, a1, b1, x1[14], S43, u);	/* 51 */
+	II(b0, c0, d0, a0, x0[5], S44, (u = AC52));	/* 52 */
+	II(b1, c1, d1, a1, x1[5], S44, u);	/* 52 */
+	II(a0, b0, c0, d0, x0[12], S41, (u = AC53));	/* 53 */
+	II(a1, b1, c1, d1, x1[12], S41, u);	/* 53 */
+	II(d0, a0, b0, c0, x0[3], S42, (u = AC54));	/* 54 */
+	II(d1, a1, b1, c1, x1[3], S42, u);	/* 54 */
+	II(c0, d0, a0, b0, x0[10], S43, (u = AC55));	/* 55 */
+	II(c1, d1, a1, b1, x1[10], S43, u);	/* 55 */
+	II(b0, c0, d0, a0, x0[1], S44, (u = AC56));	/* 56 */
+	II(b1, c1, d1, a1, x1[1], S44, u);	/* 56 */
+	II(a0, b0, c0, d0, x0[8], S41, (u = AC57));	/* 57 */
+	II(a1, b1, c1, d1, x1[8], S41, u);	/* 57 */
+	d0 += I(a0, b0, c0) + (u = AC58);
+	ROTATE_LEFT(d0, S42);
+	d0 += a0;		/* 58 */
+	d1 += I(a1, b1, c1) + u;
+	ROTATE_LEFT(d1, S42);
+	d1 += a1;		/* 58 */
+	II(c0, d0, a0, b0, x0[6], S43, (u = AC59));	/* 59 */
+	II(c1, d1, a1, b1, x1[6], S43, u);	/* 59 */
+	II(b0, c0, d0, a0, x0[13], S44, (u = AC60));	/* 60 */
+	II(b1, c1, d1, a1, x1[13], S44, u);	/* 60 */
+	II(a0, b0, c0, d0, x0[4], S41, (u = AC61));	/* 61 */
+	II(a1, b1, c1, d1, x1[4], S41, u);	/* 61 */
+	II(d0, a0, b0, c0, x0[11], S42, (u = AC62));	/* 62 */
+	II(d1, a1, b1, c1, x1[11], S42, u);	/* 62 */
+	II(c0, d0, a0, b0, x0[2], S43, (u = AC63));	/* 63 */
+	II(c1, d1, a1, b1, x1[2], S43, u);	/* 63 */
+	II(b0, c0, d0, a0, x0[9], S44, (u = AC64));	/* 64 */
+	II(b1, c1, d1, a1, x1[9], S44, u);	/* 64 */
 
 	out1[3] = Cd + d1;
 
@@ -764,11 +786,13 @@ void MD5_std_crypt(int count)
 {
 	int length, index, mask;
 	MD5_pattern *line;
+
 #if ARCH_LITTLE_ENDIAN
 	MD5_word *last0;
 #endif
 #if MD5_X2
 	MD5_pool *key;
+
 #if ARCH_LITTLE_ENDIAN
 	MD5_word *last1;
 #endif
@@ -780,60 +804,54 @@ void MD5_std_crypt(int count)
 #define index	0
 #define key	pool
 #endif
-		memcpy(key->o.ps.b, key->o.p.b, key->l.p);
-		memcpy(&key->o.ps.b[key->l.p], key->s, key->l.s);
-		key->l.ps = key->l.p + key->l.s;
-		memcpy(&key->o.ps.b[key->l.ps + 16], PADDING,
-			40 - key->l.ps);
-		key->o.ps.w[14] = (key->l.ps + 16) << 3;
+	memcpy(key->o.ps.b, key->o.p.b, key->l.p);
+	memcpy(&key->o.ps.b[key->l.p], key->s, key->l.s);
+	key->l.ps = key->l.p + key->l.s;
+	memcpy(&key->o.ps.b[key->l.ps + 16], PADDING, 40 - key->l.ps);
+	key->o.ps.w[14] = (key->l.ps + 16) << 3;
 
-		memcpy(key->o.psp.b, key->o.ps.b, key->l.ps);
-		memcpy(&key->o.psp.b[key->l.ps], key->o.p.b, key->l.p);
-		key->l.psp = key->l.ps + key->l.p;
-		memcpy(&key->o.psp.b[key->l.psp + 16], PADDING,
-			40 - key->l.psp);
-		key->o.psp.w[14] = (key->l.psp + 16) << 3;
+	memcpy(key->o.psp.b, key->o.ps.b, key->l.ps);
+	memcpy(&key->o.psp.b[key->l.ps], key->o.p.b, key->l.p);
+	key->l.psp = key->l.ps + key->l.p;
+	memcpy(&key->o.psp.b[key->l.psp + 16], PADDING, 40 - key->l.psp);
+	key->o.psp.w[14] = (key->l.psp + 16) << 3;
 
-		memcpy(&key->e.sp.b[16], key->s, key->l.s);
-		memcpy(&key->e.sp.b[16 + key->l.s], key->o.p.b,
-			key->l.p);
-		memcpy(&key->e.sp.b[16 + key->l.ps], PADDING,
-			40 - key->l.ps);
-		key->e.sp.w[14] = (key->l.ps + 16) << 3;
-		MD5_swap(key->e.sp.w, key->e.sp.w, 14);
+	memcpy(&key->e.sp.b[16], key->s, key->l.s);
+	memcpy(&key->e.sp.b[16 + key->l.s], key->o.p.b, key->l.p);
+	memcpy(&key->e.sp.b[16 + key->l.ps], PADDING, 40 - key->l.ps);
+	key->e.sp.w[14] = (key->l.ps + 16) << 3;
+	MD5_swap(key->e.sp.w, key->e.sp.w, 14);
 
-		memcpy(&key->e.spp.b[16], key->s, key->l.s);
-		memcpy(&key->e.spp.b[16 + key->l.s], key->o.pp.b,
-			key->l.pp);
-		memcpy(&key->e.spp.b[16 + key->l.psp], PADDING,
-			40 - key->l.psp);
-		key->e.spp.w[14] = (key->l.psp + 16) << 3;
-		MD5_swap(key->e.spp.w, key->e.spp.w, 14);
+	memcpy(&key->e.spp.b[16], key->s, key->l.s);
+	memcpy(&key->e.spp.b[16 + key->l.s], key->o.pp.b, key->l.pp);
+	memcpy(&key->e.spp.b[16 + key->l.psp], PADDING, 40 - key->l.psp);
+	key->e.spp.w[14] = (key->l.psp + 16) << 3;
+	MD5_swap(key->e.spp.w, key->e.spp.w, 14);
 
-		order[0][index].length = key->l.psp;
-		order[2][index].length = key->l.psp;
-		order[3][index].length = key->l.ps;
-		order[5][index].length = key->l.psp;
-		order[6][index].length = key->l.psp;
-		order[8][index].length = key->l.psp;
-		order[9][index].length = key->l.psp;
-		order[11][index].length = key->l.psp;
-		order[12][index].length = key->l.psp;
-		order[14][index].length = key->l.psp;
-		order[15][index].length = key->l.psp;
-		order[17][index].length = key->l.ps;
-		order[18][index].length = key->l.psp;
-		order[20][index].length = key->l.psp;
+	order[0][index].length = key->l.psp;
+	order[2][index].length = key->l.psp;
+	order[3][index].length = key->l.ps;
+	order[5][index].length = key->l.psp;
+	order[6][index].length = key->l.psp;
+	order[8][index].length = key->l.psp;
+	order[9][index].length = key->l.psp;
+	order[11][index].length = key->l.psp;
+	order[12][index].length = key->l.psp;
+	order[14][index].length = key->l.psp;
+	order[15][index].length = key->l.psp;
+	order[17][index].length = key->l.ps;
+	order[18][index].length = key->l.psp;
+	order[20][index].length = key->l.psp;
 
-		memcpy(&block[index], key->o.psp.b, key->l.psp);
-		memcpy(&block[index].b[key->l.psp], PADDING, 56 - key->l.psp);
-		block[index].w[14] = key->l.psp << 3;
-		MD5_swap(block[index].w, block[index].w, 14);
+	memcpy(&block[index], key->o.psp.b, key->l.psp);
+	memcpy(&block[index].b[key->l.psp], PADDING, 56 - key->l.psp);
+	block[index].w[14] = key->l.psp << 3;
+	MD5_swap(block[index].w, block[index].w, 14);
 #if MD5_X2
-	}
+}
 
-	MD5_body(block[0].w, block[1].w, MD5_out[0], MD5_out[1]);
-	MD5_swap(MD5_out[0], MD5_out[0], 8);
+MD5_body(block[0].w, block[1].w, MD5_out[0], MD5_out[1]);
+MD5_swap(MD5_out[0], MD5_out[0], 8);
 #else
 	MD5_body(block[0].w, MD5_out[0]);
 	MD5_swap(MD5_out[0], MD5_out[0], 4);
@@ -846,13 +864,13 @@ void MD5_std_crypt(int count)
 		memcpy(&block[index].b[key->l.p], prefix, prelen);
 		memcpy(&block[index].b[key->l.p + prelen], key->s, key->l.s);
 		memcpy(&block[index].b[key->l.ps + prelen],
-			MD5_out[index], key->l.p);
+		    MD5_out[index], key->l.p);
 		length = key->l.psp + prelen;
 		if ((mask = key->l.p))
-		do {
-			block[index].b[length++] =
-				(mask & 1) ? 0 : key->o.p.b[0];
-		} while (mask >>= 1);
+			do {
+				block[index].b[length++] =
+				    (mask & 1) ? 0 : key->o.p.b[0];
+			} while (mask >>= 1);
 		memcpy(&block[index].b[length], PADDING, 56 - length);
 		block[index].w[14] = length << 3;
 		MD5_swap(block[index].w, block[index].w, 14);
@@ -864,127 +882,132 @@ void MD5_std_crypt(int count)
 #endif
 
 #if MD5_X2
-	MD5_body(block[0].w, block[1].w,
-		order[0][0].even->w, order[0][1].even->w);
+		MD5_body(block[0].w, block[1].w,
+		    order[0][0].even->w, order[0][1].even->w);
 #else
-	MD5_body(block[0].w, order[0][0].even->w);
+		MD5_body(block[0].w, order[0][0].even->w);
 #endif
 
-	index = 500; line = order[0];
-	do {
+		index = 500;
+		line = order[0];
+		do {
 #if ARCH_LITTLE_ENDIAN
 #if ARCH_ALLOWS_UNALIGNED
 #if MD5_X2
-		MD5_body(line[0].even->w, line[1].even->w,
-			(MD5_word *)&line[0].odd->b[line[0].length],
-			(MD5_word *)&line[1].odd->b[line[1].length]);
+			MD5_body(line[0].even->w, line[1].even->w,
+			    (MD5_word *) & line[0].odd->b[line[0].length],
+			    (MD5_word *) & line[1].odd->b[line[1].length]);
 #else
-		MD5_body(line[0].even->w,
-			(MD5_word *)&line[0].odd->b[line[0].length]);
-#endif
-#else
-#if MD5_X2
-		MD5_body(line[0].even->w, line[1].even->w,
-			MD5_out[0], MD5_out[1]);
-		memcpy(&line[0].odd->b[line[0].length], MD5_out[0], 16);
-		memcpy(&line[1].odd->b[line[1].length], MD5_out[1], 16);
-#else
-		if (((ARCH_WORD)&line[0].odd->b[line[0].length]) & 3) {
-			MD5_body(line[0].even->w, MD5_out[0]);
-			memcpy(&line[0].odd->b[line[0].length],
-				MD5_out[0], 16);
-		} else {
 			MD5_body(line[0].even->w,
-				(MD5_word *)&line[0].odd->b[line[0].length]);
-		}
-#endif
-#endif
-		last0 = line[0].odd->w;
-#if MD5_X2
-		last1 = line[1].odd->w;
-		if ((line += 2) > &order[20][MD5_N - 1]) line = order[0];
-		MD5_body(last0, last1, line[0].even->w, line[1].even->w);
-#else
-		if (++line > &order[20][0]) line = order[0];
-		MD5_body(last0, line[0].even->w);
+			    (MD5_word *) & line[0].odd->b[line[0].length]);
 #endif
 #else
 #if MD5_X2
-		MD5_body(line[0].even->w, line[1].even->w,
-			MD5_out[0], MD5_out[1]);
-		MD5_swap(MD5_out[0], MD5_out[0], 8);
+			MD5_body(line[0].even->w, line[1].even->w,
+			    MD5_out[0], MD5_out[1]);
+			memcpy(&line[0].odd->b[line[0].length], MD5_out[0], 16);
+			memcpy(&line[1].odd->b[line[1].length], MD5_out[1], 16);
 #else
-		MD5_body(line[0].even->w, MD5_out[0]);
-		MD5_swap(MD5_out[0], MD5_out[0], 4);
+			if (((ARCH_WORD) & line[0].odd->b[line[0].length]) & 3) {
+				MD5_body(line[0].even->w, MD5_out[0]);
+				memcpy(&line[0].odd->b[line[0].length],
+				    MD5_out[0], 16);
+			} else {
+				MD5_body(line[0].even->w,
+				    (MD5_word *) & line[0].odd->b[line[0].
+					length]);
+			}
 #endif
-		memcpy(&line[0].odd->b[line[0].length], MD5_out[0], 16);
-#if MD5_X2
-		memcpy(&line[1].odd->b[line[1].length], MD5_out[1], 16);
 #endif
-		MD5_swap(block[0].w, line[0].odd->w, 14);
-		block[0].w[14] = line[0].odd->w[14];
+			last0 = line[0].odd->w;
 #if MD5_X2
-		MD5_swap(block[1].w, line[1].odd->w, 14);
-		block[1].w[14] = line[1].odd->w[14];
-		if ((line += 2) > &order[20][MD5_N - 1]) line = order[0];
-		MD5_body(block[0].w, block[1].w,
-			line[0].even->w, line[1].even->w);
+			last1 = line[1].odd->w;
+			if ((line += 2) > &order[20][MD5_N - 1])
+				line = order[0];
+			MD5_body(last0, last1, line[0].even->w,
+			    line[1].even->w);
 #else
-		if (++line > &order[20][0]) line = order[0];
-		MD5_body(block[0].w, line[0].even->w);
+			if (++line > &order[20][0])
+				line = order[0];
+			MD5_body(last0, line[0].even->w);
+#endif
+#else
+#if MD5_X2
+			MD5_body(line[0].even->w, line[1].even->w,
+			    MD5_out[0], MD5_out[1]);
+			MD5_swap(MD5_out[0], MD5_out[0], 8);
+#else
+			MD5_body(line[0].even->w, MD5_out[0]);
+			MD5_swap(MD5_out[0], MD5_out[0], 4);
+#endif
+			memcpy(&line[0].odd->b[line[0].length], MD5_out[0], 16);
+#if MD5_X2
+			memcpy(&line[1].odd->b[line[1].length], MD5_out[1], 16);
+#endif
+			MD5_swap(block[0].w, line[0].odd->w, 14);
+			block[0].w[14] = line[0].odd->w[14];
+#if MD5_X2
+			MD5_swap(block[1].w, line[1].odd->w, 14);
+			block[1].w[14] = line[1].odd->w[14];
+			if ((line += 2) > &order[20][MD5_N - 1])
+				line = order[0];
+			MD5_body(block[0].w, block[1].w,
+			    line[0].even->w, line[1].even->w);
+#else
+			if (++line > &order[20][0])
+				line = order[0];
+			MD5_body(block[0].w, line[0].even->w);
 #endif
 #endif
-	} while (--index);
+		} while (--index);
 
-	memcpy(MD5_out[0], line[0].even, 16);
+		memcpy(MD5_out[0], line[0].even, 16);
 #if MD5_X2
-	memcpy(MD5_out[1], line[1].even, 16);
+		memcpy(MD5_out[1], line[1].even, 16);
 #endif
-}
+	}
 
 #if MD5_std_mt
-void MD5_std_crypt(int count)
-{
+	void MD5_std_crypt(int count) {
 #if MD5_std_mt
-	int t, n = (count + (MD5_N - 1)) / MD5_N;
+		int t, n = (count + (MD5_N - 1)) / MD5_N;
 #endif
 
 #ifdef _OPENMP
 #pragma omp parallel for default(none) private(t) shared(n, salt_changed, saved_salt)
 #endif
-	for_each_t(n) {
+		for_each_t(n) {
 /*
  * We could move the salt_changed check out of the parallel region (and have
  * two specialized parallel regions instead), but MD5_std_crypt_for_thread()
  * does so much work that the salt_changed check is negligible.
  */
-		if (salt_changed)
-			MD5_std_set_salt_for_thread(t, saved_salt);
-		MD5_std_crypt_for_thread(t);
-	}
+			if (salt_changed)
+				MD5_std_set_salt_for_thread(t, saved_salt);
+			MD5_std_crypt_for_thread(t);
+		}
 
-	salt_changed = 0;
-}
+		salt_changed = 0;
+	}
 #endif
 
-char *MD5_std_get_salt(char *ciphertext)
-{
-	static char out[9];
-	char *p, *q;
-	int i;
+	char *MD5_std_get_salt(char *ciphertext) {
+		static char out[9];
+		char *p, *q;
+		int i;
 
-	p = ciphertext + 3;
-	if ((out[8] = !strncmp(ciphertext, "$apr1$", 6)))
-		p = ciphertext + 6;
+		p = ciphertext + 3;
+		if ((out[8] = !strncmp(ciphertext, "$apr1$", 6)))
+			p = ciphertext + 6;
 
-	q = out;
-	for (i = 0; *p != '$' && i < 8; i++)
-		*q++ = *p++;
-	while (i++ < 8)
-		*q++ = 0;
+		q = out;
+		for (i = 0; *p != '$' && i < 8; i++)
+			*q++ = *p++;
+		while (i++ < 8)
+			*q++ = 0;
 
-	return out;
-}
+		return out;
+	}
 
 #define TO_BINARY(b1, b2, b3) \
 	value = \
@@ -997,34 +1020,33 @@ char *MD5_std_get_salt(char *ciphertext)
 	out.b[b2] = value >> 8; \
 	out.b[b3] = value;
 
-MD5_word *MD5_std_get_binary(char *ciphertext)
-{
-	static union {
-		MD5_binary w;
-		char b[16];
-	} out;
-	char *pos;
-	MD5_word value;
+	MD5_word *MD5_std_get_binary(char *ciphertext) {
+		static union {
+			MD5_binary w;
+			char b[16];
+		} out;
+		char *pos;
+		MD5_word value;
 
-	pos = ciphertext + 3;
-	if (!strncmp(ciphertext, "$apr1$", 6))
-		pos = ciphertext + 6;
+		pos = ciphertext + 3;
+		if (!strncmp(ciphertext, "$apr1$", 6))
+			pos = ciphertext + 6;
 
-	while (*pos++ != '$');
+		while (*pos++ != '$');
 
-	TO_BINARY(0, 6, 12);
-	TO_BINARY(1, 7, 13);
-	TO_BINARY(2, 8, 14);
-	TO_BINARY(3, 9, 15);
-	TO_BINARY(4, 10, 5);
-	out.b[11] =
-		(MD5_word)atoi64[ARCH_INDEX(pos[0])] |
-		((MD5_word)atoi64[ARCH_INDEX(pos[1])] << 6);
+		TO_BINARY(0, 6, 12);
+		TO_BINARY(1, 7, 13);
+		TO_BINARY(2, 8, 14);
+		TO_BINARY(3, 9, 15);
+		TO_BINARY(4, 10, 5);
+		out.b[11] =
+		    (MD5_word) atoi64[ARCH_INDEX(pos[0])] |
+		    ((MD5_word) atoi64[ARCH_INDEX(pos[1])] << 6);
 
 #undef OOFFOOFF
 #define OOFFOOFF 0x00ff00ff
-	MD5_swap(out.w, out.w, 4);
+		MD5_swap(out.w, out.w, 4);
 #undef OOFFOOFF
 
-	return out.w;
-}
+		return out.w;
+	}

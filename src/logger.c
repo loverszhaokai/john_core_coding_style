@@ -8,7 +8,7 @@
  * There's ABSOLUTELY NO WARRANTY, express or implied.
  */
 
-#define _XOPEN_SOURCE /* for fileno(3) and fsync(2) */
+#define _XOPEN_SOURCE		/* for fileno(3) and fsync(2) */
 
 #define NEED_OS_FLOCK
 #include "os.h"
@@ -47,8 +47,8 @@ struct log_file {
 	int fd;
 };
 
-static struct log_file log = {NULL, NULL, NULL, 0, -1};
-static struct log_file pot = {NULL, NULL, NULL, 0, -1};
+static struct log_file log = { NULL, NULL, NULL, 0, -1 };
+static struct log_file pot = { NULL, NULL, NULL, 0, -1 };
 
 static int in_logger = 0;
 
@@ -57,11 +57,11 @@ static void log_file_init(struct log_file *f, char *name, int size)
 	f->name = name;
 
 	if (chmod(path_expand(name), S_IRUSR | S_IWUSR))
-	if (errno != ENOENT)
-		pexit("chmod: %s", path_expand(name));
+		if (errno != ENOENT)
+			pexit("chmod: %s", path_expand(name));
 
 	if ((f->fd = open(path_expand(name),
-	    O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0)
+		    O_WRONLY | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR)) < 0)
 		pexit("open: %s", path_expand(name));
 
 	f->ptr = f->buffer = mem_alloc(size + LINE_BUFFER_SIZE);
@@ -72,10 +72,12 @@ static void log_file_flush(struct log_file *f)
 {
 	int count;
 
-	if (f->fd < 0) return;
+	if (f->fd < 0)
+		return;
 
 	count = f->ptr - f->buffer;
-	if (count <= 0) return;
+	if (count <= 0)
+		return;
 
 #if OS_FLOCK
 	while (flock(f->fd, LOCK_EX)) {
@@ -83,7 +85,8 @@ static void log_file_flush(struct log_file *f)
 			pexit("flock(LOCK_EX)");
 	}
 #endif
-	if (write_loop(f->fd, f->buffer, count) < 0) pexit("write");
+	if (write_loop(f->fd, f->buffer, count) < 0)
+		pexit("write");
 	f->ptr = f->buffer;
 #if OS_FLOCK
 	if (flock(f->fd, LOCK_UN))
@@ -103,23 +106,27 @@ static int log_file_write(struct log_file *f)
 
 static void log_file_fsync(struct log_file *f)
 {
-	if (f->fd < 0) return;
+	if (f->fd < 0)
+		return;
 
 	log_file_flush(f);
 #ifndef __CYGWIN32__
-	if (fsync(f->fd)) pexit("fsync");
+	if (fsync(f->fd))
+		pexit("fsync");
 #endif
 }
 
 static void log_file_done(struct log_file *f, int do_sync)
 {
-	if (f->fd < 0) return;
+	if (f->fd < 0)
+		return;
 
 	if (do_sync)
 		log_file_fsync(f);
 	else
 		log_file_flush(f);
-	if (close(f->fd)) pexit("close");
+	if (close(f->fd))
+		pexit("close");
 	f->fd = -1;
 
 	MEM_FREE(f->buffer);
@@ -140,8 +147,7 @@ static int log_time(void)
 	time = pot.fd >= 0 ? status_get_time() : status_restored_time;
 
 	count2 = (int)sprintf(log.ptr + count1, "%u:%02u:%02u:%02u ",
-	    time / 86400, time % 86400 / 3600,
-	    time % 3600 / 60, time % 60);
+	    time / 86400, time % 86400 / 3600, time % 3600 / 60, time % 60);
 	if (count2 < 0)
 		return count2;
 
@@ -179,17 +185,16 @@ void log_guess(char *login, char *ciphertext, char *plaintext)
 	if (pot.fd >= 0 && ciphertext &&
 	    strlen(ciphertext) + strlen(plaintext) <= LINE_BUFFER_SIZE - 3) {
 		count1 = (int)sprintf(pot.ptr,
-			"%s:%s\n", ciphertext, plaintext);
-		if (count1 > 0) pot.ptr += count1;
+		    "%s:%s\n", ciphertext, plaintext);
+		if (count1 > 0)
+			pot.ptr += count1;
 	}
 
-	if (log.fd >= 0 &&
-	    strlen(login) < LINE_BUFFER_SIZE - 64) {
+	if (log.fd >= 0 && strlen(login) < LINE_BUFFER_SIZE - 64) {
 		count1 = log_time();
 		if (count1 > 0) {
 			log.ptr += count1;
-			count2 = (int)sprintf(log.ptr,
-				"+ Cracked %s\n", login);
+			count2 = (int)sprintf(log.ptr, "+ Cracked %s\n", login);
 			if (count2 > 0)
 				log.ptr += count2;
 			else
@@ -200,8 +205,7 @@ void log_guess(char *login, char *ciphertext, char *plaintext)
 /* Try to keep the two files in sync */
 	if (log_file_write(&pot))
 		log_file_flush(&log);
-	else
-	if (log_file_write(&log))
+	else if (log_file_write(&log))
 		log_file_flush(&pot);
 
 	in_logger = 0;
@@ -215,18 +219,19 @@ void log_event(const char *format, ...)
 	va_list args;
 	int count1, count2;
 
-	if (log.fd < 0) return;
+	if (log.fd < 0)
+		return;
 
 /*
  * Handle possible recursion:
  * log_*() -> ... -> pexit() -> ... -> log_event()
  */
-	if (in_logger) return;
+	if (in_logger)
+		return;
 	in_logger = 1;
 
 	count1 = log_time();
-	if (count1 > 0 &&
-	    count1 + strlen(format) < LINE_BUFFER_SIZE - 500 - 1) {
+	if (count1 > 0 && count1 + strlen(format) < LINE_BUFFER_SIZE - 500 - 1) {
 		log.ptr += count1;
 
 		va_start(args, format);
@@ -270,7 +275,8 @@ void log_done(void)
  * Handle possible recursion:
  * log_*() -> ... -> pexit() -> ... -> log_done()
  */
-	if (in_logger) return;
+	if (in_logger)
+		return;
 	in_logger = 1;
 
 	log_file_done(&log, !options.fork);

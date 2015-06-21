@@ -160,7 +160,7 @@ extern void DES_std_get_block(DES_binary binary, unsigned ARCH_WORD out[2]);
  * Main encryption routine.
  */
 #if CPU_DETECT && !CPU_REQ
-extern void (*DES_std_crypt)(DES_KS KS, DES_binary out);
+extern void (*DES_std_crypt) (DES_KS KS, DES_binary out);
 #else
 extern void DES_std_crypt(DES_KS KS, DES_binary out);
 #endif
